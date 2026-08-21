@@ -5,7 +5,6 @@ import time
 import json
 import base64
 import requests
-from st_aggrid import AgGrid, GridOptionsBuilder
 
 # --- FIRM CONFIGURATION & THEME STATE ---
 st.set_page_config(page_title="The Juicer // Apex Command Center", layout="wide", initial_sidebar_state="expanded")
@@ -15,7 +14,6 @@ if "theme" not in st.session_state:
 if "risk_profile" not in st.session_state:
     st.session_state.risk_profile = "Conservative (2.5% Unit)"
 
-# Theme color dictionaries
 themes = {
     "Firm Crimson (Default)": {"primary": "#ff4d4d", "border": "rgba(161, 29, 33, 0.9)", "glow": "rgba(161,29,33,0.8)"},
     "Institutional Emerald": {"primary": "#22c55e", "border": "rgba(34, 197, 94, 0.9)", "glow": "rgba(34,197,94,0.8)"},
@@ -28,7 +26,7 @@ st.session_state.theme = st.sidebar.selectbox("Terminal Visual Theme", list(them
 st.session_state.risk_profile = st.sidebar.radio("Bankroll Risk Profile", ["Conservative (2.5% Unit)", "Aggressive (5.0% Unit)", "Nuclear (Max Leverage)"])
 webhook_url = st.sidebar.text_input("Discord Webhook URL", placeholder="https://discord.com/api/webhooks/...")
 
-# --- PERSISTENT GITHUB & OFFLINE SQLITE BRAIN HANDLER ---
+# --- PERSISTENT GITHUB BRAIN HANDLER ---
 REPO_OWNER = "dustinforde-lab"
 REPO_NAME = "the-juicer"
 FILE_PATH = "brain.json"
@@ -56,7 +54,7 @@ def save_github_brain(brain_data, current_sha=None):
         url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{FILE_PATH}"
         headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.v3+json"}
         encoded = base64.b64encode(content_str.encode("utf-8")).decode("utf-8")
-        payload = {"message": "Vault: 30-Feature Master Engine Update", "content": encoded, "sha": current_sha}
+        payload = {"message": "Vault: 30-Feature Native UI Update", "content": encoded, "sha": current_sha}
         res = requests.put(url, headers=headers, json=payload)
         return res.status_code in [200, 201]
     else:
@@ -69,7 +67,7 @@ wr_modifier = brain.get("model_weights", {}).get("WR_RECEPTIONS", {}).get("modif
 wr_win_rate = brain.get("model_weights", {}).get("WR_RECEPTIONS", {}).get("rolling_win_rate", 0.50)
 pending_tickets = len([t for t in brain.get("bet_ledger", []) if t.get("result") == "PENDING"])
 
-# --- GLOBAL STYLING (DARK OPS GLASSMORPHISM) ---
+# --- GLOBAL STYLING ---
 st.markdown(f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
@@ -79,11 +77,7 @@ st.markdown(f"""
 .hud-item {{ text-align: center; border-right: 1px solid rgba(255,255,255,0.08); padding-right: 25px; }}
 .hud-item:last-child {{ border-right: none; }}
 .hud-dot {{ height: 8px; width: 8px; background-color: {current_theme['primary']}; border-radius: 50%; display: inline-block; box-shadow: 0 0 12px {current_theme['glow']}; animation: pulse 2s infinite; }}
-.hungry-article-box {{ background: rgba(12, 12, 16, 0.98); border-left: 5px solid {current_theme['primary']}; padding: 30px; border-radius: 0 10px 10px 0; font-size: 1.02rem; line-height: 1.8; color: #e4e4e7; margin-top: 15px; }}
-.article-header {{ font-size: 1.6rem; font-weight: 800; color: #ffffff; margin-bottom: 12px; letter-spacing: -0.5px; text-transform: uppercase; }}
-.article-subheader {{ font-size: 1.15rem; font-weight: 700; color: {current_theme['primary']}; margin-top: 20px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }}
 .source-badge {{ background: rgba(34, 197, 94, 0.15); border: 1px solid #22c55e; color: #4ade80; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }}
-.ag-root-wrapper, .ag-root, .ag-body-viewport, .ag-center-cols-viewport, .ag-center-cols-container {{ background-color: #121218 !important; width: 100% !important; }}
 @keyframes pulse {{ 0% {{ opacity: 1; }} 50% {{ opacity: 0.4; }} 100% {{ opacity: 1; }} }}
 </style>
 """, unsafe_allow_html=True)
@@ -91,21 +85,6 @@ st.markdown(f"""
 # --- ANIMATED LOGO ---
 st.markdown(f"""
 <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 25px;">
-    <svg width="70" height="90" viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg" style="margin-right: 18px; filter: drop-shadow(0 0 15px {current_theme['glow']});">
-        <defs>
-            <linearGradient id="juiceGrad" x1="0%" y1="100%" x2="0%" y2="0%">
-                <stop offset="0%" stop-color="#111" />
-                <stop offset="100%" stop-color="{current_theme['primary']}" />
-            </linearGradient>
-        </defs>
-        <path d="M 15 70 L 45 70 L 40 80 L 20 80 Z" fill="#222" />
-        <path d="M 10 20 L 50 20 L 45 70 L 15 70 Z" fill="rgba(255,255,255,0.05)" stroke="#555" stroke-width="2"/>
-        <path d="M 12.5 45 Q 30 35 47.5 45 L 45 68 L 15 68 Z" fill="url(#juiceGrad)">
-            <animate attributeName="d" values="M 12.5 45 Q 30 35 47.5 45 L 45 68 L 15 68 Z; M 12.5 45 Q 30 55 47.5 45 L 45 68 L 15 68 Z; M 12.5 45 Q 30 35 47.5 45 L 45 68 L 15 68 Z" dur="1.2s" repeatCount="indefinite" />
-        </path>
-        <path d="M 5 20 L 55 20 L 50 10 L 10 10 Z" fill="#111" />
-        <rect x="25" y="5" width="10" height="5" fill="{current_theme['primary']}" />
-    </svg>
     <div>
         <h1 style="font-size: 3.5rem; font-weight: 800; background: linear-gradient(135deg, #ffffff 20%, {current_theme['primary']} 60%, #111 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; line-height: 1;">THE JUICER</h1>
         <p style="color: #a1a1aa; font-weight: 600; letter-spacing: 4px; margin: 0; text-transform: uppercase; font-size: 0.85rem;">Managed by Mike Donna // 30-Feature Master Syndicate Engine</p>
@@ -122,19 +101,6 @@ st.markdown(f"""
     <div class="hud-item"><b>PENDING TICKETS:</b> {pending_tickets}</div>
 </div>
 """, unsafe_allow_html=True)
-
-# --- GRID HELPER ---
-custom_grid_css = {
-    ".ag-root-wrapper": {"border": "1px solid #2a2a35 !important", "border-radius": "8px", "background-color": "#121218 !important"},
-    ".ag-header": {"background-color": "#0d0d12 !important", f"border-bottom": f"2px solid {current_theme['primary']} !important"},
-    ".ag-header-cell-text": {f"color": f"{current_theme['primary']} !important", "font-weight": "800 !important", "font-size": "13px", "text-transform": "uppercase"},
-    ".ag-row": {"background-color": "#16161e !important", "color": "#f4f4f5 !important", "border-bottom": "1px solid rgba(255,255,255,0.05) !important"}
-}
-
-def render_styled_grid(df, height=260):
-    gb = GridOptionsBuilder.from_dataframe(df)
-    gb.configure_default_column(resizable=True, sortable=True, filter=True, flex=1, minWidth=120)
-    AgGrid(df, gridOptions=gb.build(), custom_css=custom_grid_css, theme='alpine-dark', fit_columns_on_grid_load=True, height=height)
 
 # --- TABS ---
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
@@ -156,7 +122,7 @@ with tab1:
         "Circa Ticket Count": ["78% Sharp", "85% Sharp", "62% Public", "91% Sharp"],
         "Arbitrage Alert": ["LOCKED (+4.2%)", "CLEAR", "FADE PUBLIC", "LOCKED (+5.1%)"]
     })
-    render_styled_grid(df_sharp, height=200)
+    st.dataframe(df_sharp, use_container_width=True, hide_index=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ================= TAB 2 =================
@@ -174,7 +140,7 @@ with tab2:
         "Salary": ["$7,200", "$6,400", "$8,200", "$5,200"],
         "AI Proj": [22.4, 18.5, round(24.5 * wr_modifier, 1), 15.1]
     })
-    render_styled_grid(df_dfs, height=200)
+    st.dataframe(df_dfs, use_container_width=True, hide_index=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ================= TAB 3 =================
@@ -207,7 +173,7 @@ with tab4:
         "Referee Crew Over/Under Bias": ["Neutral (Crew #4)", "Over leaning (+3.5 pts)", "Under leaning (-4.2 pts - Crew #12)"],
         "Impact": ["Optimal", "Neutral", "Heavy Under Lean"]
     })
-    render_styled_grid(df_weather, height=180)
+    st.dataframe(df_weather, use_container_width=True, hide_index=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ================= TAB 5 =================
@@ -253,7 +219,7 @@ with tab6:
     
     df_ledger = pd.DataFrame(brain.get("bet_ledger", []))
     if not df_ledger.empty:
-        render_styled_grid(df_ledger, height=200)
+        st.dataframe(df_ledger, use_container_width=True, hide_index=True)
     else:
         st.info("Ledger is currently empty. Execute a wager in Tab 5.")
         
