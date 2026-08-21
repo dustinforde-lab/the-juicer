@@ -7,7 +7,7 @@ import base64
 import requests
 import plotly.express as px
 
-st.set_page_config(page_title="The Juicer // Apex Terminal v22", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="The Juicer // Vegas Sportsbook Lounge", layout="wide", initial_sidebar_state="expanded")
 
 if "theme" not in st.session_state:
     st.session_state.theme = "Sydney Velvet Rose"
@@ -53,7 +53,7 @@ def save_github_brain(brain_data, current_sha=None):
         url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{FILE_PATH}"
         headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.v3+json"}
         encoded = base64.b64encode(content_str.encode("utf-8")).decode("utf-8")
-        payload = {"message": "Vault: Syntax-Safe Master Update", "content": encoded, "sha": current_sha}
+        payload = {"message": "Vault: Vegas Sportsbook View Wall Added", "content": encoded, "sha": current_sha}
         res = requests.put(url, headers=headers, json=payload)
         return res.status_code in [200, 201]
     else:
@@ -129,6 +129,26 @@ footer {{visibility: hidden;}}
     animation: luxuryGlow 2s infinite;
 }}
 
+.sportsbook-game-box {{
+    background: rgba(12, 9, 18, 0.95);
+    border: 1px solid {current_theme['border']};
+    border-radius: 16px;
+    padding: 22px;
+    text-align: center;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.7);
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+}}
+
+.sportsbook-game-box::before {{
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: {current_theme['primary']};
+}}
+
 .player-card {{
     background: rgba(14, 10, 20, 0.9);
     border: 1px solid {current_theme['border']};
@@ -194,7 +214,7 @@ footer {{visibility: hidden;}}
 st.markdown(f"""
 <div style="text-align: center; margin-bottom: 45px; padding-top: 15px;">
     <h1 style="font-size: 4.5rem; font-weight: 800; background: linear-gradient(135deg, #ffffff 15%, {current_theme['primary']} 65%, #100c14 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; line-height: 1; letter-spacing: -2px;">THE JUICER</h1>
-    <p style="color: #9494a6; font-weight: 600; letter-spacing: 6px; margin-top: 12px; text-transform: uppercase; font-size: 0.85rem;">Managed by Mike Donna // Full Scoreboard & 20-Parlay Master Suite</p>
+    <p style="color: #9494a6; font-weight: 600; letter-spacing: 6px; margin-top: 12px; text-transform: uppercase; font-size: 0.85rem;">Managed by Mike Donna // Vegas Sportsbook Lounge & Live View Wall</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -209,7 +229,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-    "🏆 Full Scoreboard & Shootout Matrix",
+    "🏆 Vegas Sportsbook View Wall",
     "👑 DFS & Bayesian Sims",
     "🎯 20 Pre-Made Parlays & News",
     "📰 Weather & Sharp Ticker",
@@ -217,11 +237,82 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "💼 Master Ledger & Export"
 ])
 
-# ================= TAB 1: FULL SCOREBOARD & SHOOTOUT INTELLIGENCE =================
+# ================= TAB 1: VEGAS SPORTSBOOK VIEW WALL =================
 with tab1:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
-    st.markdown('<h3>Full Slate Scoreboard, Spreads & Shootout Intelligence</h3>', unsafe_allow_html=True)
+    st.markdown('<h3>🎰 Live Vegas Sportsbook Lounge // Slate View Wall</h3>', unsafe_allow_html=True)
     
+    # 3-Column Sportsbook Game Cards
+    col_g1, col_g2, col_g3 = st.columns(3)
+    
+    with col_g1:
+        st.markdown("""
+        <div class="sportsbook-game-box">
+            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">WED, SEPT 9 // 8:20 PM ET</span>
+            <h3 style="margin: 8px 0 4px 0; font-size: 1.3rem;">NE @ SEA</h3>
+            <p style="color:#00f576; font-size:0.9rem; font-weight:700; margin:0;">Spread: SEA -6.0 | O/U: 44.5</p>
+            <p style="color:#e2e2eb; font-size:0.8rem; margin:6px 0 0 0;">Weather: Clear / 61°F</p>
+            <span class="source-badge" style="margin-top:10px; display:inline-block;">MODEL LOCK: SEA -6.0</span>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("""
+        <div class="sportsbook-game-box">
+            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">SUN, SEPT 13 // 1:00 PM ET</span>
+            <h3 style="margin: 8px 0 4px 0; font-size: 1.3rem;">CHI @ CAR</h3>
+            <p style="color:#ff9e00; font-size:0.9rem; font-weight:700; margin:0;">Spread: CHI -1.5 | O/U: 41.0</p>
+            <p style="color:#e2e2eb; font-size:0.8rem; margin:6px 0 0 0;">Weather: 16mph Crosswind</p>
+            <span class="source-badge" style="margin-top:10px; display:inline-block; background:rgba(255,158,0,0.15); border-color:#ff9e00; color:#ffb733;">TRENCH WAR (UNDER LEAN)</span>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col_g2:
+        st.markdown("""
+        <div class="sportsbook-game-box">
+            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">THU, SEPT 10 // 8:15 PM ET</span>
+            <h3 style="margin: 8px 0 4px 0; font-size: 1.3rem;">SF vs LAR (Melb)</h3>
+            <p style="color:#00f576; font-size:0.9rem; font-weight:700; margin:0;">Spread: SF -4.0 | O/U: 48.0</p>
+            <p style="color:#e2e2eb; font-size:0.8rem; margin:6px 0 0 0;">Weather: Dome / Controlled</p>
+            <span class="source-badge" style="margin-top:10px; display:inline-block;">EXPLOSIVE PACING</span>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("""
+        <div class="sportsbook-game-box">
+            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">SUN, SEPT 13 // 4:05 PM ET</span>
+            <h3 style="margin: 8px 0 4px 0; font-size: 1.3rem;">TB @ CIN</h3>
+            <p style="color:#ff2a5f; font-size:0.9rem; font-weight:700; margin:0;">Spread: CIN -3.0 | O/U: 51.5</p>
+            <p style="color:#e2e2eb; font-size:0.8rem; margin:6px 0 0 0;">Weather: Humid / 72°F</p>
+            <span class="source-badge" style="margin-top:10px; display:inline-block; background:rgba(255,42,95,0.2); border-color:#ff2a5f; color:#ff6b8b;">🔥 ELITE SHOOTOUT</span>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col_g3:
+        st.markdown("""
+        <div class="sportsbook-game-box">
+            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">SUN, SEPT 13 // 1:00 PM ET</span>
+            <h3 style="margin: 8px 0 4px 0; font-size: 1.3rem;">BAL @ IND</h3>
+            <p style="color:#00f576; font-size:0.9rem; font-weight:700; margin:0;">Spread: BAL -4.5 | O/U: 47.5</p>
+            <p style="color:#e2e2eb; font-size:0.8rem; margin:6px 0 0 0;">Weather: Indoor / Optimal</p>
+            <span class="source-badge" style="margin-top:10px; display:inline-block;">PINNACLE STEAM LOCK</span>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("""
+        <div class="sportsbook-game-box">
+            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">SUN, SEPT 13 // 8:20 PM ET</span>
+            <h3 style="margin: 8px 0 4px 0; font-size: 1.3rem;">KC @ LAC</h3>
+            <p style="color:#ff2a5f; font-size:0.9rem; font-weight:700; margin:0;">Spread: KC -3.5 | O/U: 53.0</p>
+            <p style="color:#e2e2eb; font-size:0.8rem; margin:6px 0 0 0;">Weather: Dome / Controlled</p>
+            <span class="source-badge" style="margin-top:10px; display:inline-block; background:rgba(255,42,95,0.2); border-color:#ff2a5f; color:#ff6b8b;">🔥 ELITE SHOOTOUT</span>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # Full Scoreboard Data Grid underneath
+    st.markdown('<div class="exec-card">', unsafe_allow_html=True)
+    st.markdown('<h3>Comprehensive Vegas Odds & Intelligence Matrix</h3>', unsafe_allow_html=True)
     df_scoreboard = pd.DataFrame({
         "Matchup": ["NE @ SEA", "SF vs LAR (Melb)", "CHI @ CAR", "BAL @ IND", "TB @ CIN", "KC @ LAC"],
         "Spread": ["SEA -6.0", "SF -4.0", "CHI -1.5", "BAL -4.5", "CIN -3.0", "KC -3.5"],
@@ -236,9 +327,9 @@ with tab1:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown(f"""
     <div class="donna-article">
-        <div class="donna-header">Mike Donna // Decoding Shootout Projections</div>
-        <div class="donna-subheader">Identifying True Ceiling Games</div>
-        A game projected as a shootout requires synchronized neutral pass rates and opposing defensive deficiencies in zone coverage. When our model flags an elite shootout like KC vs LAC or TB vs CIN, we bypass standard spreads and target correlated wide receiver receptions and quarterback passing yard alt-lines.
+        <div class="donna-header">Mike Donna // Vegas Sportsbook View Wall Intelligence</div>
+        <div class="donna-subheader">Reading the View Wall</div>
+        The View Wall aggregates our live model outputs against retail sportsbook movement. When you see a matchup tagged with **ELITE SHOOTOUT**, our EPA and DVOA metrics project an elevated ceiling for pass-catchers. When you see **Trench War**, the model signals a defensive grind where ground games and unders dictate the outcome.
     </div>
     """, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
