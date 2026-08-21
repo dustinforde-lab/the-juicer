@@ -1,0 +1,49 @@
+Team,Player,Position,Cost
+Diamond Bricks,Baker Mayfield,QB,1
+Diamond Bricks,Ashton Jeanty,RB,1
+Diamond Bricks,Zay Flowers,WR,1
+Diamond Bricks,Brock Bowers,TE,1
+The Company,Justin Herbert,QB,1
+The Company,Kenneth Walker III,RB,1
+The Company,Malik Nabers,WR,1
+The Company,Sam LaPorta,TE,1
+Y$GRID Aces,Drake Maye,QB,1
+Y$GRID Aces,James Cook,RB,1
+Y$GRID Aces,Nico Collins,WR,1
+Y$GRID Aces,Colston Loveland,TE,1
+PURPLE STICKY,Joe Burrow,QB,1
+PURPLE STICKY,Kyren Williams,RB,1
+PURPLE STICKY,Justin Jefferson,WR,1
+PURPLE STICKY,Travis Kelce,TE,1
+Quad City,Matthew Stafford,QB,1
+Quad City,Saquon Barkley,RB,1
+Quad City,CeeDee Lamb,WR,1
+Quad City,George Kittle,TE,1
+Heavy,Jalen Hurts,QB,1
+Heavy,Travis Etienne Jr.,RB,1
+Heavy,Amon-Ra St. Brown,WR,1
+Heavy,Harold Fannin Jr.,TE,1
+LADDs Legion,Patrick Mahomes,QB,1
+LADDs Legion,Cam Skattebo,RB,1
+LADDs Legion,A.J. Brown,WR,1
+LADDs Legion,Mark Andrews,TE,1
+B’Robbin’ Son,Lamar Jackson,QB,1
+B’Robbin’ Son,Bijan Robinson,RB,1
+B’Robbin’ Son,Drake London,WR,1
+B’Robbin’ Son,Jake Ferguson,TE,1
+Mork,Josh Allen,QB,1
+Mork,Jonathan Taylor,RB,1
+Mork,Jaxon Smith-Njigba,WR,1
+Mork,Trey McBride,TE,1
+RuStY DaGGeRS,Bo Nix,QB,1
+RuStY DaGGeRS,De'Von Achane,RB,1
+RuStY DaGGeRS,Puka Nacua,WR,1
+RuStY DaGGeRS,Dallas Goedert,TE,1
+All Madden,Jared Goff,QB,1
+All Madden,Jahmyr Gibbs,RB,1
+All Madden,Jameson Williams,WR,1
+All Madden,Kyle Pitts,TE,1
+Tobi-Wan,Dak Prescott,QB,1
+Tobi-Wan,Christian McCaffrey,RB,1
+Tobi-Wan,Ja'Marr Chase,WR,1
+Tobi-Wan,Tyler Warren,TE,1

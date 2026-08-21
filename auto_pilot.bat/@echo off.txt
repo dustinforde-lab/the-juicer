@@ -1,0 +1,6 @@
+@echo off
+title The Juicer Headless Auto-Pilot
+cd /d "C:\Users\chuck\OneDrive\Desktop\Action Grid Optimizer"
+python fetcher.py
+python evaluator.py
+exit

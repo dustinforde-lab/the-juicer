@@ -1,0 +1,135 @@
+{
+    "timestamp": "2026-08-20 19:21 UTC",
+    "players": [
+        {
+            "pid": "4034",
+            "name": "Christian McCaffrey",
+            "pos": "RB",
+            "team": "SF",
+            "opp": "NYJ",
+            "game_total": 47.5,
+            "base_ppg": 22.5,
+            "rush_ypg": 78.5,
+            "rec_ypg": 48.2,
+            "game_time": "8:15 PM",
+            "wind_mph": 8.1,
+            "weather": "Clear",
+            "dk_salary": 9200
+        },
+        {
+            "pid": "6786",
+            "name": "CeeDee Lamb",
+            "pos": "WR",
+            "team": "DAL",
+            "opp": "CLE",
+            "game_total": 48.0,
+            "base_ppg": 20.8,
+            "rush_ypg": 2.5,
+            "rec_ypg": 94.0,
+            "game_time": "4:25 PM",
+            "wind_mph": 7.2,
+            "weather": "Dome/Clear",
+            "dk_salary": 8800
+        },
+        {
+            "pid": "0000",
+            "name": "Dak Prescott",
+            "pos": "QB",
+            "team": "DAL",
+            "opp": "CLE",
+            "game_total": 48.0,
+            "base_ppg": 20.1,
+            "rush_ypg": 15.0,
+            "rec_ypg": 0.0,
+            "game_time": "4:25 PM",
+            "wind_mph": 12,
+            "weather": "Dome/Clear",
+            "dk_salary": 6700
+        },
+        {
+            "pid": "1111",
+            "name": "Amari Cooper",
+            "pos": "WR",
+            "team": "CLE",
+            "opp": "DAL",
+            "game_total": 48.0,
+            "base_ppg": 14.5,
+            "rush_ypg": 0.0,
+            "rec_ypg": 65.0,
+            "game_time": "4:25 PM",
+            "wind_mph": 15,
+            "weather": "Clear",
+            "dk_salary": 6000
+        }
+    ],
+    "props_market": [
+        {
+            "player": "Christian McCaffrey",
+            "prop": "Rush Yds",
+            "line": 74.5,
+            "open_line": 72.5,
+            "movement": "\u2191 +2.0",
+            "odds_over": -115,
+            "proj": 81.2,
+            "edge_pct": 7.4,
+            "kelly": 2.1,
+            "consensus": "GREEN (LOCK)",
+            "weather_flag": "8.1 mph Wind"
+        },
+        {
+            "player": "CeeDee Lamb",
+            "prop": "Receptions",
+            "line": 6.5,
+            "open_line": 6.5,
+            "movement": "Steady",
+            "odds_over": 110,
+            "proj": 7.8,
+            "edge_pct": 9.1,
+            "kelly": 2.8,
+            "consensus": "GREEN (LOCK)",
+            "weather_flag": "Dome"
+        },
+        {
+            "player": "Dak Prescott",
+            "prop": "Pass Yds",
+            "line": 252.5,
+            "open_line": 245.5,
+            "movement": "\u2191 +7.0",
+            "odds_over": -110,
+            "proj": 268.0,
+            "edge_pct": 5.2,
+            "kelly": 1.5,
+            "consensus": "YELLOW (SPLIT)",
+            "weather_flag": "Dome"
+        },
+        {
+            "player": "Amari Cooper",
+            "prop": "Rec Yds",
+            "line": 61.5,
+            "open_line": 58.5,
+            "movement": "\u2191 +3.0",
+            "odds_over": -115,
+            "proj": 65.0,
+            "edge_pct": 4.1,
+            "kelly": 1.1,
+            "consensus": "YELLOW (SPLIT)",
+            "weather_flag": "Clear"
+        }
+    ],
+    "sgp_matrix": [
+        {
+            "team": "DAL",
+            "qb": "Dak Prescott",
+            "wr": "CeeDee Lamb",
+            "correlation": 0.68,
+            "edge": "+9.2%"
+        },
+        {
+            "team": "SF",
+            "qb": "Brock Purdy",
+            "te": "George Kittle",
+            "correlation": 0.54,
+            "edge": "+6.1%"
+        }
+    ]
+}

@@ -1,0 +1,15 @@
+@echo off
+title The Juicer Terminal Launcher
+cd /d "%~dp0"
+echo ===================================================
+echo   THE JUICER // QUANTITATIVE TERMINAL LAUNCHER
+echo ===================================================
+echo [1/3] Running Market Data Ingestion & Sleeper API...
+python fetcher.py
+echo.
+echo [2/3] Executing Model Grader & Evaluation Engine...
+python evaluator.py
+echo.
+echo [3/3] Launching The Juicer War Room in your browser...
+python -m streamlit run app.py
+pause
