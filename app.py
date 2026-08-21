@@ -7,7 +7,7 @@ import base64
 import requests
 import plotly.express as px
 
-st.set_page_config(page_title="The Juicer // Apex Terminal v20", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="The Juicer // Apex Terminal v21", layout="wide", initial_sidebar_state="expanded")
 
 if "theme" not in st.session_state:
     st.session_state.theme = "Sydney Velvet Rose"
@@ -53,7 +53,7 @@ def save_github_brain(brain_data, current_sha=None):
         url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{FILE_PATH}"
         headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.v3+json"}
         encoded = base64.b64encode(content_str.encode("utf-8")).decode("utf-8")
-        payload = {"message": "Vault: 20 Parlays, Player Photos & Live News Hub", "content": encoded, "sha": current_sha}
+        payload = {"message": "Vault: Restored Full Scoreboard and Shootout Matrix", "content": encoded, "sha": current_sha}
         res = requests.put(url, headers=headers, json=payload)
         return res.status_code in [200, 201]
     else:
@@ -190,7 +190,7 @@ footer {{visibility: hidden;}}
 st.markdown(f"""
 <div style="text-align: center; margin-bottom: 45px; padding-top: 15px;">
     <h1 style="font-size: 4.5rem; font-weight: 800; background: linear-gradient(135deg, #ffffff 15%, {current_theme['primary']} 65%, #100c14 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; line-height: 1; letter-spacing: -2px;">THE JUICER</h1>
-    <p style="color: #9494a6; font-weight: 600; letter-spacing: 6px; margin-top: 12px; text-transform: uppercase; font-size: 0.85rem;">Managed by Mike Donna // 20-Parlay Master Suite & Player Visual Hub</p>
+    <p style="color: #9494a6; font-weight: 600; letter-spacing: 6px; margin-top: 12px; text-transform: uppercase; font-size: 0.85rem;">Managed by Mike Donna // Full Scoreboard & Shootout Intelligence Hub</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -205,7 +205,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-    "🏆 Sharp Action & Spreads",
+    "🏆 Full Scoreboard & Shootout Matrix",
     "👑 DFS & Bayesian Sims",
     "🎯 20 Pre-Made Parlays & News",
     "📰 Weather & Sharp Ticker",
@@ -213,25 +213,30 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "💼 Master Ledger & Export"
 ])
 
-# ================= TAB 1 =================
+# ================= TAB 1: FULL SCOREBOARD & SHOOTOUT INTELLIGENCE =================
 with tab1:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
-    st.markdown('<h3>Institutional Sharp Action & Circa Steam Matrix</h3>', unsafe_allow_html=True)
-    df_sharp = pd.DataFrame({
-        "Matchup": ["NE @ SEA", "SF vs LAR", "CHI @ CAR", "BAL @ IND"],
-        "Sharp Consensus": ["SEA -6.0 (Heavy Steam)", "SF -4.0 (Late Money)", "CHI -1.5 (Public Trap Fade)", "BAL -4.5 (Pinnacle Lead)"],
-        "Circa Ticket Count": ["78% Sharp", "85% Sharp", "62% Public", "91% Sharp"],
-        "Arbitrage Alert": ["LOCKED (+4.2%)", "CLEAR", "FADE PUBLIC", "LOCKED (+5.1%)"]
+    st.markdown('<h3>Full Slate Scoreboard, Spreads & Shootout Intelligence</h3>', unsafe_allow_html=True)
+    
+    df_scoreboard = pd.DataFrame({
+        "Matchup": ["NE @ SEA", "SF vs LAR (Melb)", "CHI @ CAR", "BAL @ IND", "TB @ CIN", "KC @ LAC"],
+        "Spread": ["SEA -6.0", "SF -4.0", "CHI -1.5", "BAL -4.5", "CIN -3.0", "KC -3.5"],
+        "Total (O/U)": [44.5, 48.0, 41.0, 47.5, 51.5, 53.0],
+        "Weather Impact": ["Clear / 61°F", "Dome / Controlled", "16mph Crosswind", "Indoor / Optimal", "Humid / 72°F", "Dome / Controlled"],
+        "Shootout Potential": ["Moderate Pace", "High (Explosive)", "Low (Trench War)", "High (Syndicate Over)", "ELITE SHOOTOUT", "ELITE SHOOTOUT"],
+        "Model Edge": ["SEA -6.0 LOCK", "SF Team Total Higher", "Under 41.0 Lean", "BAL -4.5 LOCK", "Over 51.5 SHOOTOUT", "KC Team Total Higher"]
     })
-    st.dataframe(df_sharp, use_container_width=True, hide_index=True)
+    st.dataframe(df_scoreboard, use_container_width=True, hide_index=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
-    st.markdown("""
+    st.markdown(f"""
     <div class="donna-article">
-        <div class="donna-header">Mike Donna // Syndicate Steam Execution</div>
-        <div class="donna-subheader">Ignoring Retail Noise</div>
-        We don't care what the talking heads on television say. We track ticket counts versus handle ratios at Circa and Pinnacle. When the public floods a side but the line moves the other way, that is sharp syndicate money dictating reality. We ride their wake.
+        <div class="donna-header">Mike Donna // Decoding Shootout Projections</div>
+        <div class="donna-subheader">Identifying True Ceiling Games</div>
+        A game projected as a shootout requires synchronized neutral pass rates and opposing defensive deficiencies in zone coverage. When our model flags an elite shootout like KC vs LAC or TB vs CIN, we bypass standard spreads and target correlated wide receiver receptions and quarterback passing yard alt-lines.
+        <div class="donna-subheader">Trench Wars vs Shootouts</div>
+        Conversely, low-total games with outdoor wind vectors (like CHI @ CAR) are categorized as trench wars. We fade public overs in those matchups and attack divisional under values without hesitation.
     </div>
     """, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
