@@ -7,7 +7,7 @@ import base64
 import requests
 import plotly.express as px
 
-st.set_page_config(page_title="The Juicer // Apex Terminal v28 (Audited)", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="The Juicer // Apex Terminal v29", layout="wide", initial_sidebar_state="expanded")
 
 if "theme" not in st.session_state:
     st.session_state.theme = "Sydney Velvet Rose"
@@ -56,7 +56,7 @@ def save_github_brain(brain_data, current_sha=None):
         url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{FILE_PATH}"
         headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.v3+json"}
         encoded = base64.b64encode(content_str.encode("utf-8")).decode("utf-8")
-        payload = {"message": "Vault: Housekeeping Audited State Commit", "content": encoded, "sha": current_sha}
+        payload = {"message": "Vault: Native Streamlit Headshots Fix", "content": encoded, "sha": current_sha}
         try:
             res = requests.put(url, headers=headers, json=payload, timeout=5)
             return res.status_code in [200, 201]
@@ -82,7 +82,7 @@ if not isinstance(ledger_list, list):
     ledger_list = []
 pending_tickets = sum(1 for t in ledger_list if isinstance(t, dict) and t.get("result") == "PENDING")
 
-# --- AUDITED LUXURY STYLING INJECTOR ---
+# --- STYLING ---
 st.markdown(f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
@@ -161,58 +161,15 @@ footer {{visibility: hidden;}}
     background: {current_theme['primary']};
 }}
 
-.player-card {{
-    background: rgba(14, 10, 20, 0.9);
-    border: 1px solid {current_theme['border']};
-    border-radius: 14px;
-    padding: 18px;
-    text-align: center;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.6);
-}}
-
-.player-avatar {{
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    border: 2px solid {current_theme['primary']};
-    object-fit: cover;
-    margin-bottom: 10px;
-    background-color: #2b1d3a;
-    box-shadow: 0 0 15px {current_theme['glow']};
-}}
-
-.donna-article {{
-    background: rgba(10, 7, 15, 0.96);
-    border-left: 4px solid {current_theme['primary']};
-    padding: 38px;
-    border-radius: 0 18px 18px 0;
-    font-size: 1.08rem;
-    line-height: 1.95;
-    color: #e2e2eb;
-    margin-top: 25px;
-    box-shadow: inset 12px 0 35px rgba(0,0,0,0.8);
-}}
-
-.donna-header {{
-    font-size: 1.75rem;
+.source-badge {{
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid #22c55e;
+    color: #4ade80;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
     font-weight: 800;
-    color: #ffffff;
-    margin-bottom: 14px;
-    letter-spacing: -0.5px;
     text-transform: uppercase;
-    background: linear-gradient(90deg, #ffffff 20%, {current_theme['primary']} 90%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}}
-
-.donna-subheader {{
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: {current_theme['primary']};
-    margin-top: 24px;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
 }}
 
 @keyframes luxuryGlow {{
@@ -227,7 +184,7 @@ footer {{visibility: hidden;}}
 st.markdown(f"""
 <div style="text-align: center; margin-bottom: 45px; padding-top: 15px;">
     <h1 style="font-size: 4.5rem; font-weight: 800; background: linear-gradient(135deg, #ffffff 15%, {current_theme['primary']} 65%, #100c14 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; line-height: 1; letter-spacing: -2px;">THE JUICER</h1>
-    <p style="color: #9494a6; font-weight: 600; letter-spacing: 6px; margin-top: 12px; text-transform: uppercase; font-size: 0.85rem;">Managed by Mike Donna // Audited Apex Command Center</p>
+    <p style="color: #9494a6; font-weight: 600; letter-spacing: 6px; margin-top: 12px; text-transform: uppercase; font-size: 0.85rem;">Managed by Mike Donna // Native Render Headshots & Apex Terminal</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -250,7 +207,7 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "💼 Master Ledger & Export"
 ])
 
-# ================= TAB 1: VEGAS SPORTSBOOK VIEW WALL =================
+# ================= TAB 1 =================
 with tab1:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>🎰 Live Vegas Sportsbook Lounge // Season-Long Slate View Wall</h3>', unsafe_allow_html=True)
@@ -322,7 +279,7 @@ with tab1:
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ================= TAB 2: SEASON-LONG FANTASY & DFS =================
+# ================= TAB 2 =================
 with tab2:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>👑 Season-Long Fantasy & 12-Team Keeper League Suite</h3>', unsafe_allow_html=True)
@@ -360,48 +317,37 @@ with tab2:
     st.plotly_chart(fig, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ================= TAB 3: 20 FULLY DETAILED CLICKABLE PARLAYS =================
+# ================= TAB 3: NATIVE STREAMLIT HEADSHOTS & PARLAYS =================
 with tab3:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>Core Roster // Official NFL Headshots & Live News Feed</h3>', unsafe_allow_html=True)
     
     col_p1, col_p2, col_p3, col_p4 = st.columns(4)
+    
     with col_p1:
-        st.markdown("""
-        <div class="player-card">
-            <img src="https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4362628.png" class="player-avatar">
-            <h4 style="margin:5px 0 2px 0; font-size:1rem;">Kenneth Walker</h4>
-            <p style="color:#a1a1aa; font-size:0.75rem; margin:0;">RB // SEA</p>
-            <span class="source-badge" style="margin-top:8px; display:inline-block;">ACTIVE // FULL PRACTICE</span>
-        </div>
-        """, unsafe_allow_html=True)
+        st.image("https://a.espncdn.com/i/headshots/nfl/players/full/4362628.png", width=110)
+        st.markdown("#### Kenneth Walker")
+        st.markdown("<p style='color:#a1a1aa; font-size:0.8rem; margin:0;'>RB // SEA</p>", unsafe_allow_html=True)
+        st.markdown("<span class='source-badge' style='margin-top:8px; display:inline-block;'>ACTIVE // FULL PRACTICE</span>", unsafe_allow_html=True)
+        
     with col_p2:
-        st.markdown("""
-        <div class="player-card">
-            <img src="https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4426353.png" class="player-avatar">
-            <h4 style="margin:5px 0 2px 0; font-size:1rem;">Amon-Ra St. Brown</h4>
-            <p style="color:#a1a1aa; font-size:0.75rem; margin:0;">WR // DET</p>
-            <span class="source-badge" style="margin-top:8px; display:inline-block;">LOCKED // ELITE TARGET SHARE</span>
-        </div>
-        """, unsafe_allow_html=True)
+        st.image("https://a.espncdn.com/i/headshots/nfl/players/full/4426353.png", width=110)
+        st.markdown("#### Amon-Ra St. Brown")
+        st.markdown("<p style='color:#a1a1aa; font-size:0.8rem; margin:0;'>WR // DET</p>", unsafe_allow_html=True)
+        st.markdown("<span class='source-badge' style='margin-top:8px; display:inline-block;'>LOCKED // TARGET SHARE</span>", unsafe_allow_html=True)
+        
     with col_p3:
-        st.markdown("""
-        <div class="player-card">
-            <img src="https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4431713.png" class="player-avatar">
-            <h4 style="margin:5px 0 2px 0; font-size:1rem;">Justin Herbert</h4>
-            <p style="color:#a1a1aa; font-size:0.75rem; margin:0;">QB // LAC</p>
-            <span class="source-badge" style="margin-top:8px; display:inline-block;">ACTIVE // CLEAN POCKET</span>
-        </div>
-        """, unsafe_allow_html=True)
+        st.image("https://a.espncdn.com/i/headshots/nfl/players/full/4431713.png", width=110)
+        st.markdown("#### Justin Herbert")
+        st.markdown("<p style='color:#a1a1aa; font-size:0.8rem; margin:0;'>QB // LAC</p>", unsafe_allow_html=True)
+        st.markdown("<span class='source-badge' style='margin-top:8px; display:inline-block;'>ACTIVE // CLEAN POCKET</span>", unsafe_allow_html=True)
+        
     with col_p4:
-        st.markdown("""
-        <div class="player-card">
-            <img src="https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/11235.png" class="player-avatar">
-            <h4 style="margin:5px 0 2px 0; font-size:1rem;">Derrick Henry</h4>
-            <p style="color:#a1a1aa; font-size:0.75rem; margin:0;">RB // BAL</p>
-            <span class="source-badge" style="margin-top:8px; display:inline-block;">ACTIVE // TRENCH USAGE</span>
-        </div>
-        """, unsafe_allow_html=True)
+        st.image("https://a.espncdn.com/i/headshots/nfl/players/full/11235.png", width=110)
+        st.markdown("#### Derrick Henry")
+        st.markdown("<p style='color:#a1a1aa; font-size:0.8rem; margin:0;'>RB // BAL</p>", unsafe_allow_html=True)
+        st.markdown("<span class='source-badge' style='margin-top:8px; display:inline-block;'>ACTIVE // TRENCH USAGE</span>", unsafe_allow_html=True)
+        
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
