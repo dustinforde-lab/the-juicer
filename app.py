@@ -52,7 +52,7 @@ def save_github_brain(brain_data, current_sha=None):
         url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{FILE_PATH}"
         headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.v3+json"}
         encoded = base64.b64encode(content_str.encode("utf-8")).decode("utf-8")
-        payload = {"message": "Vault: Hard Header Reset", "content": encoded, "sha": current_sha}
+        payload = {"message": "Vault: Centered Smoothie Logo Restoration", "content": encoded, "sha": current_sha}
         res = requests.put(url, headers=headers, json=payload)
         return res.status_code in [200, 201]
     else:
@@ -79,10 +79,30 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
-# Clean Native Streamlit Title Header (No HTML Container Blocks)
-st.title("THE JUICER")
-st.caption("MANAGED BY MIKE DONNA // 30-FEATURE MASTER SYNDICATE ENGINE")
-st.markdown("---")
+# --- CENTERED ANIMATED SMOOTHIE LOGO BANNER ---
+st.markdown(f"""
+<div style="text-align: center; margin-bottom: 30px;">
+    <svg width="65" height="85" viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-bottom: 12px; filter: drop-shadow(0 0 20px {current_theme['glow']});">
+        <defs>
+            <linearGradient id="juiceGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+                <stop offset="0%" stop-color="#111" />
+                <stop offset="100%" stop-color="{current_theme['primary']}">
+                    <animate attributeName="stop-color" values="{current_theme['primary']};#ffffff;{current_theme['primary']}" dur="2s" repeatCount="indefinite" />
+                </stop>
+            </linearGradient>
+        </defs>
+        <path d="M 15 70 L 45 70 L 40 80 L 20 80 Z" fill="#222" />
+        <path d="M 10 20 L 50 20 L 45 70 L 15 70 Z" fill="rgba(255,255,255,0.05)" stroke="#555" stroke-width="2"/>
+        <path d="M 12.5 45 Q 30 35 47.5 45 L 45 68 L 15 68 Z" fill="url(#juiceGrad)">
+            <animate attributeName="d" values="M 12.5 45 Q 30 35 47.5 45 L 45 68 L 15 68 Z; M 12.5 45 Q 30 55 47.5 45 L 45 68 L 15 68 Z; M 12.5 45 Q 30 35 47.5 45 L 45 68 L 15 68 Z" dur="1.2s" repeatCount="indefinite" />
+        </path>
+        <path d="M 5 20 L 55 20 L 50 10 L 10 10 Z" fill="#111" />
+        <rect x="25" y="5" width="10" height="5" fill="{current_theme['primary']}" />
+    </svg>
+    <h1 style="font-size: 3.5rem; font-weight: 800; background: linear-gradient(135deg, #ffffff 20%, {current_theme['primary']} 60%, #111 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; line-height: 1; letter-spacing: -1px;">THE JUICER</h1>
+    <p style="color: #a1a1aa; font-weight: 600; letter-spacing: 4px; margin-top: 8px; text-transform: uppercase; font-size: 0.85rem;">Managed by Mike Donna // 30-Feature Master Syndicate Engine</p>
+</div>
+""", unsafe_allow_html=True)
 
 storage_mode = "PERMANENT VAULT" if st.secrets.get("GITHUB_TOKEN") else "LOCAL SESSION"
 st.markdown(f"""
