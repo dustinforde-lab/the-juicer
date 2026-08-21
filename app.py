@@ -7,7 +7,7 @@ import base64
 import requests
 import plotly.express as px
 
-st.set_page_config(page_title="The Juicer // Apex Terminal v24", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="The Juicer // Apex Terminal v25", layout="wide", initial_sidebar_state="expanded")
 
 if "theme" not in st.session_state:
     st.session_state.theme = "Sydney Velvet Rose"
@@ -53,7 +53,7 @@ def save_github_brain(brain_data, current_sha=None):
         url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{FILE_PATH}"
         headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.v3+json"}
         encoded = base64.b64encode(content_str.encode("utf-8")).decode("utf-8")
-        payload = {"message": "Vault: Season-Long Tab & Clickable Parlays Restored", "content": encoded, "sha": current_sha}
+        payload = {"message": "Vault: Fixed Headshot CDN Links", "content": encoded, "sha": current_sha}
         res = requests.put(url, headers=headers, json=payload)
         return res.status_code in [200, 201]
     else:
@@ -159,13 +159,13 @@ footer {{visibility: hidden;}}
 }}
 
 .player-avatar {{
-    width: 75px;
-    height: 75px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     border: 2px solid {current_theme['primary']};
     object-fit: cover;
     margin-bottom: 10px;
-    background-color: #1a1a24;
+    background-color: #2b1d3a;
     box-shadow: 0 0 15px {current_theme['glow']};
 }}
 
@@ -348,7 +348,7 @@ with tab2:
     st.plotly_chart(fig, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ================= TAB 3: 20 CLICKABLE PARLAYS & OFFICIAL HEADSHOTS =================
+# ================= TAB 3: 20 CLICKABLE PARLAYS & FIXED HEADSHOTS =================
 with tab3:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>Core Roster // Official NFL Headshots & Live News Feed</h3>', unsafe_allow_html=True)
@@ -357,7 +357,7 @@ with tab3:
     with col_p1:
         st.markdown("""
         <div class="player-card">
-            <img src="https://a.espncdn.com/i/headshots/nfl/players/full/4362628.png" class="player-avatar">
+            <img src="https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4362628.png" class="player-avatar">
             <h4 style="margin:5px 0 2px 0; font-size:1rem;">Kenneth Walker</h4>
             <p style="color:#a1a1aa; font-size:0.75rem; margin:0;">RB // SEA</p>
             <span class="source-badge" style="margin-top:8px; display:inline-block;">ACTIVE // FULL PRACTICE</span>
@@ -366,7 +366,7 @@ with tab3:
     with col_p2:
         st.markdown("""
         <div class="player-card">
-            <img src="https://a.espncdn.com/i/headshots/nfl/players/full/4426353.png" class="player-avatar">
+            <img src="https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4426353.png" class="player-avatar">
             <h4 style="margin:5px 0 2px 0; font-size:1rem;">Amon-Ra St. Brown</h4>
             <p style="color:#a1a1aa; font-size:0.75rem; margin:0;">WR // DET</p>
             <span class="source-badge" style="margin-top:8px; display:inline-block;">LOCKED // ELITE TARGET SHARE</span>
@@ -375,7 +375,7 @@ with tab3:
     with col_p3:
         st.markdown("""
         <div class="player-card">
-            <img src="https://a.espncdn.com/i/headshots/nfl/players/full/4431713.png" class="player-avatar">
+            <img src="https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/4431713.png" class="player-avatar">
             <h4 style="margin:5px 0 2px 0; font-size:1rem;">Justin Herbert</h4>
             <p style="color:#a1a1aa; font-size:0.75rem; margin:0;">QB // LAC</p>
             <span class="source-badge" style="margin-top:8px; display:inline-block;">ACTIVE // CLEAN POCKET</span>
@@ -384,7 +384,7 @@ with tab3:
     with col_p4:
         st.markdown("""
         <div class="player-card">
-            <img src="https://a.espncdn.com/i/headshots/nfl/players/full/11235.png" class="player-avatar">
+            <img src="https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/11235.png" class="player-avatar">
             <h4 style="margin:5px 0 2px 0; font-size:1rem;">Derrick Henry</h4>
             <p style="color:#a1a1aa; font-size:0.75rem; margin:0;">RB // BAL</p>
             <span class="source-badge" style="margin-top:8px; display:inline-block;">ACTIVE // TRENCH USAGE</span>
@@ -417,9 +417,6 @@ with tab3:
         {"title": "Tier 10 // 15-Leg Ultimate Slate Sweeper Matrix", "odds": "+2,500,000", "legs": ["Leg 1-15: Ultra-deep syndicate accumulator covering every high-confidence edge on the weekend board."]},
         {"title": "Tier 10 // THE 18-TEAM NUCLEAR ACCUMULATOR", "odds": "+10,000,000+", "legs": ["Leg 1-18: The ultimate master accumulator locking every verified model edge across the entire 18-team board."]}
     ]
-    
-    for p in parlays_list:
-        pass # placeholder loop to keep structure clean
 
     for idx, item in enumerate(parlays_detailed):
         with st.expander(f"📌 [{item['odds']}] {item['title']}"):
