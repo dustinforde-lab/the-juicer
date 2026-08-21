@@ -7,7 +7,7 @@ import base64
 import requests
 import plotly.express as px
 
-st.set_page_config(page_title="The Juicer // Apex Terminal v31", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="The Juicer // Max-HP Apex Terminal", layout="wide", initial_sidebar_state="expanded")
 
 if "theme" not in st.session_state:
     st.session_state.theme = "Sydney Velvet Rose"
@@ -15,13 +15,13 @@ if "risk_profile" not in st.session_state:
     st.session_state.risk_profile = "Nuclear (Max Leverage)"
 
 themes = {
-    "Sydney Velvet Rose": {"primary": "#ff2a5f", "border": "rgba(255, 42, 95, 0.5)", "glow": "rgba(255, 42, 95, 0.3)", "bg": "#050407", "card": "rgba(18, 14, 24, 0.85)"},
-    "Institutional Emerald": {"primary": "#00f576", "border": "rgba(0, 245, 118, 0.5)", "glow": "rgba(0, 245, 118, 0.3)", "bg": "#030604", "card": "rgba(10, 20, 14, 0.85)"},
-    "High-Contrast Amber": {"primary": "#ff9e00", "border": "rgba(255, 158, 0, 0.5)", "glow": "rgba(255, 158, 0, 0.3)", "bg": "#070503", "card": "rgba(22, 16, 8, 0.85)"}
+    "Sydney Velvet Rose": {"primary": "#ff2a5f", "border": "rgba(255, 42, 95, 0.6)", "glow": "rgba(255, 42, 95, 0.35)", "bg": "#050407", "card": "rgba(18, 14, 24, 0.88)"},
+    "Institutional Emerald": {"primary": "#00f576", "border": "rgba(0, 245, 118, 0.6)", "glow": "rgba(0, 245, 118, 0.35)", "bg": "#030604", "card": "rgba(10, 20, 14, 0.88)"},
+    "High-Contrast Amber": {"primary": "#ff9e00", "border": "rgba(255, 158, 0, 0.6)", "glow": "rgba(255, 158, 0, 0.35)", "bg": "#070503", "card": "rgba(22, 16, 8, 0.88)"}
 }
 current_theme = themes[st.session_state.theme]
 
-st.sidebar.markdown("### ⚙️ Executive Command")
+st.sidebar.markdown("### ⚙️ Executive Command (Max HP)")
 st.session_state.theme = st.sidebar.selectbox("Aesthetic Profile", list(themes.keys()))
 st.session_state.risk_profile = st.sidebar.radio("Bankroll Risk Profile", ["Conservative (2.5% Unit)", "Aggressive (5.0% Unit)", "Nuclear (Max Leverage)"])
 webhook_url = st.sidebar.text_input("Discord Webhook URL", placeholder="https://discord.com/api/webhooks/...")
@@ -56,7 +56,7 @@ def save_github_brain(brain_data, current_sha=None):
         url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{FILE_PATH}"
         headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.v3+json"}
         encoded = base64.b64encode(content_str.encode("utf-8")).decode("utf-8")
-        payload = {"message": "Vault: Stable Apex Terminal Commit", "content": encoded, "sha": current_sha}
+        payload = {"message": "Vault: Max-HP Master Commit", "content": encoded, "sha": current_sha}
         try:
             res = requests.put(url, headers=headers, json=payload, timeout=5)
             return res.status_code in [200, 201]
@@ -82,13 +82,13 @@ if not isinstance(ledger_list, list):
     ledger_list = []
 pending_tickets = sum(1 for t in ledger_list if isinstance(t, dict) and t.get("result") == "PENDING")
 
-# --- STYLING ---
+# --- MAX-HP STYLING SYSTEM ---
 st.markdown(f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 .stApp {{
-    background: radial-gradient(circle at 50% -10%, #22122b 0%, {current_theme['bg']} 70%);
+    background: radial-gradient(circle at 50% -10%, #2a1535 0%, {current_theme['bg']} 75%);
     color: #f7f7f9;
     font-family: 'Plus Jakarta Sans', sans-serif;
 }}
@@ -98,30 +98,30 @@ footer {{visibility: hidden;}}
 
 .exec-card {{
     background: {current_theme['card']};
-    backdrop-filter: blur(40px);
-    -webkit-backdrop-filter: blur(40px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(45px);
+    -webkit-backdrop-filter: blur(45px);
+    border: 1px solid rgba(255, 255, 255, 0.09);
     border-top: 2px solid {current_theme['primary']};
-    border-radius: 22px;
-    padding: 38px;
-    box-shadow: 0 35px 70px -20px rgba(0, 0, 0, 0.95), 0 0 35px {current_theme['glow']};
+    border-radius: 24px;
+    padding: 40px;
+    box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.98), 0 0 40px {current_theme['glow']};
     margin-bottom: 35px;
 }}
 
 .hud-bar {{
-    background: rgba(14, 11, 20, 0.9);
-    backdrop-filter: blur(25px);
+    background: rgba(14, 11, 20, 0.92);
+    backdrop-filter: blur(30px);
     border: 1px solid {current_theme['border']};
-    padding: 20px 35px;
-    border-radius: 18px;
+    padding: 22px 38px;
+    border-radius: 20px;
     display: flex;
     justify-content: space-around;
     align-items: center;
     margin-bottom: 35px;
-    font-size: 0.85rem;
-    letter-spacing: 3px;
+    font-size: 0.88rem;
+    letter-spacing: 3.5px;
     text-transform: uppercase;
-    box-shadow: inset 0 0 30px rgba(0,0,0,0.85);
+    box-shadow: inset 0 0 35px rgba(0,0,0,0.9);
 }}
 
 .hud-item {{
@@ -132,23 +132,23 @@ footer {{visibility: hidden;}}
 .hud-item:last-child {{ border-right: none; }}
 
 .hud-dot {{
-    height: 9px;
-    width: 9px;
+    height: 10px;
+    width: 10px;
     background-color: {current_theme['primary']};
     border-radius: 50%;
     display: inline-block;
-    box-shadow: 0 0 18px {current_theme['primary']};
+    box-shadow: 0 0 20px {current_theme['primary']};
     animation: luxuryGlow 2s infinite;
 }}
 
 .sportsbook-game-box {{
-    background: rgba(12, 9, 18, 0.95);
+    background: rgba(14, 10, 22, 0.96);
     border: 1px solid {current_theme['border']};
-    border-radius: 16px;
-    padding: 22px;
+    border-radius: 18px;
+    padding: 24px;
     text-align: center;
-    box-shadow: 0 15px 30px rgba(0,0,0,0.7);
-    margin-bottom: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+    margin-bottom: 22px;
     position: relative;
     overflow: hidden;
 }}
@@ -157,16 +157,16 @@ footer {{visibility: hidden;}}
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
-    height: 3px;
+    height: 3.5px;
     background: {current_theme['primary']};
 }}
 
 .source-badge {{
-    background: rgba(34, 197, 94, 0.15);
+    background: rgba(34, 197, 94, 0.18);
     border: 1px solid #22c55e;
     color: #4ade80;
-    padding: 4px 10px;
-    border-radius: 12px;
+    padding: 5px 12px;
+    border-radius: 14px;
     font-size: 0.75rem;
     font-weight: 800;
     text-transform: uppercase;
@@ -174,7 +174,7 @@ footer {{visibility: hidden;}}
 
 @keyframes luxuryGlow {{
     0% {{ transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 {current_theme['glow']}; }}
-    50% {{ transform: scale(1.18); opacity: 0.6; box-shadow: 0 0 0 12px rgba(0,0,0,0); }}
+    50% {{ transform: scale(1.2); opacity: 0.6; box-shadow: 0 0 0 14px rgba(0,0,0,0); }}
     100% {{ transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(0,0,0,0); }}
 }}
 </style>
@@ -183,8 +183,8 @@ footer {{visibility: hidden;}}
 # --- HEADER BANNER ---
 st.markdown(f"""
 <div style="text-align: center; margin-bottom: 45px; padding-top: 15px;">
-    <h1 style="font-size: 4.5rem; font-weight: 800; background: linear-gradient(135deg, #ffffff 15%, {current_theme['primary']} 65%, #100c14 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; line-height: 1; letter-spacing: -2px;">THE JUICER</h1>
-    <p style="color: #9494a6; font-weight: 600; letter-spacing: 6px; margin-top: 12px; text-transform: uppercase; font-size: 0.85rem;">Managed by Mike Donna // Stable Apex Command Terminal</p>
+    <h1 style="font-size: 4.8rem; font-weight: 800; background: linear-gradient(135deg, #ffffff 15%, {current_theme['primary']} 65%, #100c14 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; line-height: 1; letter-spacing: -2px;">THE JUICER</h1>
+    <p style="color: #9494a6; font-weight: 600; letter-spacing: 6px; margin-top: 12px; text-transform: uppercase; font-size: 0.88rem;">Managed by Mike Donna // Max-HP Apex Syndicate Command Terminal</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -208,29 +208,29 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
     "💼 Master Ledger & Export"
 ])
 
-# ================= TAB 1: VEGAS VIEW WALL =================
+# ================= TAB 1: VEGAS VIEW WALL (2026 WEEK 1 OPENING ODDS) =================
 with tab1:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
-    st.markdown('<h3>🎰 Live Vegas Sportsbook Lounge // Slate View Wall</h3>', unsafe_allow_html=True)
+    st.markdown('<h3>🎰 Live Vegas Sportsbook Lounge // 2026 Week 1 Opening View Wall</h3>', unsafe_allow_html=True)
     
     col_g1, col_g2, col_g3 = st.columns(3)
     
     with col_g1:
         st.markdown("""
         <div class="sportsbook-game-box">
-            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">WEEK 1 // 2026 OPENER</span>
+            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">WED, SEPT 9 // KICKOFF</span>
             <h3 style="margin: 8px 0 4px 0; font-size: 1.3rem;">NE @ SEA</h3>
-            <p style="color:#00f576; font-size:0.9rem; font-weight:700; margin:0;">Spread: SEA -6.0 | O/U: 44.5</p>
-            <p style="color:#e2e2eb; font-size:0.8rem; margin:6px 0 0 0;">Weather: Clear / 61°F</p>
-            <span class="source-badge" style="margin-top:10px; display:inline-block;">MODEL LOCK: SEA -6.0</span>
+            <p style="color:#00f576; font-size:0.9rem; font-weight:700; margin:0;">Spread: SEA -3.5 | O/U: 44.5</p>
+            <p style="color:#e2e2eb; font-size:0.8rem; margin:6px 0 0 0;">Location: Lumen Field, Seattle</p>
+            <span class="source-badge" style="margin-top:10px; display:inline-block;">SUPER BOWL REMATCH LOCK</span>
         </div>
         """, unsafe_allow_html=True)
         
         st.markdown("""
         <div class="sportsbook-game-box">
-            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">WEEK 1 // SUNDAY SLATE</span>
+            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">SUN, SEPT 13 // 1:00 PM ET</span>
             <h3 style="margin: 8px 0 4px 0; font-size: 1.3rem;">CHI @ CAR</h3>
-            <p style="color:#ff9e00; font-size:0.9rem; font-weight:700; margin:0;">Spread: CHI -1.5 | O/U: 41.0</p>
+            <p style="color:#ff9e00; font-size:0.9rem; font-weight:700; margin:0;">Spread: CHI -2.5 | O/U: 44.5</p>
             <p style="color:#e2e2eb; font-size:0.8rem; margin:6px 0 0 0;">Weather: 16mph Crosswind</p>
             <span class="source-badge" style="margin-top:10px; display:inline-block; background:rgba(255,158,0,0.15); border-color:#ff9e00; color:#ffb733;">TRENCH WAR (UNDER LEAN)</span>
         </div>
@@ -239,20 +239,20 @@ with tab1:
     with col_g2:
         st.markdown("""
         <div class="sportsbook-game-box">
-            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">WEEK 1 // THURSDAY NIGHT</span>
-            <h3 style="margin: 8px 0 4px 0; font-size: 1.3rem;">SF vs LAR (Melb)</h3>
-            <p style="color:#00f576; font-size:0.9rem; font-weight:700; margin:0;">Spread: SF -4.0 | O/U: 48.0</p>
-            <p style="color:#e2e2eb; font-size:0.8rem; margin:6px 0 0 0;">Weather: Dome / Controlled</p>
+            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">THU, SEPT 10 // AUSTRALIA</span>
+            <h3 style="margin: 8px 0 4px 0; font-size: 1.3rem;">SF vs LAR</h3>
+            <p style="color:#00f576; font-size:0.9rem; font-weight:700; margin:0;">Spread: LAR -2.5 | O/U: 48.5</p>
+            <p style="color:#e2e2eb; font-size:0.8rem; margin:6px 0 0 0;">First NFL Game in Australia</p>
             <span class="source-badge" style="margin-top:10px; display:inline-block;">EXPLOSIVE PACING</span>
         </div>
         """, unsafe_allow_html=True)
         
         st.markdown("""
         <div class="sportsbook-game-box">
-            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">WEEK 1 // SUNDAY AFTERNOON</span>
+            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">SUN, SEPT 13 // 1:00 PM ET</span>
             <h3 style="margin: 8px 0 4px 0; font-size: 1.3rem;">TB @ CIN</h3>
-            <p style="color:#ff2a5f; font-size:0.9rem; font-weight:700; margin:0;">Spread: CIN -3.0 | O/U: 51.5</p>
-            <p style="color:#e2e2eb; font-size:0.8rem; margin:6px 0 0 0;">Weather: Humid / 72°F</p>
+            <p style="color:#ff2a5f; font-size:0.9rem; font-weight:700; margin:0;">Spread: CIN -3.5 | O/U: 50.5</p>
+            <p style="color:#e2e2eb; font-size:0.8rem; margin:6px 0 0 0;">Paycor Stadium, Cincinnati</p>
             <span class="source-badge" style="margin-top:10px; display:inline-block; background:rgba(255,42,95,0.2); border-color:#ff2a5f; color:#ff6b8b;">🔥 ELITE SHOOTOUT</span>
         </div>
         """, unsafe_allow_html=True)
@@ -260,21 +260,21 @@ with tab1:
     with col_g3:
         st.markdown("""
         <div class="sportsbook-game-box">
-            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">WEEK 1 // SUNDAY AFTERNOON</span>
+            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">SUN, SEPT 13 // 1:00 PM ET</span>
             <h3 style="margin: 8px 0 4px 0; font-size: 1.3rem;">BAL @ IND</h3>
-            <p style="color:#00f576; font-size:0.9rem; font-weight:700; margin:0;">Spread: BAL -4.5 | O/U: 47.5</p>
-            <p style="color:#e2e2eb; font-size:0.8rem; margin:6px 0 0 0;">Weather: Indoor / Optimal</p>
+            <p style="color:#00f576; font-size:0.9rem; font-weight:700; margin:0;">Spread: BAL -3.5 | O/U: 49.5</p>
+            <p style="color:#e2e2eb; font-size:0.8rem; margin:6px 0 0 0;">Lucas Oil Stadium, Indy</p>
             <span class="source-badge" style="margin-top:10px; display:inline-block;">PINNACLE STEAM LOCK</span>
         </div>
         """, unsafe_allow_html=True)
         
         st.markdown("""
         <div class="sportsbook-game-box">
-            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">WEEK 1 // SUNDAY NIGHT</span>
-            <h3 style="margin: 8px 0 4px 0; font-size: 1.3rem;">KC @ LAC</h3>
-            <p style="color:#ff2a5f; font-size:0.9rem; font-weight:700; margin:0;">Spread: KC -3.5 | O/U: 53.0</p>
-            <p style="color:#e2e2eb; font-size:0.8rem; margin:6px 0 0 0;">Weather: Dome / Controlled</p>
-            <span class="source-badge" style="margin-top:10px; display:inline-block; background:rgba(255,42,95,0.2); border-color:#ff2a5f; color:#ff6b8b;">🔥 ELITE SHOOTOUT</span>
+            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">MON, SEPT 14 // 8:15 PM ET</span>
+            <h3 style="margin: 8px 0 4px 0; font-size: 1.3rem;">DEN @ KC</h3>
+            <p style="color:#ff2a5f; font-size:0.9rem; font-weight:700; margin:0;">Spread: KC -2.5 | O/U: 42.5</p>
+            <p style="color:#e2e2eb; font-size:0.8rem; margin:6px 0 0 0;">Arrowhead Stadium, KC</p>
+            <span class="source-badge" style="margin-top:10px; display:inline-block; background:rgba(255,42,95,0.2); border-color:#ff2a5f; color:#ff6b8b;">🔥 DIVISIONAL SHOWDOWN</span>
         </div>
         """, unsafe_allow_html=True)
 
@@ -333,7 +333,7 @@ with tab3:
     st.plotly_chart(fig, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ================= TAB 4: 20 CLICKABLE PARLAYS =================
+# ================= TAB 4: 20 CLICKABLE PARLAYS & HEADSHOTS =================
 with tab4:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>Core Roster // Official NFL Headshots & Live News Feed</h3>', unsafe_allow_html=True)
@@ -370,17 +370,17 @@ with tab4:
         {"title": "Tier 2 // 3-Leg Core Offensive Stack", "odds": "+680", "payout": "7.80x Return", "legs": ["Leg 1: Kenneth Walker Higher 65.5 Rushing Yards", "Leg 2: Amon-Ra St. Brown Higher 75.5 Receiving Yards", "Leg 3: Justin Herbert Higher 1.5 Passing TDs"]},
         {"title": "Tier 2 // 3-Leg Heavy Ground Matrix", "odds": "+720", "payout": "8.20x Return", "legs": ["Leg 1: Derrick Henry Higher 74.5 Rushing Yards", "Leg 2: Nico Collins Higher 60.5 Receiving Yards", "Leg 3: Breece Hall Higher 3.5 Receptions"]},
         {"title": "Tier 3 // 4-Leg Compound Catalyst Slip", "odds": "+1,450", "payout": "15.50x Return", "legs": ["Leg 1: Kenneth Walker Higher 65.5 Rushing Yards", "Leg 2: Amon-Ra St. Brown Higher 75.5 Receiving Yards", "Leg 3: Justin Herbert Higher 245.5 Passing Yards", "Leg 4: Derrick Henry Higher 0.5 Rushing Touchdowns"]},
-        {"title": "Tier 3 // 4-Leg Spread & Prop Correlation", "odds": "+1,600", "payout": "17.00x Return", "legs": ["Leg 1: Seattle Seahawks -6.0 Spread vs NE", "Leg 2: San Francisco 49ers -4.0 Spread vs LAR", "Leg 3: Kenneth Walker Higher 14.5 Rush Attempts", "Leg 4: Amon-Ra St. Brown Higher 5.5 Receptions"]},
+        {"title": "Tier 3 // 4-Leg Spread & Prop Correlation", "odds": "+1,600", "payout": "17.00x Return", "legs": ["Leg 1: Seattle Seahawks -3.5 Spread vs NE", "Leg 2: LA Rams -2.5 Spread vs SF", "Leg 3: Kenneth Walker Higher 14.5 Rush Attempts", "Leg 4: Amon-Ra St. Brown Higher 5.5 Receptions"]},
         {"title": "Tier 4 // 5-Leg Offensive Catalyst Stack", "odds": "+3,400", "payout": "35.00x Return", "legs": ["Leg 1: Justin Herbert Higher 1.5 Passing TDs", "Leg 2: Kenneth Walker Higher 65.5 Rush Yards", "Leg 3: Amon-Ra St. Brown Higher 75.5 Rec Yards", "Leg 4: Derrick Henry Higher 74.5 Rush Yards", "Leg 5: Travis Kelce Higher Anytime Touchdown"]},
-        {"title": "Tier 4 // 5-Team Spread & Total Accumulator", "odds": "+3,850", "payout": "39.50x Return", "legs": ["Leg 1: Seattle Seahawks -6.0 Spread", "Leg 2: San Francisco 49ers -4.0 Spread", "Leg 3: Baltimore Ravens -4.5 Spread", "Leg 4: Tampa Bay @ Cincinnati Over 51.5 Total", "Leg 5: Kansas City @ LA Chargers Over 53.0 Total"]},
-        {"title": "Tier 5 // 6-Leg Cross-Conference Over/Under", "odds": "+7,500", "payout": "76.00x Return", "legs": ["Leg 1: New England @ Seattle Under 44.5 Total", "Leg 2: San Francisco vs LA Rams Over 48.0 Total", "Leg 3: Chicago @ Carolina Under 41.0 Total", "Leg 4: Baltimore @ Indianapolis Over 47.5 Total", "Leg 5: Tampa Bay @ Cincinnati Over 51.5 Total", "Leg 6: Kansas City @ LA Chargers Over 53.0 Total"]},
+        {"title": "Tier 4 // 5-Team Spread & Total Accumulator", "odds": "+3,850", "payout": "39.50x Return", "legs": ["Leg 1: Seattle Seahawks -3.5 Spread", "Leg 2: LA Rams -2.5 Spread", "Leg 3: Baltimore Ravens -3.5 Spread", "Leg 4: Tampa Bay @ Cincinnati Over 50.5 Total", "Leg 5: Denver @ Kansas City Over 42.5 Total"]},
+        {"title": "Tier 5 // 6-Leg Cross-Conference Over/Under", "odds": "+7,500", "payout": "76.00x Return", "legs": ["Leg 1: New England @ Seattle Under 44.5 Total", "Leg 2: San Francisco vs LA Rams Over 48.5 Total", "Leg 3: Chicago @ Carolina Under 44.5 Total", "Leg 4: Baltimore @ Indianapolis Over 49.5 Total", "Leg 5: Tampa Bay @ Cincinnati Over 50.5 Total", "Leg 6: Denver @ Kansas City Over 42.5 Total"]},
         {"title": "Tier 5 // 6-Leg Elite Receiver Prop Accumulator", "odds": "+8,200", "payout": "83.00x Return", "legs": ["Leg 1: Amon-Ra St. Brown Higher 80.5 Receiving Yards", "Leg 2: Nico Collins Higher 70.5 Receiving Yards", "Leg 3: Rashee Rice Higher 60.5 Receiving Yards", "Leg 4: Travis Kelce Higher 60.5 Receiving Yards", "Leg 5: Malik Nabers Higher 70.5 Receiving Yards", "Leg 6: Justin Jefferson Higher 90.5 Receiving Yards"]},
         {"title": "Tier 6 // 7-Leg Trench Dominance & Rushing Matrix", "odds": "+15,000", "payout": "151.00x Return", "legs": ["Leg 1: Kenneth Walker Higher 65.5 Rushing Yards", "Leg 2: Derrick Henry Higher 74.5 Rushing Yards", "Leg 3: Breece Hall Higher 60.5 Rushing Yards", "Leg 4: Jahmyr Gibbs Higher 55.5 Rushing Yards", "Leg 5: Saquon Barkley Higher 79.5 Rushing Yards", "Leg 6: Isiah Pacheco Higher 58.5 Rushing Yards", "Leg 7: Jonathan Taylor Higher 72.5 Rushing Yards"]},
         {"title": "Tier 6 // 7-Leg Quarterback Passing Efficiency Slip", "odds": "+16,500", "payout": "166.00x Return", "legs": ["Leg 1: Justin Herbert Higher 245.5 Pass Yards", "Leg 2: Patrick Mahomes Higher 275.5 Pass Yards", "Leg 3: Joe Burrow Higher 265.5 Pass Yards", "Leg 4: Josh Allen Higher 250.5 Pass Yards", "Leg 5: Lamar Jackson Higher 220.5 Pass Yards", "Leg 6: Dak Prescott Higher 260.5 Pass Yards", "Leg 7: Jordan Love Higher 235.5 Pass Yards"]},
-        {"title": "Tier 7 // 8-Leg Global Slate Spread Lock", "odds": "+32,000", "payout": "321.00x Return", "legs": ["Leg 1: Seattle -6.0", "Leg 2: San Francisco -4.0", "Leg 3: Baltimore -4.5", "Leg 4: Cincinnati -3.0", "Leg 5: Kansas City -3.5", "Leg 6: Detroit -5.5", "Leg 7: Philadelphia -3.0", "Leg 8: Buffalo -6.5"]},
+        {"title": "Tier 7 // 8-Leg Global Slate Spread Lock", "odds": "+32,000", "payout": "321.00x Return", "legs": ["Leg 1: Seattle -3.5", "Leg 2: LA Rams -2.5", "Leg 3: Baltimore -3.5", "Leg 4: Cincinnati -3.5", "Leg 5: Kansas City -2.5", "Leg 6: Detroit -7.0", "Leg 7: Philadelphia -5.5", "Leg 8: Jacksonville -7.0"]},
         {"title": "Tier 7 // 8-Leg Red-Zone Touchdown Scorer Sweep", "odds": "+35,400", "payout": "355.00x Return", "legs": ["Leg 1: Derrick Henry Anytime TD", "Leg 2: Travis Kelce Anytime TD", "Leg 3: Amon-Ra St. Brown Anytime TD", "Leg 4: Kenneth Walker Anytime TD", "Leg 5: Breece Hall Anytime TD", "Leg 6: CeeDee Lamb Anytime TD", "Leg 7: Ja'Marr Chase Anytime TD", "Leg 8: George Kittle Anytime TD"]},
-        {"title": "Tier 8 // 10-Leg Master Slate Comprehensive Accumulator", "odds": "+120,000", "payout": "1,201.00x Return", "legs": ["Leg 1: SEA -6.0", "Leg 2: SF -4.0", "Leg 3: BAL -4.5", "Leg 4: CIN -3.0", "Leg 5: KC -3.5", "Leg 6: Walker Rush Higher", "Leg 7: St. Brown Rec Higher", "Leg 8: Herbert Pass Higher", "Leg 9: Henry Rush Higher", "Leg 10: Kelce Rec Higher"]},
-        {"title": "Tier 8 // 10-Leg Weather-Adjusted Totals Slip", "odds": "+135,000", "payout": "1,351.00x Return", "legs": ["Leg 1: NE/SEA Under 44.5", "Leg 2: CHI/CAR Under 41.0", "Leg 3: PIT/CLE Under 38.5", "Leg 4: DEN/LV Under 40.0", "Leg 5: SF/LAR Over 48.0", "Leg 6: BAL/IND Over 47.5", "Leg 7: TB/CIN Over 51.5", "Leg 8: KC/LAC Over 53.0", "Leg 9: DAL/NYG Over 49.0", "Leg 10: GB/MIN Over 46.5"]},
+        {"title": "Tier 8 // 10-Leg Master Slate Comprehensive Accumulator", "odds": "+120,000", "payout": "1,201.00x Return", "legs": ["Leg 1: SEA -3.5", "Leg 2: LAR -2.5", "Leg 3: BAL -3.5", "Leg 4: CIN -3.5", "Leg 5: KC -2.5", "Leg 6: Walker Rush Higher", "Leg 7: St. Brown Rec Higher", "Leg 8: Herbert Pass Higher", "Leg 9: Henry Rush Higher", "Leg 10: Kelce Rec Higher"]},
+        {"title": "Tier 8 // 10-Leg Weather-Adjusted Totals Slip", "odds": "+135,000", "payout": "1,351.00x Return", "legs": ["Leg 1: NE/SEA Under 44.5", "Leg 2: CHI/CAR Under 44.5", "Leg 3: PIT/CLE Under 42.5", "Leg 4: DEN/LV Under 41.5", "Leg 5: SF/LAR Over 48.5", "Leg 6: BAL/IND Over 49.5", "Leg 7: TB/CIN Over 50.5", "Leg 8: DEN/KC Over 42.5", "Leg 9: DAL/NYG Over 48.5", "Leg 10: GB/MIN Over 44.5"]},
         {"title": "Tier 9 // 12-Leg High-Frequency Syndicate Parlay", "odds": "+500,000", "payout": "5,001.00x Return", "legs": ["Leg 1-6: Elite Quarterback & Running Back Yardage Alt-Lines", "Leg 7-12: Elite Wide Receiver Target Share & Reception Props Verified by +4.0% CLV"]},
         {"title": "Tier 9 // 12-Leg Uncorrelated Edge Compounding Sheet", "odds": "+550,000", "payout": "5,501.00x Return", "legs": ["Leg 1-6: Spread & Team Total Locks", "Leg 7-12: Cross-Conference Defensive Pressure & Turnaround Props"]},
         {"title": "Tier 10 // 15-Leg Ultimate Slate Sweeper Matrix", "odds": "+2,500,000", "payout": "25,001.00x Return", "legs": ["Leg 1-15: Comprehensive multi-prop sweep covering every primary offensive weapon across Sunday and Monday slates."]},
@@ -403,8 +403,8 @@ with tab5:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>Environmental Threats & Referee Bias Hub</h3>', unsafe_allow_html=True)
     df_weather = pd.DataFrame({
-        "Stadium": ["Lumen Field (SEA)", "Arrowhead Stadium", "Soldier Field"],
-        "Wind Vector": ["Sustained 8mph", "Calm 4mph", "Sustained 18mph (Crosswind)"],
+        "Stadium": ["Lumen Field (SEA)", "Empower Field (DEN)", "Soldier Field"],
+        "Wind Vector": ["Sustained 8mph", "Calm 4mph", "Sustained 16mph (Crosswind)"],
         "Referee Crew Over/Under Bias": ["Neutral (Crew #4)", "Over leaning (+3.5 pts)", "Under leaning (-4.2 pts - Crew #12)"],
         "Impact": ["Optimal", "Neutral", "Heavy Under Lean"]
     })
