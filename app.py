@@ -7,7 +7,7 @@ import base64
 import requests
 import plotly.express as px
 
-st.set_page_config(page_title="The Juicer // Apex Terminal v30", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="The Juicer // Apex Terminal v31", layout="wide", initial_sidebar_state="expanded")
 
 if "theme" not in st.session_state:
     st.session_state.theme = "Sydney Velvet Rose"
@@ -56,7 +56,7 @@ def save_github_brain(brain_data, current_sha=None):
         url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{FILE_PATH}"
         headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.v3+json"}
         encoded = base64.b64encode(content_str.encode("utf-8")).decode("utf-8")
-        payload = {"message": "Vault: Separated Season-Long and DFS Suites", "content": encoded, "sha": current_sha}
+        payload = {"message": "Vault: Stable Apex Terminal Commit", "content": encoded, "sha": current_sha}
         try:
             res = requests.put(url, headers=headers, json=payload, timeout=5)
             return res.status_code in [200, 201]
@@ -184,7 +184,7 @@ footer {{visibility: hidden;}}
 st.markdown(f"""
 <div style="text-align: center; margin-bottom: 45px; padding-top: 15px;">
     <h1 style="font-size: 4.5rem; font-weight: 800; background: linear-gradient(135deg, #ffffff 15%, {current_theme['primary']} 65%, #100c14 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; line-height: 1; letter-spacing: -2px;">THE JUICER</h1>
-    <p style="color: #9494a6; font-weight: 600; letter-spacing: 6px; margin-top: 12px; text-transform: uppercase; font-size: 0.85rem;">Managed by Mike Donna // Separated Season-Long & DFS Command Suites</p>
+    <p style="color: #9494a6; font-weight: 600; letter-spacing: 6px; margin-top: 12px; text-transform: uppercase; font-size: 0.85rem;">Managed by Mike Donna // Stable Apex Command Terminal</p>
 </div>
 """, unsafe_allow_html=True)
 
