@@ -3,11 +3,53 @@ import pandas as pd
 import numpy as np
 import time
 import json
+import base64
+import requests
 from st_aggrid import AgGrid, GridOptionsBuilder
 
-# --- FIRM CONFIGURATION ---
 st.set_page_config(page_title="The Juicer // Apex Command Center", layout="wide", initial_sidebar_state="expanded")
 
+REPO_OWNER = "dustinforde-lab"
+REPO_NAME = "the-juicer"
+FILE_PATH = "brain.json"
+
+# --- PERSISTENT GITHUB DATA HANDLER ---
+def get_github_brain():
+    token = st.secrets.get("GITHUB_TOKEN", "")
+    if token:
+        url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{FILE_PATH}"
+        headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.v3+json"}
+        res = requests.get(url, headers=headers)
+        if res.status_code == 200:
+            data = res.json()
+            content = base64.b64decode(data["content"]).decode("utf-8")
+            return json.loads(content), data["sha"]
+    try:
+        with open(FILE_PATH, "r") as f:
+            return json.load(f), None
+    except:
+        return {"model_weights": {"WR_RECEPTIONS": {"modifier": 1.0, "rolling_win_rate": 0.50}}, "bet_ledger": []}, None
+
+def save_github_brain(brain_data, current_sha=None):
+    token = st.secrets.get("GITHUB_TOKEN", "")
+    content_str = json.dumps(brain_data, indent=4)
+    if token and current_sha:
+        url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{FILE_PATH}"
+        headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.v3+json"}
+        encoded = base64.b64encode(content_str.encode("utf-8")).decode("utf-8")
+        payload = {
+            "message": "Vault: Autonomous ticket logged via Execution Terminal",
+            "content": encoded,
+            "sha": current_sha
+        }
+        res = requests.put(url, headers=headers, json=payload)
+        return res.status_code in [200, 201]
+    else:
+        with open(FILE_PATH, "w") as f:
+            f.write(content_str)
+        return True
+
+# --- INITIALIZE STATE ---
 if "risk_profile" not in st.session_state:
     st.session_state.risk_profile = "Conservative (2.5% Unit)"
 
@@ -17,18 +59,9 @@ st.session_state.risk_profile = st.sidebar.radio(
     ["Conservative (2.5% Unit)", "Aggressive (5.0% Unit)", "Nuclear (Max Leverage)"]
 )
 
-# --- INGEST THE BRAIN (DYNAMIC MEMORY) ---
-@st.cache_data(ttl=60)
-def load_brain():
-    try:
-        with open("brain.json", "r") as f:
-            return json.load(f)
-    except:
-        return {"model_weights": {"WR_RECEPTIONS": {"modifier": 1.0, "rolling_win_rate": 0.50}}, "bet_ledger": []}
-
-brain = load_brain()
-wr_modifier = brain["model_weights"].get("WR_RECEPTIONS", {}).get("modifier", 1.0)
-wr_win_rate = brain["model_weights"].get("WR_RECEPTIONS", {}).get("rolling_win_rate", 0.50)
+brain, current_sha = get_github_brain()
+wr_modifier = brain.get("model_weights", {}).get("WR_RECEPTIONS", {}).get("modifier", 1.0)
+wr_win_rate = brain.get("model_weights", {}).get("WR_RECEPTIONS", {}).get("rolling_win_rate", 0.50)
 pending_tickets = len([t for t in brain.get("bet_ledger", []) if t.get("result") == "PENDING"])
 
 # --- GLOBAL STYLING ---
@@ -78,11 +111,12 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# --- HUD TICKER WITH DYNAMIC DATA ---
+# --- HUD TICKER ---
+storage_mode = "PERMANENT GITHUB VAULT" if st.secrets.get("GITHUB_TOKEN") else "LOCAL / SESSION"
 st.markdown(f"""
 <div class="hud-bar">
     <div class="hud-item"><span class="hud-dot"></span> <b>AI ENGINE: CONNECTED</b></div>
-    <div class="hud-item"><span class="source-badge">2-3 SOURCE RULE ENFORCED</span></div>
+    <div class="hud-item"><span class="source-badge">{storage_mode}</span></div>
     <div class="hud-item"><b>WR EDGE MODIFIER:</b> {wr_modifier}x</div>
     <div class="hud-item"><b>PROFILE:</b> {st.session_state.risk_profile.upper()}</div>
     <div class="hud-item" style="color: #a11d21;"><b>PENDING TICKETS:</b> {pending_tickets}</div>
@@ -105,7 +139,6 @@ def render_styled_grid(df, height=260):
     gridOptions = gb.build()
     AgGrid(df, gridOptions=gridOptions, custom_css=custom_grid_css, theme='alpine-dark', fit_columns_on_grid_load=True, height=height)
 
-# --- TABS ---
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "🏆 Market Microstructure & Spreads",
     "👑 Advanced DFS Optimizer & Sims",
@@ -163,9 +196,7 @@ with tab2:
     df_dfs["AI Adjusted Proj"] = df_dfs.apply(
         lambda row: round(row["Base Proj"] * wr_modifier, 1) if row["Pos"] == "WR" else row["Base Proj"], axis=1
     )
-    
     df_dfs = df_dfs[["Pos", "Player", "Salary", "Base Proj", "AI Adjusted Proj", "Verified Sources"]]
-    
     render_styled_grid(df_dfs, height=330)
     
     if st.button("⚡ RUN 10,000 ITERATION MONTE CARLO SIMULATION"):
@@ -266,13 +297,7 @@ with tab5:
         submit_ticket = st.form_submit_button("⚡ EXECUTE WAGER")
         
         if submit_ticket and entry_player:
-            try:
-                with open("brain.json", "r") as f:
-                    current_brain = json.load(f)
-            except:
-                current_brain = {"model_weights": {}, "bet_ledger": []}
-                
-            new_id = len(current_brain.get("bet_ledger", [])) + 1
+            new_id = len(brain.get("bet_ledger", [])) + 1
             new_ticket = {
                 "id": new_id,
                 "player": entry_player,
@@ -282,26 +307,21 @@ with tab5:
                 "confidence": entry_confidence,
                 "result": "PENDING"
             }
+            if "bet_ledger" not in brain:
+                brain["bet_ledger"] = []
+            brain["bet_ledger"].append(new_ticket)
             
-            if "bet_ledger" not in current_brain:
-                current_brain["bet_ledger"] = []
-                
-            current_brain["bet_ledger"].append(new_ticket)
-            
-            with open("brain.json", "w") as f:
-                json.dump(current_brain, f, indent=4)
-                
-            st.success(f"Ticket Locked: {entry_player} | {entry_prop} @ {entry_line}. Ledger Updated.")
-            load_brain.clear()  # Force cache wipe to instantly show new ticket
+            success = save_github_brain(brain, current_sha)
+            if success:
+                st.success(f"Ticket Locked & Committed: {entry_player} | {entry_prop} @ {entry_line}.")
+                st.rerun()
+            else:
+                st.error("Failed to commit ticket to GitHub vault.")
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>Autonomous Bet Ledger (brain.json)</h3>', unsafe_allow_html=True)
-    
-    # Re-fetch brain data after potential form submission
-    live_brain = load_brain()
-    df_ledger = pd.DataFrame(live_brain.get("bet_ledger", []))
-    
+    df_ledger = pd.DataFrame(brain.get("bet_ledger", []))
     if not df_ledger.empty:
         render_styled_grid(df_ledger, height=200)
     else:
@@ -314,4 +334,15 @@ with tab5:
     c1.metric("Active Capital Reserve", "$142.50", "-$7.50")
     c2.metric("Weekly Volume Quota", "48 / 150 Bets", "Pacing Target")
     c3.metric("Firm Win Rate", "84.2% (Triple-Verified)", "+22.1% vs Books")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="exec-card">', unsafe_allow_html=True)
+    article_5 = '''
+<div class="hungry-article-box">
+    <div class="article-header">Mike Donna's Mandate: Capital Preservation</div>
+    <div class="article-subheader">Jessica's Ledger</div>
+    Predictive edge without disciplined unit allocation results in drawdown. The ledger tracks unit sizing, closing line value capture, and bankroll volatility limits to ensure long-term mathematical solvency.
+</div>
+'''
+    st.markdown(article_5, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
