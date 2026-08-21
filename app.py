@@ -4,10 +4,10 @@ import numpy as np
 from st_aggrid import AgGrid, GridOptionsBuilder, ColumnsAutoSizeMode
 from sklearn.ensemble import GradientBoostingRegressor
 
-# --- THE BUSHES CONFIG ---
-st.set_page_config(page_title="The Juicer | Aim For The Bushes", layout="wide", initial_sidebar_state="collapsed")
+# --- GVP APEX CONFIG ---
+st.set_page_config(page_title="The Juicer // Full-Season Command Center", layout="wide", initial_sidebar_state="collapsed")
 
-# --- CINEMATIC CSS ---
+# --- CINEMATIC GLASSMORPHISM CSS ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;800&display=swap');
@@ -21,57 +21,70 @@ st.markdown("""
     .glass-card {
         background: rgba(20, 20, 25, 0.4); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
         border: 1px solid rgba(128, 0, 0, 0.3); border-top: 1px solid rgba(255, 255, 255, 0.1); border-left: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 16px; padding: 30px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6); margin-bottom: 20px;
+        border-radius: 16px; padding: 25px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6); margin-bottom: 20px;
     }
     
     .luxe-title {
-        font-size: 3.5rem; font-weight: 800; background: linear-gradient(to right, #ffffff, #800000);
+        font-size: 3rem; font-weight: 800; background: linear-gradient(to right, #ffffff, #800000);
         -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0; text-align: center; letter-spacing: -1px;
     }
-    .luxe-subtitle { text-align: center; color: #888; font-weight: 300; letter-spacing: 4px; margin-bottom: 40px; text-transform: uppercase; }
+    .luxe-subtitle { text-align: center; color: #888; font-weight: 300; letter-spacing: 3px; margin-bottom: 30px; text-transform: uppercase; font-size: 0.85rem;}
     
-    .nav-bar {
-        background: rgba(10, 10, 12, 0.8); backdrop-filter: blur(20px); padding: 15px 30px;
-        border-bottom: 1px solid rgba(128, 0, 0, 0.2); display: flex; justify-content: space-between; align-items: center;
-        border-radius: 0 0 16px 16px; margin-top: -3rem; margin-bottom: 3rem;
+    /* Live Scoreboard Header */
+    .scoreboard-container {
+        background: rgba(10, 10, 12, 0.9); border: 1px solid rgba(128, 0, 0, 0.4);
+        padding: 12px 20px; border-radius: 12px; display: flex; justify-content: space-around;
+        align-items: center; margin-bottom: 30px; font-size: 0.9rem; letter-spacing: 1px;
     }
-    .nav-logo { font-weight: 800; font-size: 1.2rem; color: #fff; letter-spacing: 2px;}
-    .nav-status { font-size: 0.8rem; color: #ff3333; letter-spacing: 1px; border: 1px solid #ff3333; padding: 4px 12px; border-radius: 20px;}
+    .score-item { text-align: center; border-right: 1px solid rgba(255,255,255,0.1); padding-right: 25px; }
+    .score-item:last-child { border-right: none; }
+    .live-dot { height: 8px; width: 8px; background-color: #ff3333; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px #ff3333; animation: pulse 1.5s infinite; }
+    
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
     </style>
 """, unsafe_allow_html=True)
 
-# --- TOP NAV & ROZ PROTOCOL ---
+# --- PERSISTENT LIVE SCOREBOARD (HUD) ---
 st.markdown("""
-<div class="nav-bar">
-    <div class="nav-logo">THE JUICER // APEX ENGINE</div>
-    <div class="nav-status">● PROTOCOL: ALWAYS WATCHING</div>
+<div class="scoreboard-container">
+    <div class="score-item"><span class="live-dot"></span> <b>LIVE TICKER</b></div>
+    <div class="score-item"><b>MIN 24</b> - GB 17 <span style="color:#888;">(4th Qtr)</span></div>
+    <div class="score-item"><b>KC 31</b> - LAC 24 <span style="color:#888;">(Final)</span></div>
+    <div class="score-item"><b>BUF 28</b> - MIA 21 <span style="color:#888;">(2nd Qtr)</span></div>
+    <div class="score-item" style="color: #ff3333;"><b>SYSTEM:</b> ONLINE</div>
 </div>
 """, unsafe_allow_html=True)
 
 st.markdown('<h1 class="luxe-title">THE JUICER</h1>', unsafe_allow_html=True)
-st.markdown('<p class="luxe-subtitle">Industrial Draft Configurator & Neural Engine</p>', unsafe_allow_html=True)
+st.markdown('<p class="luxe-subtitle">Full-Season Spread Matrix & Neural Engine</p>', unsafe_allow_html=True)
 
-# --- INDUSTRIAL KEEPER CONFIGURATOR ---
+# --- FULL-SEASON SLATE & SPREAD TRACKER (WEEKS 1-18) ---
 st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-st.markdown('<h3 style="color: #fff; text-transform: uppercase; font-size: 1.2rem; letter-spacing: 2px;">12-Team Keeper ROI Lookup</h3>', unsafe_allow_html=True)
+col_head1, col_head2 = st.columns([2, 1])
+with col_head1:
+    st.markdown('<p style="color: #fff; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom:0;">Full-Season Spread Movement Tracker</p>', unsafe_allow_html=True)
+with col_head2:
+    selected_week = st.selectbox("Select Slate Window", [f"Week {i}" for i in range(1, 19)], index=0, label_visibility="collapsed")
 
 @st.cache_data
-def load_keeper_logic():
+def load_season_slate(week):
+    # Simulating data tracking movement from Week 1 baseline to current tracking
     return pd.DataFrame({
-        "Asset": ["Kenneth Walker", "Derrick Henry", "Breece Hall", "Amon-Ra St. Brown"],
-        "Base Cost ($)": [15, 18, 55, 50],
-        "Projected Output (Pts)": [245.5, 230.1, 290.4, 275.8],
-        "Yield (Pts/$)": [16.37, 12.78, 5.28, 5.51],
-        "Status": ["LOCKED VALUE", "LOCKED VALUE", "DRAFT MARKET", "DRAFT MARKET"]
+        "Matchup": ["KC @ DET", "BUF @ NYJ", "SF @ PIT", "PHI @ NE", "MIN @ CHI"],
+        "Opening Spread": ["KC -6.5", "BUF -2.5", "SF -3.0", "PHI -4.0", "CHI -3.5"],
+        "Current Spread": ["KC -8.5", "BUF -1.5", "SF -4.5", "PHI -3.5", "CHI -4.5"],
+        "Line Delta": ["+2.0 (Sharp)", "-1.0 (Steam)", "+1.5 (Sharp)", "-0.5 (Public)", "+1.0 (Sharp)"],
+        "O/U Total": [53.5, 45.5, 41.5, 48.0, 43.5],
+        "Action Status": ["LOCK", "FADE", "LOCK", "PASS", "LOCK"]
     })
 
-df_keepers = load_keeper_logic()
-kb = GridOptionsBuilder.from_dataframe(df_keepers)
-kb.configure_selection('single')
-AgGrid(df_keepers, gridOptions=kb.build(), theme='alpine-dark', fit_columns_on_grid_load=True)
+df_slate = load_season_slate(selected_week)
+sb = GridOptionsBuilder.from_dataframe(df_slate)
+sb.configure_selection('multiple', use_checkbox=True)
+AgGrid(df_slate, gridOptions=sb.build(), theme='alpine-dark', fit_columns_on_grid_load=True, height=220)
 st.markdown('</div>', unsafe_allow_html=True)
 
-# --- ML ENGINE ---
+# --- ML ENGINE & PROBABILITY MATRIX ---
 @st.cache_resource
 def train_ai_model():
     np.random.seed(42)
@@ -97,14 +110,14 @@ def generate_predictions(_model):
         "SYSTEM CALL": ["LOCK" if e > 5 else "FADE" if e < -5 else "PLAY" for e in edges]
     })
 
-with st.spinner('Calibrating...'):
+with st.spinner('Calibrating Neural Network...'):
     model = train_ai_model()
     df_ml = generate_predictions(model)
 
 st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-st.markdown('<p style="color: #888; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px;">LIVE PROBABILITY MATRIX</p>', unsafe_allow_html=True)
+st.markdown('<p style="color: #888; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px;">NEURAL EDGE MATRIX</p>', unsafe_allow_html=True)
 
 gb = GridOptionsBuilder.from_dataframe(df_ml)
 gb.configure_selection('multiple', use_checkbox=True)
-AgGrid(df_ml, gridOptions=gb.build(), theme='alpine-dark', fit_columns_on_grid_load=True)
+AgGrid(df_ml, gridOptions=gb.build(), theme='alpine-dark', fit_columns_on_grid_load=True, height=220)
 st.markdown('</div>', unsafe_allow_html=True)
