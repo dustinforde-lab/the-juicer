@@ -1,10 +1,5 @@
 ﻿streamlit
 pandas
 numpy
-streamlit-aggrid
 scikit-learn
-websockets
-feedparser
-beautifulsoup4
-nest-asyncio
 requests

@@ -1,0 +1,10 @@
+﻿{
+    "model_weights": {
+        "RB_RUSHING": {"modifier": 1.0, "rolling_win_rate": 0.55},
+        "WR_RECEPTIONS": {"modifier": 1.0, "rolling_win_rate": 0.58},
+        "QB_PASSING": {"modifier": 1.0, "rolling_win_rate": 0.52}
+    },
+    "bet_ledger": [
+        {"id": 1, "player": "Kenneth Walker", "prop": "Rushing Yards", "line": 65.5, "result": "PENDING"}
+    ]
+}

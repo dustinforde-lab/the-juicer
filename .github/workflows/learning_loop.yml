@@ -1,0 +1,32 @@
+﻿name: Mike Donna Autonomous Learning Loop
+
+on:
+  schedule:
+    - cron: '0 6,18 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  run-learning-loop:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Execute Self-Learning Loop
+        run: python self_learning_loop.py
+
+      - name: Commit and Push Updated Brain
+        run: |
+          git config --global user.name "Mike Donna Autonomous AI"
+          git config --global user.email "bot@thejuicer.local"
+          git add brain.json
+          git commit -m "Auto-Update: Recalibrated ML model weights in brain.json" || exit 0
+          git push
