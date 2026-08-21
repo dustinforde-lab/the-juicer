@@ -7,7 +7,7 @@ import base64
 import requests
 import plotly.express as px
 
-st.set_page_config(page_title="The Juicer // Apex Terminal v33", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="The Juicer // Apex Terminal v34", layout="wide", initial_sidebar_state="expanded")
 
 if "theme" not in st.session_state:
     st.session_state.theme = "Sydney Velvet Rose"
@@ -56,7 +56,7 @@ def save_github_brain(brain_data, current_sha=None):
         url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{FILE_PATH}"
         headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.v3+json"}
         encoded = base64.b64encode(content_str.encode("utf-8")).decode("utf-8")
-        payload = {"message": "Vault: Logo Restoration Commit", "content": encoded, "sha": current_sha}
+        payload = {"message": "Vault: Clean Banner Text Fix", "content": encoded, "sha": current_sha}
         try:
             res = requests.put(url, headers=headers, json=payload, timeout=5)
             return res.status_code in [200, 201]
@@ -214,7 +214,7 @@ footer {{visibility: hidden;}}
 </style>
 """, unsafe_allow_html=True)
 
-# --- CENTERED ANIMATED SMOOTHIE LOGO BANNER ---
+# --- CLEAN CENTERED BANNER ---
 st.markdown(f"""
 <div style="text-align: center; margin-bottom: 40px; padding-top: 15px;">
     <svg width="75" height="95" viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-bottom: 14px; filter: drop-shadow(0 0 35px {current_theme['glow']});">
@@ -234,7 +234,7 @@ st.markdown(f"""
         <path d="M 5 20 L 55 20 L 50 10 L 10 10 Z" fill="#221a29" />
         <rect x="24" y="3" width="12" height="7" fill="{current_theme['primary']}" rx="2.5" />
     </svg>
-    <h1 style="font-size: 4.5rem; font-weight: 800; background: linear-gradient(135deg, #ffffff 15%, {current_theme['primary']} 65%, #15101a 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; line-height: 1; letter-spacing: -2px;">THE JUICER</h1>
+    <h1 style="font-size: 4.5rem; font-weight: 800; color: #ffffff; margin: 0; line-height: 1; letter-spacing: -2px; text-shadow: 0 0 30px {current_theme['glow']};">THE JUICER</h1>
     <p style="color: #9494a6; font-weight: 600; letter-spacing: 6px; margin-top: 12px; text-transform: uppercase; font-size: 0.88rem;">Managed by Mike Donna // Top 300 Live Rankings Terminal</p>
 </div>
 """, unsafe_allow_html=True)
