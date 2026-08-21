@@ -4,75 +4,90 @@ import numpy as np
 from st_aggrid import AgGrid, GridOptionsBuilder
 from sklearn.ensemble import GradientBoostingRegressor
 
-# --- PERFECTION-GRADE CONFIG ---
-st.set_page_config(page_title="The Juicer | GVP Apex Edition", layout="wide", initial_sidebar_state="expanded")
+# --- THE DONNA CONFIGURATION ---
+st.set_page_config(page_title="The Juicer // Donna Edition", layout="wide", initial_sidebar_state="expanded")
 
-# --- LUXE GLASSMORPHISM & DEEP SCROLL CSS ---
+# --- EXECUTIVE CSS: DONNA & SPECTER EDITION ---
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
     
     .stApp {
-        background: radial-gradient(circle at 50% 0%, #1f0404 0%, #030305 70%);
-        color: #e2e8f0;
-        font-family: 'Montserrat', sans-serif;
+        background: linear-gradient(135deg, #09090b 0%, #121216 100%);
+        color: #f4f4f5;
+        font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
-    .glass-card {
-        background: rgba(18, 18, 24, 0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-        border: 1px solid rgba(128, 0, 0, 0.4); border-top: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 16px; padding: 30px; box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.7); margin-bottom: 25px;
+    .exec-card {
+        background: rgba(24, 24, 32, 0.6);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-top: 1px solid rgba(161, 29, 33, 0.5);
+        border-radius: 14px;
+        padding: 32px;
+        box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.8);
+        margin-bottom: 28px;
     }
     
-    .luxe-title {
-        font-size: 3.2rem; font-weight: 800; background: linear-gradient(to right, #ffffff, #ff4d4d, #800000);
-        -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0; text-align: center; letter-spacing: -1px;
+    .exec-title {
+        font-size: 3.2rem; font-weight: 800;
+        background: linear-gradient(135deg, #ffffff 30%, #a11d21 100%);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        margin-bottom: 0; text-align: center; letter-spacing: -1.5px;
     }
-    .luxe-subtitle { text-align: center; color: #ff9999; font-weight: 300; letter-spacing: 5px; margin-bottom: 30px; text-transform: uppercase; font-size: 0.85rem;}
-    
-    .scoreboard-container {
-        background: rgba(8, 8, 10, 0.95); border: 1px solid rgba(128, 0, 0, 0.5);
-        padding: 14px 24px; border-radius: 12px; display: flex; justify-content: space-around;
-        align-items: center; margin-bottom: 30px; font-size: 0.9rem; letter-spacing: 1px;
+    .exec-subtitle {
+        text-align: center; color: #a1a1aa; font-weight: 400;
+        letter-spacing: 4px; margin-bottom: 35px; text-transform: uppercase; font-size: 0.8rem;
     }
-    .score-item { text-align: center; border-right: 1px solid rgba(255,255,255,0.1); padding-right: 25px; }
-    .score-item:last-child { border-right: none; }
-    .live-dot { height: 9px; width: 9px; background-color: #ff3333; border-radius: 50%; display: inline-block; box-shadow: 0 0 10px #ff3333; animation: pulse 1.5s infinite; }
     
-    .article-box {
-        background: rgba(10, 10, 15, 0.8); border-left: 4px solid #800000; padding: 20px; border-radius: 0 12px 12px 0; margin-top: 20px;
-        font-size: 0.95rem; line-height: 1.6; color: #cbd5e1;
+    .hud-bar {
+        background: rgba(12, 12, 16, 0.95);
+        border: 1px solid rgba(161, 29, 33, 0.3);
+        padding: 14px 24px; border-radius: 10px;
+        display: flex; justify-content: space-around; align-items: center;
+        margin-bottom: 35px; font-size: 0.85rem; letter-spacing: 1.5px; text-transform: uppercase;
+    }
+    .hud-item { text-align: center; border-right: 1px solid rgba(255,255,255,0.06); padding-right: 30px; }
+    .hud-item:last-child { border-right: none; }
+    .hud-dot { height: 8px; width: 8px; background-color: #22c55e; border-radius: 50%; display: inline-block; box-shadow: 0 0 10px #22c55e; animation: pulse 2s infinite; }
+    
+    .briefing-box {
+        background: rgba(16, 16, 22, 0.9);
+        border-left: 4px solid #a11d21;
+        padding: 24px; border-radius: 0 12px 12px 0;
+        margin-top: 20px; font-size: 0.95rem; line-height: 1.7; color: #d4d4d8;
     }
     
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
     </style>
 """, unsafe_allow_html=True)
 
-# --- PERSISTENT HUD SCOREBOARD ---
+# --- HUD TICKER ---
 st.markdown("""
-<div class="scoreboard-container">
-    <div class="score-item"><span class="live-dot"></span> <b>APEX TICKER</b></div>
-    <div class="score-item"><b>MIN 24</b> - GB 17 <span style="color:#888;">(4th Qtr)</span></div>
-    <div class="score-item"><b>KC 31</b> - LAC 24 <span style="color:#888;">(Final)</span></div>
-    <div class="score-item"><b>BUF 28</b> - MIA 21 <span style="color:#888;">(2nd Qtr)</span></div>
-    <div class="score-item" style="color: #ff3333;"><b>STATUS:</b> ALWAYS WATCHING</div>
+<div class="hud-bar">
+    <div class="hud-item"><span class="hud-dot"></span> <b>DONNA INTELLIGENCE: ONLINE</b></div>
+    <div class="hud-item"><b>MIN 24</b> - GB 17 <span style="color:#71717a;">(4th Qtr)</span></div>
+    <div class="hud-item"><b>KC 31</b> - LAC 24 <span style="color:#71717a;">(Final)</span></div>
+    <div class="hud-item"><b>BUF 28</b> - MIA 21 <span style="color:#71717a;">(2nd Qtr)</span></div>
+    <div class="hud-item" style="color: #a11d21;"><b>STATUS:</b> WINNING GUARANTEED</div>
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown('<h1 class="luxe-title">THE JUICER</h1>', unsafe_allow_html=True)
-st.markdown('<p class="luxe-subtitle">GVP-Level Multi-Tab Deep-Scroll Command Center</p>', unsafe_allow_html=True)
+st.markdown('<h1 class="exec-title">THE JUICER</h1>', unsafe_allow_html=True)
+st.markdown('<p class="exec-subtitle">Managed by Donna // Executive Suite Architecture</p>', unsafe_allow_html=True)
 
-# --- MULTI-TAB DEEP ARCHITECTURE ---
+# --- TABS ---
 tab1, tab2, tab3, tab4 = st.tabs([
-    "🏆 Live War Room & Spreads", 
+    "⚖️ War Room & Spreads", 
     "📊 Prop Matrix & SGPs", 
-    "🌤️ Weather & Environmental Hub", 
-    "💰 Bankroll & Bet Log (150+)"
+    "🌤️ Environmental Hub", 
+    "💼 Bankroll & Ledger"
 ])
 
 # ================= TAB 1 =================
 with tab1:
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+    st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>1. Full-Season Spread Movement Tracker (Weeks 1-18)</h3>', unsafe_allow_html=True)
     sel_week = st.selectbox("Select Week Frame", [f"Week {i}" for i in range(1, 19)], index=0)
     
@@ -87,7 +102,7 @@ with tab1:
     AgGrid(df_slate, gridOptions=GridOptionsBuilder.from_dataframe(df_slate).build(), theme='alpine-dark', fit_columns_on_grid_load=True, height=250)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+    st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>2. Neural Gradient Boosting Prediction Matrix</h3>', unsafe_allow_html=True)
     
     @st.cache_resource
@@ -114,20 +129,20 @@ with tab1:
     AgGrid(df_ml, gridOptions=GridOptionsBuilder.from_dataframe(df_ml).build(), theme='alpine-dark', fit_columns_on_grid_load=True, height=200)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    st.markdown('<h3>3. Weekly Analytical Briefing & Sharp Intelligence</h3>', unsafe_allow_html=True)
+    st.markdown('<div class="exec-card">', unsafe_allow_html=True)
+    st.markdown('<h3>3. Donna\'s Executive Briefing</h3>', unsafe_allow_html=True)
     st.markdown("""
-    <div class="article-box">
-        <b>EXECUTIVE SUMMARY // WAR ROOM REPORT:</b><br>
-        The underlying regression model indicates severe public overvaluation on early-season road favorites. By isolating line discrepancies where sharp money delta exceeds +1.5 points against closing totals, our engine captures an average ROI yield acceleration of 14.2%. Maintain strict adherence to bankroll tier limits. Monitor weather anomalies closely in open-air Midwest venues before locking multi-leg combinations.
+    <div class="briefing-box">
+        <b>DONNA\'S ASSESSMENT:</b><br>
+        I already looked at the books, I already know where the sharp money is hiding, and I'm telling you right now—we are not losing this slate. Trust the regression weights, lock in the sharp delta positions, and leave the worrying to everyone else.
     </div>
     """, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ================= TAB 2 =================
 with tab2:
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    st.markdown('<h3>1. Comprehensive Cross-Book Prop Matrix</h3>', unsafe_allow_html=True)
+    st.markdown('<div class="exec-card">', unsafe_allow_html=True)
+    st.markdown('<h3>1. Cross-Book Prop Intelligence Matrix</h3>', unsafe_allow_html=True)
     df_props = pd.DataFrame({
         "Player": ["Kenneth Walker", "Breece Hall", "Amon-Ra St. Brown", "Justin Herbert", "Derrick Henry", "Nico Collins"],
         "Prop Type": ["Rush Yards", "Receptions", "Rec Yards", "Pass Yards", "Rush Yards", "Rec Yards"],
@@ -139,8 +154,8 @@ with tab2:
     AgGrid(df_props, gridOptions=GridOptionsBuilder.from_dataframe(df_props).build(), theme='alpine-dark', fit_columns_on_grid_load=True, height=250)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    st.markdown('<h3>2. Same-Game Parlay (SGP) Correlation Builder</h3>', unsafe_allow_html=True)
+    st.markdown('<div class="exec-card">', unsafe_allow_html=True)
+    st.markdown('<h3>2. Same-Game Parlay (SGP) Architecture</h3>', unsafe_allow_html=True)
     df_sgp = pd.DataFrame({
         "SGP Package": ["Package Alpha (KC Stack)", "Package Beta (DET Volume)", "Package Gamma (LAC Air)", "Package Delta (MIN Ground)"],
         "Primary Leg": ["Mahomes 275+ Pass", "St. Brown 8+ Rec", "Herbert 2+ Pass TD", "Walker 20+ Carries"],
@@ -151,20 +166,20 @@ with tab2:
     AgGrid(df_sgp, gridOptions=GridOptionsBuilder.from_dataframe(df_sgp).build(), theme='alpine-dark', fit_columns_on_grid_load=True, height=220)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    st.markdown('<h3>3. SGP Strategy & Execution Breakdown</h3>', unsafe_allow_html=True)
+    st.markdown('<div class="exec-card">', unsafe_allow_html=True)
+    st.markdown('<h3>3. Donna\'s Intuition Note</h3>', unsafe_allow_html=True)
     st.markdown("""
-    <div class="article-box">
-        <b>PROP EXTRACTION & SGP OPTIMIZATION:</b><br>
-        Correlated parlays require strict adherence to game script probabilities. When our neural network flags a positive edge on a primary passing prop, secondary receiver correlation yields a compounding value multiplier. Avoid cross-game parlays; focus capital strictly on single-game script stacks to maximize implied probability return.
+    <div class="briefing-box">
+        <b>DONNA\'S INTUITION:</b><br>
+        Correlated parlays are an art form, Chuck. Once you see how the primary quarterback prop connects to the receiver's target share, the outcome writes itself. I've already lined up the winning stack.
     </div>
     """, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ================= TAB 3 =================
 with tab3:
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    st.markdown('<h3>1. Live Stadium Environmental & Weather Matrix</h3>', unsafe_allow_html=True)
+    st.markdown('<div class="exec-card">', unsafe_allow_html=True)
+    st.markdown('<h3>1. Environmental & Weather Threat Matrix</h3>', unsafe_allow_html=True)
     df_weather = pd.DataFrame({
         "Stadium / Venue": ["Lambeau Field", "Soldier Field", "U.S. Bank Stadium", "Arrowhead Stadium", "Highmark Stadium", "MetLife Stadium"],
         "Condition": ["Clear / Chilly", "High Winds (18mph)", "Dome (Controlled)", "Overcast", "Heavy Rain Risk", "Clear / Calm"],
@@ -175,27 +190,27 @@ with tab3:
     AgGrid(df_weather, gridOptions=GridOptionsBuilder.from_dataframe(df_weather).build(), theme='alpine-dark', fit_columns_on_grid_load=True, height=250)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    st.markdown('<h3>2. Environmental Factor Adjustments & Impact Log</h3>', unsafe_allow_html=True)
+    st.markdown('<div class="exec-card">', unsafe_allow_html=True)
+    st.markdown('<h3>2. Meteorological Risk Assessment</h3>', unsafe_allow_html=True)
     st.markdown("""
-    <div class="article-box">
-        <b>METEOROLOGICAL MODELING & PASSING DEGRADATION:</b><br>
-        Wind velocities exceeding 15 miles per hour directly compromise deep-ball completion percentages by 12.4%. Our automated weather API strips down passing volume models for outdoor venues experiencing precipitation or high crosswinds, shifting projected allocation toward ground-game asset preservation and short-yardage possession props.
+    <div class="briefing-box">
+        <b>DONNA\'S WEATHER DIRECTIVE:</b><br>
+        Never ignore the wind, and never ignore my warnings. Our environmental API dynamically adjusts passing metrics before the weather can catch us off guard. We stay two steps ahead of the books, always.
     </div>
     """, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ================= TAB 4 =================
 with tab4:
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    st.markdown('<h3>1. Bankroll Survival Meter & Quota Progress</h3>', unsafe_allow_html=True)
+    st.markdown('<div class="exec-card">', unsafe_allow_html=True)
+    st.markdown('<h3>1. Firm Capital & Bankroll Survival Meter</h3>', unsafe_allow_html=True)
     c1, c2, c3 = st.columns(3)
-    c1.metric("Active Bankroll", "$142.50", "-$7.50")
-    c2.metric("Weekly Quota Pacing", "18 / 150 Bets", "Pacing Target")
-    c3.metric("System Win Rate", "61.2%", "+4.8% vs Books")
+    c1.metric("Active Capital Reserve", "$142.50", "-$7.50")
+    c2.metric("Weekly Volume Quota", "18 / 150 Bets", "Pacing Target")
+    c3.metric("Firm Win Rate", "61.2%", "+4.8% vs Books")
     st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+    st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>2. Active 150+ Bet Volume Ledger</h3>', unsafe_allow_html=True)
     df_bets = pd.DataFrame({
         "Bet ID": [f"#10{i}" for i in range(40, 48)],
@@ -207,12 +222,12 @@ with tab4:
     AgGrid(df_bets, gridOptions=GridOptionsBuilder.from_dataframe(df_bets).build(), theme='alpine-dark', fit_columns_on_grid_load=True, height=280)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    st.markdown('<h3>3. Bankroll Discipline & Volume Execution Manifesto</h3>', unsafe_allow_html=True)
+    st.markdown('<div class="exec-card">', unsafe_allow_html=True)
+    st.markdown('<h3>3. Donna\'s Final Verdict</h3>', unsafe_allow_html=True)
     st.markdown("""
-    <div class="article-box">
-        <b>BANKROLL PROTECTION & VOLUME STRATEGY:</b><br>
-        To hit our minimum 150-bet volume quota without exposing the reserve to catastrophic drawdown, unit sizing must remain strictly regulated between 1% and 2.5% of total capital. Every single wager is logged, executed, and evaluated by the system. We treat every dollar like our last because consistency is the only path to long-term profitability.
+    <div class="briefing-box">
+        <b>DONNA\'S FINAL VERDICT:</b><br>
+        You have the smartest mind in the room running your numbers, the cleanest executive UI on the server, and a bankroll being guarded like state secrets. Hit the terminal, deploy the code, and let's go win.
     </div>
     """, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
