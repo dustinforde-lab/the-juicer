@@ -7,7 +7,7 @@ import base64
 import requests
 import plotly.express as px
 
-st.set_page_config(page_title="The Juicer // Apex Terminal v27", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="The Juicer // Apex Terminal v28 (Audited)", layout="wide", initial_sidebar_state="expanded")
 
 if "theme" not in st.session_state:
     st.session_state.theme = "Sydney Velvet Rose"
@@ -35,13 +35,16 @@ def get_github_brain():
     if token:
         url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{FILE_PATH}"
         headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.v3+json"}
-        res = requests.get(url, headers=headers)
-        if res.status_code == 200:
-            data = res.json()
-            content = base64.b64decode(data["content"]).decode("utf-8")
-            return json.loads(content), data["sha"]
+        try:
+            res = requests.get(url, headers=headers, timeout=5)
+            if res.status_code == 200:
+                data = res.json()
+                content = base64.b64decode(data["content"]).decode("utf-8")
+                return json.loads(content), data.get("sha")
+        except:
+            pass
     try:
-        with open(FILE_PATH, "r") as f:
+        with open(FILE_PATH, "r", encoding="utf-8") as f:
             return json.load(f), None
     except:
         return {"model_weights": {"WR_RECEPTIONS": {"modifier": 1.0, "rolling_win_rate": 0.50}}, "bet_ledger": []}, None
@@ -53,15 +56,24 @@ def save_github_brain(brain_data, current_sha=None):
         url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{FILE_PATH}"
         headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.v3+json"}
         encoded = base64.b64encode(content_str.encode("utf-8")).decode("utf-8")
-        payload = {"message": "Vault: Explicit Granular Prop Breakdown for All 20 Parlays", "content": encoded, "sha": current_sha}
-        res = requests.put(url, headers=headers, json=payload)
-        return res.status_code in [200, 201]
+        payload = {"message": "Vault: Housekeeping Audited State Commit", "content": encoded, "sha": current_sha}
+        try:
+            res = requests.put(url, headers=headers, json=payload, timeout=5)
+            return res.status_code in [200, 201]
+        except:
+            return False
     else:
-        with open(FILE_PATH, "w") as f:
-            f.write(content_str)
-        return True
+        try:
+            with open(FILE_PATH, "w", encoding="utf-8") as f:
+                f.write(content_str)
+            return True
+        except:
+            return False
 
 brain, current_sha = get_github_brain()
+if not isinstance(brain, dict):
+    brain = {"model_weights": {"WR_RECEPTIONS": {"modifier": 1.0, "rolling_win_rate": 0.50}}, "bet_ledger": []}
+
 wr_modifier = brain.get("model_weights", {}).get("WR_RECEPTIONS", {}).get("modifier", 1.0)
 wr_win_rate = brain.get("model_weights", {}).get("WR_RECEPTIONS", {}).get("rolling_win_rate", 0.50)
 
@@ -70,7 +82,7 @@ if not isinstance(ledger_list, list):
     ledger_list = []
 pending_tickets = sum(1 for t in ledger_list if isinstance(t, dict) and t.get("result") == "PENDING")
 
-# --- LUXURY STYLING INJECTOR ---
+# --- AUDITED LUXURY STYLING INJECTOR ---
 st.markdown(f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
@@ -215,7 +227,7 @@ footer {{visibility: hidden;}}
 st.markdown(f"""
 <div style="text-align: center; margin-bottom: 45px; padding-top: 15px;">
     <h1 style="font-size: 4.5rem; font-weight: 800; background: linear-gradient(135deg, #ffffff 15%, {current_theme['primary']} 65%, #100c14 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; line-height: 1; letter-spacing: -2px;">THE JUICER</h1>
-    <p style="color: #9494a6; font-weight: 600; letter-spacing: 6px; margin-top: 12px; text-transform: uppercase; font-size: 0.85rem;">Managed by Mike Donna // Season-Long Suite & Vegas Sportsbook Lounge</p>
+    <p style="color: #9494a6; font-weight: 600; letter-spacing: 6px; margin-top: 12px; text-transform: uppercase; font-size: 0.85rem;">Managed by Mike Donna // Audited Apex Command Center</p>
 </div>
 """, unsafe_allow_html=True)
 
