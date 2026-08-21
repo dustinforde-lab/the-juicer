@@ -6,7 +6,6 @@ import json
 import base64
 import requests
 
-# --- FIRM CONFIGURATION & THEME STATE ---
 st.set_page_config(page_title="The Juicer // Apex Command Center", layout="wide", initial_sidebar_state="expanded")
 
 if "theme" not in st.session_state:
@@ -26,7 +25,6 @@ st.session_state.theme = st.sidebar.selectbox("Terminal Visual Theme", list(them
 st.session_state.risk_profile = st.sidebar.radio("Bankroll Risk Profile", ["Conservative (2.5% Unit)", "Aggressive (5.0% Unit)", "Nuclear (Max Leverage)"])
 webhook_url = st.sidebar.text_input("Discord Webhook URL", placeholder="https://discord.com/api/webhooks/...")
 
-# --- PERSISTENT GITHUB BRAIN HANDLER ---
 REPO_OWNER = "dustinforde-lab"
 REPO_NAME = "the-juicer"
 FILE_PATH = "brain.json"
@@ -54,7 +52,7 @@ def save_github_brain(brain_data, current_sha=None):
         url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{FILE_PATH}"
         headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.v3+json"}
         encoded = base64.b64encode(content_str.encode("utf-8")).decode("utf-8")
-        payload = {"message": "Vault: 30-Feature Native UI Update", "content": encoded, "sha": current_sha}
+        payload = {"message": "Vault: Hard Header Reset", "content": encoded, "sha": current_sha}
         res = requests.put(url, headers=headers, json=payload)
         return res.status_code in [200, 201]
     else:
@@ -67,7 +65,6 @@ wr_modifier = brain.get("model_weights", {}).get("WR_RECEPTIONS", {}).get("modif
 wr_win_rate = brain.get("model_weights", {}).get("WR_RECEPTIONS", {}).get("rolling_win_rate", 0.50)
 pending_tickets = len([t for t in brain.get("bet_ledger", []) if t.get("result") == "PENDING"])
 
-# --- GLOBAL STYLING ---
 st.markdown(f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
@@ -82,15 +79,10 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
-# --- ANIMATED LOGO ---
-st.markdown(f"""
-<div style="display: flex; align-items: center; justify-content: center; margin-bottom: 25px;">
-    <div>
-        <h1 style="font-size: 3.5rem; font-weight: 800; background: linear-gradient(135deg, #ffffff 20%, {current_theme['primary']} 60%, #111 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; line-height: 1;">THE JUICER</h1>
-        <p style="color: #a1a1aa; font-weight: 600; letter-spacing: 4px; margin: 0; text-transform: uppercase; font-size: 0.85rem;">Managed by Mike Donna // 30-Feature Master Syndicate Engine</p>
-    </div>
-</div>
-""", unsafe_allow_html=True)
+# Clean Native Streamlit Title Header (No HTML Container Blocks)
+st.title("THE JUICER")
+st.caption("MANAGED BY MIKE DONNA // 30-FEATURE MASTER SYNDICATE ENGINE")
+st.markdown("---")
 
 storage_mode = "PERMANENT VAULT" if st.secrets.get("GITHUB_TOKEN") else "LOCAL SESSION"
 st.markdown(f"""
@@ -102,7 +94,6 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# --- TABS ---
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "🏆 Sharp Action & Spreads",
     "👑 DFS & Bayesian Sims",
@@ -112,7 +103,6 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "💼 Master Ledger & Export"
 ])
 
-# ================= TAB 1 =================
 with tab1:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>Live Sharp Money & Circa/Pinnacle Steam Feed</h3>', unsafe_allow_html=True)
@@ -125,7 +115,6 @@ with tab1:
     st.dataframe(df_sharp, use_container_width=True, hide_index=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ================= TAB 2 =================
 with tab2:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>DraftKings Optimizer & Bayesian Ruin Probability</h3>', unsafe_allow_html=True)
@@ -143,11 +132,9 @@ with tab2:
     st.dataframe(df_dfs, use_container_width=True, hide_index=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ================= TAB 3 =================
 with tab3:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>One-Click Preset Parlay & Arbitrage Hedging Calculator</h3>', unsafe_allow_html=True)
-    
     col_a, col_b = st.columns(2)
     with col_a:
         st.markdown("#### ⚡ 3-Leg Nuclear Preset")
@@ -163,7 +150,6 @@ with tab3:
             st.success(f"Stake Book A: ${bet1} | Stake Book B: ${bet2} (Guaranteed Return)")
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ================= TAB 4 =================
 with tab4:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>Autonomous Weather Threat Hub & Referee Bias Matrix</h3>', unsafe_allow_html=True)
@@ -176,11 +162,9 @@ with tab4:
     st.dataframe(df_weather, use_container_width=True, hide_index=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ================= TAB 5 =================
 with tab5:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>Execution Terminal: Live Wager & Discord Broadcast</h3>', unsafe_allow_html=True)
-    
     with st.form("master_ticket_entry"):
         c1, c2, c3 = st.columns(3)
         p_name = c1.text_input("Player / Team", placeholder="e.g. Derrick Henry")
@@ -192,14 +176,12 @@ with tab5:
         p_grade = c5.selectbox("Mike Donna Confidence", ["A+ (Nuclear Spread/Prop)", "A (Standard Model Lock)", "B (Variance Play)"])
         
         submit_btn = st.form_submit_button("⚡ EXECUTE WAGER & BROADCAST")
-        
         if submit_btn and p_name:
             new_id = len(brain.get("bet_ledger", [])) + 1
             new_ticket = {"id": new_id, "player": p_name, "prop": p_prop, "line": p_line, "stake": p_stake, "confidence": p_grade, "result": "PENDING"}
             if "bet_ledger" not in brain:
                 brain["bet_ledger"] = []
             brain["bet_ledger"].append(new_ticket)
-            
             success = save_github_brain(brain, current_sha)
             if success:
                 st.success(f"Ticket #{new_id} Committed to Permanent Vault.")
@@ -212,17 +194,14 @@ with tab5:
                 st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ================= TAB 6 =================
 with tab6:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>Master Ledger, ROI Analytics & Executive Report Export</h3>', unsafe_allow_html=True)
-    
     df_ledger = pd.DataFrame(brain.get("bet_ledger", []))
     if not df_ledger.empty:
         st.dataframe(df_ledger, use_container_width=True, hide_index=True)
     else:
         st.info("Ledger is currently empty. Execute a wager in Tab 5.")
-        
     csv_export = df_ledger.to_csv(index=False).encode('utf-8') if not df_ledger.empty else b""
     st.download_button("📥 Download Executive PDF/CSV Report Archive", data=csv_export, file_name="juicer_executive_ledger.csv", mime="text/csv")
     st.markdown('</div>', unsafe_allow_html=True)
