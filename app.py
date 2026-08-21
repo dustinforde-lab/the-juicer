@@ -7,7 +7,7 @@ import base64
 import requests
 import plotly.express as px
 
-st.set_page_config(page_title="The Juicer // Apex Terminal v21", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="The Juicer // Apex Terminal v22", layout="wide", initial_sidebar_state="expanded")
 
 if "theme" not in st.session_state:
     st.session_state.theme = "Sydney Velvet Rose"
@@ -53,7 +53,7 @@ def save_github_brain(brain_data, current_sha=None):
         url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{FILE_PATH}"
         headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.v3+json"}
         encoded = base64.b64encode(content_str.encode("utf-8")).decode("utf-8")
-        payload = {"message": "Vault: Restored Full Scoreboard and Shootout Matrix", "content": encoded, "sha": current_sha}
+        payload = {"message": "Vault: Syntax-Safe Master Update", "content": encoded, "sha": current_sha}
         res = requests.put(url, headers=headers, json=payload)
         return res.status_code in [200, 201]
     else:
@@ -64,7 +64,11 @@ def save_github_brain(brain_data, current_sha=None):
 brain, current_sha = get_github_brain()
 wr_modifier = brain.get("model_weights", {}).get("WR_RECEPTIONS", {}).get("modifier", 1.0)
 wr_win_rate = brain.get("model_weights", {}).get("WR_RECEPTIONS", {}).get("rolling_win_rate", 0.50)
-pending_tickets = len([t for t in brain.get("bet_ledger", []) if t.get("result"] == "PENDING"])
+
+ledger_list = brain.get("bet_ledger", [])
+if not isinstance(ledger_list, list):
+    ledger_list = []
+pending_tickets = sum(1 for t in ledger_list if isinstance(t, dict) and t.get("result") == "PENDING")
 
 # --- LUXURY STYLING INJECTOR ---
 st.markdown(f"""
@@ -190,7 +194,7 @@ footer {{visibility: hidden;}}
 st.markdown(f"""
 <div style="text-align: center; margin-bottom: 45px; padding-top: 15px;">
     <h1 style="font-size: 4.5rem; font-weight: 800; background: linear-gradient(135deg, #ffffff 15%, {current_theme['primary']} 65%, #100c14 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; line-height: 1; letter-spacing: -2px;">THE JUICER</h1>
-    <p style="color: #9494a6; font-weight: 600; letter-spacing: 6px; margin-top: 12px; text-transform: uppercase; font-size: 0.85rem;">Managed by Mike Donna // Full Scoreboard & Shootout Intelligence Hub</p>
+    <p style="color: #9494a6; font-weight: 600; letter-spacing: 6px; margin-top: 12px; text-transform: uppercase; font-size: 0.85rem;">Managed by Mike Donna // Full Scoreboard & 20-Parlay Master Suite</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -235,8 +239,6 @@ with tab1:
         <div class="donna-header">Mike Donna // Decoding Shootout Projections</div>
         <div class="donna-subheader">Identifying True Ceiling Games</div>
         A game projected as a shootout requires synchronized neutral pass rates and opposing defensive deficiencies in zone coverage. When our model flags an elite shootout like KC vs LAC or TB vs CIN, we bypass standard spreads and target correlated wide receiver receptions and quarterback passing yard alt-lines.
-        <div class="donna-subheader">Trench Wars vs Shootouts</div>
-        Conversely, low-total games with outdoor wind vectors (like CHI @ CAR) are categorized as trench wars. We fade public overs in those matchups and attack divisional under values without hesitation.
     </div>
     """, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
@@ -279,7 +281,7 @@ with tab3:
             <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&auto=format&fit=crop&q=80" class="player-avatar">
             <h4 style="margin:5px 0 2px 0; font-size:1rem;">Kenneth Walker</h4>
             <p style="color:#a1a1aa; font-size:0.75rem; margin:0;">RB // SEA</p>
-            <span class="source-badge" style="margin-top:8px; display:inline-block;">ACTIVE // NEWS: FULL PRACTICE</span>
+            <span class="source-badge" style="margin-top:8px; display:inline-block;">ACTIVE // FULL PRACTICE</span>
         </div>
         """, unsafe_allow_html=True)
     with col_p2:
@@ -288,7 +290,7 @@ with tab3:
             <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80" class="player-avatar">
             <h4 style="margin:5px 0 2px 0; font-size:1rem;">Amon-Ra St. Brown</h4>
             <p style="color:#a1a1aa; font-size:0.75rem; margin:0;">WR // DET</p>
-            <span class="source-badge" style="margin-top:8px; display:inline-block;">LOCKED // NEWS: ELITE TARGET SHARE</span>
+            <span class="source-badge" style="margin-top:8px; display:inline-block;">LOCKED // ELITE TARGET SHARE</span>
         </div>
         """, unsafe_allow_html=True)
     with col_p3:
@@ -297,7 +299,7 @@ with tab3:
             <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80" class="player-avatar">
             <h4 style="margin:5px 0 2px 0; font-size:1rem;">Justin Herbert</h4>
             <p style="color:#a1a1aa; font-size:0.75rem; margin:0;">QB // LAC</p>
-            <span class="source-badge" style="margin-top:8px; display:inline-block;">ACTIVE // NEWS: CLEAN POCKET METRICS</span>
+            <span class="source-badge" style="margin-top:8px; display:inline-block;">ACTIVE // CLEAN POCKET</span>
         </div>
         """, unsafe_allow_html=True)
     with col_p4:
@@ -306,7 +308,7 @@ with tab3:
             <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80" class="player-avatar">
             <h4 style="margin:5px 0 2px 0; font-size:1rem;">Derrick Henry</h4>
             <p style="color:#a1a1aa; font-size:0.75rem; margin:0;">RB // BAL</p>
-            <span class="source-badge" style="margin-top:8px; display:inline-block;">ACTIVE // NEWS: HEAVY TRENCH USAGE</span>
+            <span class="source-badge" style="margin-top:8px; display:inline-block;">ACTIVE // TRENCH USAGE</span>
         </div>
         """, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
@@ -370,7 +372,7 @@ with tab5:
         
         submit_btn = st.form_submit_button("⚡ EXECUTE WAGER & BROADCAST")
         if submit_btn and p_name:
-            new_id = len(brain.get("bet_ledger", [])) + 1
+            new_id = len(ledger_list) + 1
             new_ticket = {"id": new_id, "player": p_name, "prop": p_prop, "line": p_line, "stake": p_stake, "confidence": p_grade, "result": "PENDING"}
             if "bet_ledger" not in brain:
                 brain["bet_ledger"] = []
