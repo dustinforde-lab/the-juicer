@@ -7,7 +7,7 @@ import base64
 import requests
 import plotly.express as px
 
-st.set_page_config(page_title="The Juicer // Apex Terminal v29", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="The Juicer // Apex Terminal v30", layout="wide", initial_sidebar_state="expanded")
 
 if "theme" not in st.session_state:
     st.session_state.theme = "Sydney Velvet Rose"
@@ -56,7 +56,7 @@ def save_github_brain(brain_data, current_sha=None):
         url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{FILE_PATH}"
         headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.v3+json"}
         encoded = base64.b64encode(content_str.encode("utf-8")).decode("utf-8")
-        payload = {"message": "Vault: Native Streamlit Headshots Fix", "content": encoded, "sha": current_sha}
+        payload = {"message": "Vault: Separated Season-Long and DFS Suites", "content": encoded, "sha": current_sha}
         try:
             res = requests.put(url, headers=headers, json=payload, timeout=5)
             return res.status_code in [200, 201]
@@ -184,7 +184,7 @@ footer {{visibility: hidden;}}
 st.markdown(f"""
 <div style="text-align: center; margin-bottom: 45px; padding-top: 15px;">
     <h1 style="font-size: 4.5rem; font-weight: 800; background: linear-gradient(135deg, #ffffff 15%, {current_theme['primary']} 65%, #100c14 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; line-height: 1; letter-spacing: -2px;">THE JUICER</h1>
-    <p style="color: #9494a6; font-weight: 600; letter-spacing: 6px; margin-top: 12px; text-transform: uppercase; font-size: 0.85rem;">Managed by Mike Donna // Native Render Headshots & Apex Terminal</p>
+    <p style="color: #9494a6; font-weight: 600; letter-spacing: 6px; margin-top: 12px; text-transform: uppercase; font-size: 0.85rem;">Managed by Mike Donna // Separated Season-Long & DFS Command Suites</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -198,19 +198,20 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-    "🏆 Vegas Sportsbook View Wall",
-    "👑 Season-Long Fantasy & DFS",
-    "🎯 20 Clickable Parlays & News",
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
+    "🏆 Vegas View Wall",
+    "🏈 Season-Long Fantasy",
+    "👑 DFS Optimizer & Sims",
+    "🎯 20 Clickable Parlays",
     "📰 Weather & Sharp Ticker",
     "⚡ Execution Terminal",
     "💼 Master Ledger & Export"
 ])
 
-# ================= TAB 1 =================
+# ================= TAB 1: VEGAS VIEW WALL =================
 with tab1:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
-    st.markdown('<h3>🎰 Live Vegas Sportsbook Lounge // Season-Long Slate View Wall</h3>', unsafe_allow_html=True)
+    st.markdown('<h3>🎰 Live Vegas Sportsbook Lounge // Slate View Wall</h3>', unsafe_allow_html=True)
     
     col_g1, col_g2, col_g3 = st.columns(3)
     
@@ -279,37 +280,52 @@ with tab1:
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ================= TAB 2 =================
+# ================= TAB 2: SEASON-LONG FANTASY =================
 with tab2:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
-    st.markdown('<h3>👑 Season-Long Fantasy & 12-Team Keeper League Suite</h3>', unsafe_allow_html=True)
+    st.markdown('<h3>🏈 Season-Long Fantasy & 12-Team Keeper League Command Center</h3>', unsafe_allow_html=True)
     
-    st.markdown("#### 🏈 2026 Keeper League Core Roster Tracking")
-    df_keeper = pd.DataFrame({
-        "Player": ["Kenneth Walker", "Derrick Henry", "Amon-Ra St. Brown", "Justin Herbert", "Breece Hall"],
-        "Position": ["RB", "RB", "WR", "QB", "RB"],
-        "Keeper Round Value": ["Round 3", "Round 1", "Round 1", "Round 5", "Round 2"],
-        "Projected VBD (Value Over Replacement)": ["+48.2 pts", "+62.1 pts", "+74.5 pts", "+35.0 pts", "+55.8 pts"],
-        "Action Status": ["LOCK KEEPER", "LOCK KEEPER", "LOCK KEEPER", "EVALUATE", "LOCK KEEPER"]
-    })
-    st.dataframe(df_keeper, use_container_width=True, hide_index=True)
+    col_s1, col_s2 = st.columns(2)
+    with col_s1:
+        st.markdown("#### 🔒 Keeper Value & Draft Capital Matrix")
+        df_keeper_full = pd.DataFrame({
+            "Player": ["Kenneth Walker", "Derrick Henry", "Amon-Ra St. Brown", "Justin Herbert", "Breece Hall", "Rashee Rice"],
+            "Pos": ["RB", "RB", "WR", "QB", "RB", "WR"],
+            "Round Cost": ["Round 3", "Round 1", "Round 1", "Round 5", "Round 2", "Round 7"],
+            "VBD Score": ["+48.2", "+62.1", "+74.5", "+35.0", "+55.8", "+44.1"],
+            "Recommendation": ["LOCK KEEPER", "LOCK KEEPER", "LOCK KEEPER", "EVALUATE", "LOCK KEEPER", "STEAL KEEPER"]
+        })
+        st.dataframe(df_keeper_full, use_container_width=True, hide_index=True)
+    with col_s2:
+        st.markdown("#### 📈 Waiver Wire & Trade Target Velocity")
+        df_waiver = pd.DataFrame({
+            "Target Player": ["Zach Charbonnet", "Jaleel McLaughlin", "Adonai Mitchell", "Ray Davis"],
+            "Team": ["SEA", "DEN", "IND", "BUF"],
+            "Snap Share Trend": ["+14% (Rising)", "+8% (Steady)", "+18% (Exploding)", "+11% (Goal Line)"],
+            "Action Priority": ["HIGH CLAIM", "WATCH", "TOP WAIVER", "DEEP STASH"]
+        })
+        st.dataframe(df_waiver, use_container_width=True, hide_index=True)
+
     st.markdown('</div>', unsafe_allow_html=True)
 
+# ================= TAB 3: DFS OPTIMIZER & SIMS =================
+with tab3:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
-    st.markdown('<h3>DraftKings DFS Lineup Optimizer & Monte Carlo Simulations</h3>', unsafe_allow_html=True)
+    st.markdown('<h3>👑 DraftKings & FanDuel DFS Optimizer & GPP Simulator Suite</h3>', unsafe_allow_html=True)
     
     c1, c2, c3 = st.columns(3)
-    c1.metric("Bayesian Ruin Risk", "0.01% (Elite Solvency)", "1,000 Iterations")
-    c2.metric("WR Rolling Win Rate", f"{wr_win_rate * 100}%", "Live AI Memory")
-    c3.metric("Simulated Cash Rate", "86.4%", "+5.1% Edge")
+    c1.metric("Bayesian Solvency Risk", "0.01% (Elite)", "1,000 Iterations")
+    c2.metric("WR Projection Multiplier", f"{wr_modifier}x", "Live AI Calibration")
+    c3.metric("Simulated GPP Cash Rate", "86.4%", "+5.1% Edge")
 
-    df_dfs = pd.DataFrame({
-        "Pos": ["QB", "RB", "RB", "WR", "TE"],
-        "Player": ["Justin Herbert", "Kenneth Walker", "Derrick Henry", "Amon-Ra St. Brown", "Travis Kelce"],
-        "Salary": ["$7,200", "$6,400", "$6,500", "$8,200", "$5,200"],
-        "AI Proj": [22.4, 18.5, 16.9, round(24.5 * wr_modifier, 1), 15.1]
+    df_dfs_full = pd.DataFrame({
+        "Pos": ["QB", "RB", "RB", "WR", "WR", "TE", "FLEX", "DST"],
+        "Player": ["Justin Herbert", "Kenneth Walker", "Derrick Henry", "Amon-Ra St. Brown", "Nico Collins", "Travis Kelce", "Rashee Rice", "Texans D"],
+        "Site Salary": ["$7,200", "$6,400", "$6,500", "$8,200", "$6,800", "$5,200", "$5,600", "$2,800"],
+        "AI Proj": [22.4, 18.5, 16.9, round(24.5 * wr_modifier, 1), 17.2, 15.1, 14.8, 8.4],
+        "Optimal Leverage": ["Core Stack", "High Floor", "Red Zone", "Lock", "Value", "Discount", "GPP Pivot", "Value D"]
     })
-    st.dataframe(df_dfs, use_container_width=True, hide_index=True)
+    st.dataframe(df_dfs_full, use_container_width=True, hide_index=True)
     
     simulated_data = pd.DataFrame({"Iteration Score": np.random.normal(162.4, 12.5, 1000)})
     fig = px.histogram(simulated_data, x="Iteration Score", nbins=40, title="10,000-Iteration GPP Ceiling Probability Curve", color_discrete_sequence=[current_theme['primary']])
@@ -317,37 +333,32 @@ with tab2:
     st.plotly_chart(fig, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ================= TAB 3: NATIVE STREAMLIT HEADSHOTS & PARLAYS =================
-with tab3:
+# ================= TAB 4: 20 CLICKABLE PARLAYS =================
+with tab4:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>Core Roster // Official NFL Headshots & Live News Feed</h3>', unsafe_allow_html=True)
     
     col_p1, col_p2, col_p3, col_p4 = st.columns(4)
-    
     with col_p1:
         st.image("https://a.espncdn.com/i/headshots/nfl/players/full/4362628.png", width=110)
         st.markdown("#### Kenneth Walker")
         st.markdown("<p style='color:#a1a1aa; font-size:0.8rem; margin:0;'>RB // SEA</p>", unsafe_allow_html=True)
         st.markdown("<span class='source-badge' style='margin-top:8px; display:inline-block;'>ACTIVE // FULL PRACTICE</span>", unsafe_allow_html=True)
-        
     with col_p2:
         st.image("https://a.espncdn.com/i/headshots/nfl/players/full/4426353.png", width=110)
         st.markdown("#### Amon-Ra St. Brown")
         st.markdown("<p style='color:#a1a1aa; font-size:0.8rem; margin:0;'>WR // DET</p>", unsafe_allow_html=True)
         st.markdown("<span class='source-badge' style='margin-top:8px; display:inline-block;'>LOCKED // TARGET SHARE</span>", unsafe_allow_html=True)
-        
     with col_p3:
         st.image("https://a.espncdn.com/i/headshots/nfl/players/full/4431713.png", width=110)
         st.markdown("#### Justin Herbert")
         st.markdown("<p style='color:#a1a1aa; font-size:0.8rem; margin:0;'>QB // LAC</p>", unsafe_allow_html=True)
         st.markdown("<span class='source-badge' style='margin-top:8px; display:inline-block;'>ACTIVE // CLEAN POCKET</span>", unsafe_allow_html=True)
-        
     with col_p4:
         st.image("https://a.espncdn.com/i/headshots/nfl/players/full/11235.png", width=110)
         st.markdown("#### Derrick Henry")
         st.markdown("<p style='color:#a1a1aa; font-size:0.8rem; margin:0;'>RB // BAL</p>", unsafe_allow_html=True)
         st.markdown("<span class='source-badge' style='margin-top:8px; display:inline-block;'>ACTIVE // TRENCH USAGE</span>", unsafe_allow_html=True)
-        
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
@@ -387,8 +398,8 @@ with tab3:
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ================= TAB 4 =================
-with tab4:
+# ================= TAB 5 =================
+with tab5:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>Environmental Threats & Referee Bias Hub</h3>', unsafe_allow_html=True)
     df_weather = pd.DataFrame({
@@ -400,8 +411,8 @@ with tab4:
     st.dataframe(df_weather, use_container_width=True, hide_index=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ================= TAB 5 =================
-with tab5:
+# ================= TAB 6 =================
+with tab6:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>Execution Terminal: Live Wager & Discord Broadcast</h3>', unsafe_allow_html=True)
     with st.form("master_ticket_entry"):
@@ -433,8 +444,8 @@ with tab5:
                 st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ================= TAB 6 =================
-with tab6:
+# ================= TAB 7 =================
+with tab7:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>Master Ledger, ROI Analytics & Executive Export</h3>', unsafe_allow_html=True)
     df_ledger = pd.DataFrame(brain.get("bet_ledger", []))
