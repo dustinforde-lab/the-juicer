@@ -29,7 +29,7 @@ def load_brain():
 brain = load_brain()
 wr_modifier = brain["model_weights"].get("WR_RECEPTIONS", {}).get("modifier", 1.0)
 wr_win_rate = brain["model_weights"].get("WR_RECEPTIONS", {}).get("rolling_win_rate", 0.50)
-pending_tickets = len(brain.get("bet_ledger", []))
+pending_tickets = len([t for t in brain.get("bet_ledger", []) if t.get("result") == "PENDING"])
 
 # --- GLOBAL STYLING ---
 st.markdown("""
@@ -251,8 +251,57 @@ with tab4:
 # ================= TAB 5 =================
 with tab5:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
+    st.markdown('<h3>Execution Terminal: Live Ticket Entry</h3>', unsafe_allow_html=True)
+    
+    with st.form("ticket_entry"):
+        col1, col2, col3 = st.columns(3)
+        entry_player = col1.text_input("Player / Matchup", placeholder="e.g. Kenneth Walker")
+        entry_prop = col2.selectbox("Market Type", ["Rushing Yards", "Receptions", "Passing Yards", "Touchdown", "Spread"])
+        entry_line = col3.number_input("Line / Target", value=0.0, step=0.5)
+        
+        col4, col5 = st.columns([1, 2])
+        entry_stake = col4.number_input("Unit Stake", value=1.0, step=0.5)
+        entry_confidence = col5.selectbox("Mike Donna Confidence Grade", ["A+ (Nuclear)", "A (Standard)", "B (Variance Play)"])
+        
+        submit_ticket = st.form_submit_button("⚡ EXECUTE WAGER")
+        
+        if submit_ticket and entry_player:
+            try:
+                with open("brain.json", "r") as f:
+                    current_brain = json.load(f)
+            except:
+                current_brain = {"model_weights": {}, "bet_ledger": []}
+                
+            new_id = len(current_brain.get("bet_ledger", [])) + 1
+            new_ticket = {
+                "id": new_id,
+                "player": entry_player,
+                "prop": entry_prop,
+                "line": entry_line,
+                "stake": entry_stake,
+                "confidence": entry_confidence,
+                "result": "PENDING"
+            }
+            
+            if "bet_ledger" not in current_brain:
+                current_brain["bet_ledger"] = []
+                
+            current_brain["bet_ledger"].append(new_ticket)
+            
+            with open("brain.json", "w") as f:
+                json.dump(current_brain, f, indent=4)
+                
+            st.success(f"Ticket Locked: {entry_player} | {entry_prop} @ {entry_line}. Ledger Updated.")
+            load_brain.clear()  # Force cache wipe to instantly show new ticket
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>Autonomous Bet Ledger (brain.json)</h3>', unsafe_allow_html=True)
-    df_ledger = pd.DataFrame(brain.get("bet_ledger", []))
+    
+    # Re-fetch brain data after potential form submission
+    live_brain = load_brain()
+    df_ledger = pd.DataFrame(live_brain.get("bet_ledger", []))
+    
     if not df_ledger.empty:
         render_styled_grid(df_ledger, height=200)
     else:
@@ -265,15 +314,4 @@ with tab5:
     c1.metric("Active Capital Reserve", "$142.50", "-$7.50")
     c2.metric("Weekly Volume Quota", "48 / 150 Bets", "Pacing Target")
     c3.metric("Firm Win Rate", "84.2% (Triple-Verified)", "+22.1% vs Books")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="exec-card">', unsafe_allow_html=True)
-    article_5 = '''
-<div class="hungry-article-box">
-    <div class="article-header">Mike Donna's Mandate: Capital Preservation</div>
-    <div class="article-subheader">Jessica's Ledger</div>
-    Predictive edge without disciplined unit allocation results in drawdown. The ledger tracks unit sizing, closing line value capture, and bankroll volatility limits to ensure long-term mathematical solvency.
-</div>
-'''
-    st.markdown(article_5, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
