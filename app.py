@@ -7,7 +7,7 @@ import base64
 import requests
 import plotly.express as px
 
-st.set_page_config(page_title="The Juicer // Apex Terminal v10", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="The Juicer // Apex Terminal", layout="wide", initial_sidebar_state="expanded")
 
 if "theme" not in st.session_state:
     st.session_state.theme = "Sydney Velvet Rose"
@@ -53,7 +53,7 @@ def save_github_brain(brain_data, current_sha=None):
         url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{FILE_PATH}"
         headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.v3+json"}
         encoded = base64.b64encode(content_str.encode("utf-8")).decode("utf-8")
-        payload = {"message": "Vault: Hard Reset with Full Articles & Luxury Polish", "content": encoded, "sha": current_sha}
+        payload = {"message": "Vault: Clean Syntax Verification Update", "content": encoded, "sha": current_sha}
         res = requests.put(url, headers=headers, json=payload)
         return res.status_code in [200, 201]
     else:
@@ -64,9 +64,9 @@ def save_github_brain(brain_data, current_sha=None):
 brain, current_sha = get_github_brain()
 wr_modifier = brain.get("model_weights", {}).get("WR_RECEPTIONS", {}).get("modifier", 1.0)
 wr_win_rate = brain.get("model_weights", {}).get("WR_RECEPTIONS", {}).get("rolling_win_rate", 0.50)
-pending_tickets = len([t for t in brain.get("bet_ledger", []) if t.get("result"] == "PENDING"])
+pending_tickets = len([t for t in brain.get("bet_ledger", []) if t.get("result") == "PENDING"])
 
-# --- LUXURY STYLING INJECTOR ---
+# --- CSS STYLING ---
 st.markdown(f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
@@ -170,23 +170,6 @@ footer {{visibility: hidden;}}
 # --- HEADER BANNER ---
 st.markdown(f"""
 <div style="text-align: center; margin-bottom: 45px; padding-top: 15px;">
-    <svg width="75" height="95" viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-bottom: 16px; filter: drop-shadow(0 0 40px {current_theme['glow']});">
-        <defs>
-            <linearGradient id="juiceGrad" x1="0%" y1="100%" x2="0%" y2="0%">
-                <stop offset="0%" stop-color="#050308" />
-                <stop offset="100%" stop-color="{current_theme['primary']}">
-                    <animate attributeName="stop-color" values="{current_theme['primary']};#ffffff;{current_theme['primary']}" dur="3s" repeatCount="indefinite" />
-                </stop>
-            </linearGradient>
-        </defs>
-        <path d="M 15 70 L 45 70 L 40 80 L 20 80 Z" fill="#120e17" />
-        <path d="M 10 20 L 50 20 L 45 70 L 15 70 Z" fill="rgba(255,255,255,0.03)" stroke="{current_theme['border']}" stroke-width="1.8"/>
-        <path d="M 12.5 45 Q 30 35 47.5 45 L 45 68 L 15 68 Z" fill="url(#juiceGrad)">
-            <animate attributeName="d" values="M 12.5 45 Q 30 35 47.5 45 L 45 68 L 15 68 Z; M 12.5 45 Q 30 52 47.5 45 L 45 68 L 15 68 Z; M 12.5 45 Q 30 35 47.5 45 L 45 68 L 15 68 Z" dur="1.5s" repeatCount="indefinite" />
-        </path>
-        <path d="M 5 20 L 55 20 L 50 10 L 10 10 Z" fill="#1b1422" />
-        <rect x="23" y="2" width="14" height="8" fill="{current_theme['primary']}" rx="2.5" />
-    </svg>
     <h1 style="font-size: 4.5rem; font-weight: 800; background: linear-gradient(135deg, #ffffff 15%, {current_theme['primary']} 65%, #100c14 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; line-height: 1; letter-spacing: -2px;">THE JUICER</h1>
     <p style="color: #9494a6; font-weight: 600; letter-spacing: 6px; margin-top: 12px; text-transform: uppercase; font-size: 0.85rem;">Managed by Mike Donna // 10/10 Sydney Sweeney Luxury Terminal</p>
 </div>
@@ -211,7 +194,6 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "💼 Master Ledger & Export"
 ])
 
-# ================= TAB 1 =================
 with tab1:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>Institutional Sharp Action & Circa Steam Matrix</h3>', unsafe_allow_html=True)
@@ -225,18 +207,15 @@ with tab1:
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
-    st.markdown(f"""
+    st.markdown("""
     <div class="donna-article">
         <div class="donna-header">Mike Donna // Syndicate Steam Execution</div>
         <div class="donna-subheader">Ignoring Retail Noise</div>
         We don't care what the talking heads on television say. We track ticket counts versus handle ratios at Circa and Pinnacle. When the public floods a side but the line moves the other way, that is sharp syndicate money dictating reality. We ride their wake.
-        <div class="donna-subheader">The Three-Book Rule</div>
-        If a spread discrepancy across major offshore books doesn't yield at least a +4.0% expected value margin after vig adjustment, we pass. Discipline separates bankroll builders from bookmakers' retirement funds.
     </div>
     """, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ================= TAB 2 =================
 with tab2:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>DraftKings Optimizer & Bayesian Ruin Probability</h3>', unsafe_allow_html=True)
@@ -256,25 +235,12 @@ with tab2:
 
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>Monte Carlo Score Distribution Probability Curve</h3>', unsafe_allow_html=True)
-    simulated_data = pd.DataFrame({
-        "Iteration Score": np.random.normal(162.4, 12.5, 1000)
-    })
+    simulated_data = pd.DataFrame({"Iteration Score": np.random.normal(162.4, 12.5, 1000)})
     fig = px.histogram(simulated_data, x="Iteration Score", nbins=40, title="10,000-Iteration GPP Ceiling Probability Curve", color_discrete_sequence=[current_theme['primary']])
     fig.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font_color="#f7f7f9")
     st.plotly_chart(fig, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="exec-card">', unsafe_allow_html=True)
-    st.markdown(f"""
-    <div class="donna-article">
-        <div class="donna-header">Mike Donna // GPP Lineup Construction & EPA Warfare</div>
-        <div class="donna-subheader">Beyond the Box Score Illusion</div>
-        Constructing GPP-winning lineups requires stripping away surface-level statistics. A running back who posts 90 yards on 25 inefficient carries against a soft front is fools gold. We inject Expected Points Added (EPA) per play and DVOA opponent-adjusted efficiency matrices into our Monte Carlo engine. We project ceiling, distribution width, and touchdown probability—not median expectations.
-    </div>
-    """, unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# ================= TAB 3 =================
 with tab3:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>Preset Parlays & Arbitrage Hedging Calculator</h3>', unsafe_allow_html=True)
@@ -293,17 +259,6 @@ with tab3:
             st.success(f"Stake Book A: ${bet1} | Stake Book B: ${bet2} (Guaranteed Arbitrage Lock)")
     st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="exec-card">', unsafe_allow_html=True)
-    st.markdown(f"""
-    <div class="donna-article">
-        <div class="donna-header">Mike Donna // Parlay Compounding Mechanics</div>
-        <div class="donna-subheader">Dissecting the Accumulator Trap</div>
-        Standard multi-leg parlays are mathematical donation slips designed to fund casino resort expansions. However, when you cross-reference correlated game scripts and enforce strict +4.0% Closing Line Value prerequisites on every single leg, compounding transforms into an elite wealth-generation vehicle.
-    </div>
-    """, unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# ================= TAB 4 =================
 with tab4:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>Environmental Threats & Referee Bias Hub</h3>', unsafe_allow_html=True)
@@ -316,17 +271,6 @@ with tab4:
     st.dataframe(df_weather, use_container_width=True, hide_index=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="exec-card">', unsafe_allow_html=True)
-    st.markdown(f"""
-    <div class="donna-article">
-        <div class="donna-header">Mike Donna // Environmental Intelligence & Whistle Bias</div>
-        <div class="donna-subheader">The Hidden Point Spread</div>
-        Wind vectors exceeding 15 miles per hour reduce deep-ball completion percentages by over 14%. Furthermore, officiating crews that rank in the top quartile for holding penalties strangle opposing red-zone efficiency. We model every meteorological shift and crew tendency before locking our final totals.
-    </div>
-    """, unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# ================= TAB 5 =================
 with tab5:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>Execution Terminal: Live Wager & Discord Broadcast</h3>', unsafe_allow_html=True)
@@ -359,7 +303,6 @@ with tab5:
                 st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ================= TAB 6 =================
 with tab6:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>Master Ledger, ROI Analytics & Executive Export</h3>', unsafe_allow_html=True)
