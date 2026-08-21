@@ -7,7 +7,7 @@ import base64
 import requests
 import plotly.express as px
 
-st.set_page_config(page_title="The Juicer // Vegas Sportsbook Lounge", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="The Juicer // Apex Terminal v23", layout="wide", initial_sidebar_state="expanded")
 
 if "theme" not in st.session_state:
     st.session_state.theme = "Sydney Velvet Rose"
@@ -53,7 +53,7 @@ def save_github_brain(brain_data, current_sha=None):
         url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{FILE_PATH}"
         headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.v3+json"}
         encoded = base64.b64encode(content_str.encode("utf-8")).decode("utf-8")
-        payload = {"message": "Vault: Vegas Sportsbook View Wall Added", "content": encoded, "sha": current_sha}
+        payload = {"message": "Vault: Official NFL Headshots & Season-Long Suite", "content": encoded, "sha": current_sha}
         res = requests.put(url, headers=headers, json=payload)
         return res.status_code in [200, 201]
     else:
@@ -68,7 +68,7 @@ wr_win_rate = brain.get("model_weights", {}).get("WR_RECEPTIONS", {}).get("rolli
 ledger_list = brain.get("bet_ledger", [])
 if not isinstance(ledger_list, list):
     ledger_list = []
-pending_tickets = sum(1 for t in ledger_list if isinstance(t, dict) and t.get("result") == "PENDING")
+pending_tickets = sum(1 for t in ledger_list if isinstance(t, dict) and t.get("result"] == "PENDING")
 
 # --- LUXURY STYLING INJECTOR ---
 st.markdown(f"""
@@ -159,12 +159,13 @@ footer {{visibility: hidden;}}
 }}
 
 .player-avatar {{
-    width: 70px;
-    height: 70px;
+    width: 75px;
+    height: 75px;
     border-radius: 50%;
     border: 2px solid {current_theme['primary']};
     object-fit: cover;
     margin-bottom: 10px;
+    background-color: #1a1a24;
     box-shadow: 0 0 15px {current_theme['glow']};
 }}
 
@@ -214,7 +215,7 @@ footer {{visibility: hidden;}}
 st.markdown(f"""
 <div style="text-align: center; margin-bottom: 45px; padding-top: 15px;">
     <h1 style="font-size: 4.5rem; font-weight: 800; background: linear-gradient(135deg, #ffffff 15%, {current_theme['primary']} 65%, #100c14 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; line-height: 1; letter-spacing: -2px;">THE JUICER</h1>
-    <p style="color: #9494a6; font-weight: 600; letter-spacing: 6px; margin-top: 12px; text-transform: uppercase; font-size: 0.85rem;">Managed by Mike Donna // Vegas Sportsbook Lounge & Live View Wall</p>
+    <p style="color: #9494a6; font-weight: 600; letter-spacing: 6px; margin-top: 12px; text-transform: uppercase; font-size: 0.85rem;">Managed by Mike Donna // Season-Long Suite & Vegas Sportsbook Lounge</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -230,7 +231,7 @@ st.markdown(f"""
 
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "🏆 Vegas Sportsbook View Wall",
-    "👑 DFS & Bayesian Sims",
+    "👑 DFS & Season-Long Sims",
     "🎯 20 Pre-Made Parlays & News",
     "📰 Weather & Sharp Ticker",
     "⚡ Execution Terminal",
@@ -240,15 +241,14 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 # ================= TAB 1: VEGAS SPORTSBOOK VIEW WALL =================
 with tab1:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
-    st.markdown('<h3>🎰 Live Vegas Sportsbook Lounge // Slate View Wall</h3>', unsafe_allow_html=True)
+    st.markdown('<h3>🎰 Live Vegas Sportsbook Lounge // Season-Long Slate View Wall</h3>', unsafe_allow_html=True)
     
-    # 3-Column Sportsbook Game Cards
     col_g1, col_g2, col_g3 = st.columns(3)
     
     with col_g1:
         st.markdown("""
         <div class="sportsbook-game-box">
-            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">WED, SEPT 9 // 8:20 PM ET</span>
+            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">WEEK 1 // 2026 OPENER</span>
             <h3 style="margin: 8px 0 4px 0; font-size: 1.3rem;">NE @ SEA</h3>
             <p style="color:#00f576; font-size:0.9rem; font-weight:700; margin:0;">Spread: SEA -6.0 | O/U: 44.5</p>
             <p style="color:#e2e2eb; font-size:0.8rem; margin:6px 0 0 0;">Weather: Clear / 61°F</p>
@@ -258,7 +258,7 @@ with tab1:
         
         st.markdown("""
         <div class="sportsbook-game-box">
-            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">SUN, SEPT 13 // 1:00 PM ET</span>
+            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">WEEK 1 // SUNDAY SLATE</span>
             <h3 style="margin: 8px 0 4px 0; font-size: 1.3rem;">CHI @ CAR</h3>
             <p style="color:#ff9e00; font-size:0.9rem; font-weight:700; margin:0;">Spread: CHI -1.5 | O/U: 41.0</p>
             <p style="color:#e2e2eb; font-size:0.8rem; margin:6px 0 0 0;">Weather: 16mph Crosswind</p>
@@ -269,7 +269,7 @@ with tab1:
     with col_g2:
         st.markdown("""
         <div class="sportsbook-game-box">
-            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">THU, SEPT 10 // 8:15 PM ET</span>
+            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">WEEK 1 // THURSDAY NIGHT</span>
             <h3 style="margin: 8px 0 4px 0; font-size: 1.3rem;">SF vs LAR (Melb)</h3>
             <p style="color:#00f576; font-size:0.9rem; font-weight:700; margin:0;">Spread: SF -4.0 | O/U: 48.0</p>
             <p style="color:#e2e2eb; font-size:0.8rem; margin:6px 0 0 0;">Weather: Dome / Controlled</p>
@@ -279,7 +279,7 @@ with tab1:
         
         st.markdown("""
         <div class="sportsbook-game-box">
-            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">SUN, SEPT 13 // 4:05 PM ET</span>
+            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">WEEK 1 // SUNDAY AFTERNOON</span>
             <h3 style="margin: 8px 0 4px 0; font-size: 1.3rem;">TB @ CIN</h3>
             <p style="color:#ff2a5f; font-size:0.9rem; font-weight:700; margin:0;">Spread: CIN -3.0 | O/U: 51.5</p>
             <p style="color:#e2e2eb; font-size:0.8rem; margin:6px 0 0 0;">Weather: Humid / 72°F</p>
@@ -290,7 +290,7 @@ with tab1:
     with col_g3:
         st.markdown("""
         <div class="sportsbook-game-box">
-            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">SUN, SEPT 13 // 1:00 PM ET</span>
+            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">WEEK 1 // SUNDAY AFTERNOON</span>
             <h3 style="margin: 8px 0 4px 0; font-size: 1.3rem;">BAL @ IND</h3>
             <p style="color:#00f576; font-size:0.9rem; font-weight:700; margin:0;">Spread: BAL -4.5 | O/U: 47.5</p>
             <p style="color:#e2e2eb; font-size:0.8rem; margin:6px 0 0 0;">Weather: Indoor / Optimal</p>
@@ -300,7 +300,7 @@ with tab1:
         
         st.markdown("""
         <div class="sportsbook-game-box">
-            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">SUN, SEPT 13 // 8:20 PM ET</span>
+            <span style="font-size:0.75rem; color:#a1a1aa; letter-spacing:1px;">WEEK 1 // SUNDAY NIGHT</span>
             <h3 style="margin: 8px 0 4px 0; font-size: 1.3rem;">KC @ LAC</h3>
             <p style="color:#ff2a5f; font-size:0.9rem; font-weight:700; margin:0;">Spread: KC -3.5 | O/U: 53.0</p>
             <p style="color:#e2e2eb; font-size:0.8rem; margin:6px 0 0 0;">Weather: Dome / Controlled</p>
@@ -310,26 +310,12 @@ with tab1:
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # Full Scoreboard Data Grid underneath
-    st.markdown('<div class="exec-card">', unsafe_allow_html=True)
-    st.markdown('<h3>Comprehensive Vegas Odds & Intelligence Matrix</h3>', unsafe_allow_html=True)
-    df_scoreboard = pd.DataFrame({
-        "Matchup": ["NE @ SEA", "SF vs LAR (Melb)", "CHI @ CAR", "BAL @ IND", "TB @ CIN", "KC @ LAC"],
-        "Spread": ["SEA -6.0", "SF -4.0", "CHI -1.5", "BAL -4.5", "CIN -3.0", "KC -3.5"],
-        "Total (O/U)": [44.5, 48.0, 41.0, 47.5, 51.5, 53.0],
-        "Weather Impact": ["Clear / 61°F", "Dome / Controlled", "16mph Crosswind", "Indoor / Optimal", "Humid / 72°F", "Dome / Controlled"],
-        "Shootout Potential": ["Moderate Pace", "High (Explosive)", "Low (Trench War)", "High (Syndicate Over)", "ELITE SHOOTOUT", "ELITE SHOOTOUT"],
-        "Model Edge": ["SEA -6.0 LOCK", "SF Team Total Higher", "Under 41.0 Lean", "BAL -4.5 LOCK", "Over 51.5 SHOOTOUT", "KC Team Total Higher"]
-    })
-    st.dataframe(df_scoreboard, use_container_width=True, hide_index=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown(f"""
     <div class="donna-article">
-        <div class="donna-header">Mike Donna // Vegas Sportsbook View Wall Intelligence</div>
-        <div class="donna-subheader">Reading the View Wall</div>
-        The View Wall aggregates our live model outputs against retail sportsbook movement. When you see a matchup tagged with **ELITE SHOOTOUT**, our EPA and DVOA metrics project an elevated ceiling for pass-catchers. When you see **Trench War**, the model signals a defensive grind where ground games and unders dictate the outcome.
+        <div class="donna-header">Mike Donna // Season-Long View Wall Mechanics</div>
+        <div class="donna-subheader">Full Slate Synchronization</div>
+        Our season-long matrix tracks opening lines, closing line value velocity, and environmental threat vectors across all 18 weeks of the 2026 schedule. Use the view wall to scan opening numbers before sharp money forces market corrections.
     </div>
     """, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
@@ -337,17 +323,17 @@ with tab1:
 # ================= TAB 2 =================
 with tab2:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
-    st.markdown('<h3>DraftKings Optimizer & Bayesian Ruin Probability</h3>', unsafe_allow_html=True)
+    st.markdown('<h3>DraftKings DFS & Season-Long Keeper League Optimizer</h3>', unsafe_allow_html=True)
     c1, c2, c3 = st.columns(3)
     c1.metric("Bayesian Ruin Risk", "0.01% (Elite Solvency)", "1,000 Iterations")
     c2.metric("WR Rolling Win Rate", f"{wr_win_rate * 100}%", "Live AI Memory")
     c3.metric("Simulated Cash Rate", "86.4%", "+5.1% Edge")
 
     df_dfs = pd.DataFrame({
-        "Pos": ["QB", "RB", "WR", "TE"],
-        "Player": ["Justin Herbert", "Kenneth Walker", "Amon-Ra St. Brown", "Travis Kelce"],
-        "Salary": ["$7,200", "$6,400", "$8,200", "$5,200"],
-        "AI Proj": [22.4, 18.5, round(24.5 * wr_modifier, 1), 15.1]
+        "Pos": ["QB", "RB", "RB", "WR", "TE"],
+        "Player": ["Justin Herbert", "Kenneth Walker", "Derrick Henry", "Amon-Ra St. Brown", "Travis Kelce"],
+        "Team/Value": ["LAC ($7,200)", "SEA (Keeper Lock)", "BAL (Keeper Lock)", "DET ($8,200)", "KC ($5,200)"],
+        "AI Proj": [22.4, 18.5, 16.9, round(24.5 * wr_modifier, 1), 15.1]
     })
     st.dataframe(df_dfs, use_container_width=True, hide_index=True)
     st.markdown('</div>', unsafe_allow_html=True)
@@ -360,16 +346,16 @@ with tab2:
     st.plotly_chart(fig, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ================= TAB 3: 20 PARLAYS + PLAYER CARDS & NEWS =================
+# ================= TAB 3: 20 PARLAYS + OFFICIAL PLAYER HEADSHOTS & NEWS =================
 with tab3:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
-    st.markdown('<h3>Core Roster // Player Photo & Live News Feed</h3>', unsafe_allow_html=True)
+    st.markdown('<h3>Core Roster // Official NFL Headshots & Live News Feed</h3>', unsafe_allow_html=True)
     
     col_p1, col_p2, col_p3, col_p4 = st.columns(4)
     with col_p1:
         st.markdown("""
         <div class="player-card">
-            <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&auto=format&fit=crop&q=80" class="player-avatar">
+            <img src="https://a.espncdn.com/i/headshots/nfl/players/full/4362628.png" class="player-avatar">
             <h4 style="margin:5px 0 2px 0; font-size:1rem;">Kenneth Walker</h4>
             <p style="color:#a1a1aa; font-size:0.75rem; margin:0;">RB // SEA</p>
             <span class="source-badge" style="margin-top:8px; display:inline-block;">ACTIVE // FULL PRACTICE</span>
@@ -378,7 +364,7 @@ with tab3:
     with col_p2:
         st.markdown("""
         <div class="player-card">
-            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80" class="player-avatar">
+            <img src="https://a.espncdn.com/i/headshots/nfl/players/full/4426353.png" class="player-avatar">
             <h4 style="margin:5px 0 2px 0; font-size:1rem;">Amon-Ra St. Brown</h4>
             <p style="color:#a1a1aa; font-size:0.75rem; margin:0;">WR // DET</p>
             <span class="source-badge" style="margin-top:8px; display:inline-block;">LOCKED // ELITE TARGET SHARE</span>
@@ -387,7 +373,7 @@ with tab3:
     with col_p3:
         st.markdown("""
         <div class="player-card">
-            <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80" class="player-avatar">
+            <img src="https://a.espncdn.com/i/headshots/nfl/players/full/4431713.png" class="player-avatar">
             <h4 style="margin:5px 0 2px 0; font-size:1rem;">Justin Herbert</h4>
             <p style="color:#a1a1aa; font-size:0.75rem; margin:0;">QB // LAC</p>
             <span class="source-badge" style="margin-top:8px; display:inline-block;">ACTIVE // CLEAN POCKET</span>
@@ -396,7 +382,7 @@ with tab3:
     with col_p4:
         st.markdown("""
         <div class="player-card">
-            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80" class="player-avatar">
+            <img src="https://a.espncdn.com/i/headshots/nfl/players/full/11235.png" class="player-avatar">
             <h4 style="margin:5px 0 2px 0; font-size:1rem;">Derrick Henry</h4>
             <p style="color:#a1a1aa; font-size:0.75rem; margin:0;">RB // BAL</p>
             <span class="source-badge" style="margin-top:8px; display:inline-block;">ACTIVE // TRENCH USAGE</span>
