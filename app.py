@@ -7,7 +7,7 @@ import base64
 import requests
 import plotly.express as px
 
-st.set_page_config(page_title="The Juicer // Apex Terminal v34", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="The Juicer // Apex Terminal Master", layout="wide", initial_sidebar_state="expanded")
 
 if "theme" not in st.session_state:
     st.session_state.theme = "Sydney Velvet Rose"
@@ -56,7 +56,7 @@ def save_github_brain(brain_data, current_sha=None):
         url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{FILE_PATH}"
         headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.v3+json"}
         encoded = base64.b64encode(content_str.encode("utf-8")).decode("utf-8")
-        payload = {"message": "Vault: Clean Banner Text Fix", "content": encoded, "sha": current_sha}
+        payload = {"message": "Vault: Audited Master Commit", "content": encoded, "sha": current_sha}
         try:
             res = requests.put(url, headers=headers, json=payload, timeout=5)
             return res.status_code in [200, 201]
@@ -214,7 +214,7 @@ footer {{visibility: hidden;}}
 </style>
 """, unsafe_allow_html=True)
 
-# --- CLEAN CENTERED BANNER ---
+# --- BANNER ---
 st.markdown(f"""
 <div style="text-align: center; margin-bottom: 40px; padding-top: 15px;">
     <svg width="75" height="95" viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; margin-bottom: 14px; filter: drop-shadow(0 0 35px {current_theme['glow']});">
