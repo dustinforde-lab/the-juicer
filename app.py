@@ -63,7 +63,7 @@ def save_github_brain(brain_data, current_sha=None):
         url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{FILE_PATH}"
         headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.v3+json"}
         encoded = base64.b64encode(content_str.encode("utf-8")).decode("utf-8")
-        payload = {"message": "Vault: Next-Gen Sim Lab State Commit", "content": encoded, "sha": current_sha}
+        payload = {"message": "Vault: Syntax Fix Commit", "content": encoded, "sha": current_sha}
         try:
             res = requests.put(url, headers=headers, json=payload, timeout=5)
             return res.status_code in [200, 201]
@@ -88,7 +88,8 @@ wr_win_rate = brain.get("model_weights", {}).get("rolling_win_rate", 0.61)
 ledger_list = brain.get("bet_ledger", [])
 if not isinstance(ledger_list, list):
     ledger_list = []
-pending_tickets = sum(1 for t in ledger_list if isinstance(t, dict) and t.get("result"] == "PENDING")
+# Fixed syntax: closed parenthesis instead of bracket
+pending_tickets = sum(1 for t in ledger_list if isinstance(t, dict) and t.get("result") == "PENDING")
 
 # --- STYLING ---
 st.markdown(f"""
@@ -446,11 +447,9 @@ with tab3:
         if run_sim_btn:
             with st.spinner("Running next-gen Monte Carlo simulation with Kelly sizing and weather dampening..."):
                 time.sleep(1.5)
-                # Seed differently using current tick so results are distinct from the last sim
                 np.random.seed(int(time.time()) % 1000)
                 total_games = sim_weeks * 14
                 
-                # Apply dynamic adjustments based on newly added features
                 base_win_prob = 0.585 if enable_kelly_sizing else 0.56
                 weather_boost = 0.015 if enable_weather_dampening else 0.0
                 win_prob = base_win_prob + (wr_modifier - 1.0) * 0.12 + weather_boost
@@ -458,7 +457,6 @@ with tab3:
                 sim_wins = int(total_games * win_prob)
                 sim_losses = total_games - sim_wins
                 
-                # Kelly sizing scales net profit more aggressively on wins and protects on losses
                 multiplier = 1.18 if enable_kelly_sizing else 1.0
                 net_profit = round(((sim_wins * 1.05) - (sim_losses * 0.85)) * multiplier, 2)
                 final_bankroll = round(sim_units + net_profit, 2)
@@ -472,7 +470,6 @@ with tab3:
             m3.metric("ROI %", f"+{roi_pct}%")
             m4.metric("Final Bankroll", f"{final_bankroll}u")
 
-            # AUTOMATED NEXT-GEN EXECUTIVE PERFORMANCE REPORT
             st.markdown("---")
             st.markdown("### 📋 Next-Gen Executive Performance & Model Audit Report")
             
