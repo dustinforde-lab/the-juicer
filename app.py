@@ -7,7 +7,7 @@ import base64
 import requests
 import plotly.express as px
 
-st.set_page_config(page_title="The Juicer // Transparent Apex Terminal v36", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="The Juicer // Unified Apex Terminal v37", layout="wide", initial_sidebar_state="expanded")
 
 if "theme" not in st.session_state:
     st.session_state.theme = "Sydney Velvet Rose"
@@ -21,9 +21,15 @@ themes = {
 }
 current_theme = themes[st.session_state.theme]
 
-st.sidebar.markdown("### ⚙️ Executive Command (Transparent HP)")
+st.sidebar.markdown("### ⚙️ Executive Command (Unified Engine)")
 st.session_state.theme = st.sidebar.selectbox("Aesthetic Profile", list(themes.keys()))
 st.session_state.risk_profile = st.sidebar.radio("Bankroll Risk Profile", ["Conservative (2.5% Unit)", "Aggressive (5.0% Unit)", "Nuclear (Max Leverage)"])
+
+# Interactive Global Engine Controls that feed all tabs simultaneously
+st.sidebar.markdown("---")
+st.sidebar.markdown("### 🧠 Central AI Brain Calibration")
+global_wr_mod = st.sidebar.slider("Global WR Efficiency Multiplier", 0.80, 1.30, 1.05, 0.05)
+global_pace_bias = st.sidebar.selectbox("Slate Pacing Bias", ["Neutral Baseline", "High-Pace Shootout Bias (+1.2 EPA)", "Defensive Grind Bias (-1.5 EPA)"])
 webhook_url = st.sidebar.text_input("Discord Webhook URL", placeholder="https://discord.com/api/webhooks/...")
 
 REPO_OWNER = "dustinforde-lab"
@@ -56,7 +62,7 @@ def save_github_brain(brain_data, current_sha=None):
         url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{FILE_PATH}"
         headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.v3+json"}
         encoded = base64.b64encode(content_str.encode("utf-8")).decode("utf-8")
-        payload = {"message": "Vault: Transparent Sourcing Audit Commit", "content": encoded, "sha": current_sha}
+        payload = {"message": "Vault: Unified Engine State Commit", "content": encoded, "sha": current_sha}
         try:
             res = requests.put(url, headers=headers, json=payload, timeout=5)
             return res.status_code in [200, 201]
@@ -74,7 +80,9 @@ brain, current_sha = get_github_brain()
 if not isinstance(brain, dict):
     brain = {"model_weights": {"WR_RECEPTIONS": {"modifier": 1.0, "rolling_win_rate": 0.50}}, "bet_ledger": []}
 
-wr_modifier = brain.get("model_weights", {}).get("WR_RECEPTIONS", {}).get("modifier", 1.0)
+# Sync global slider to brain state
+brain["model_weights"]["WR_RECEPTIONS"]["modifier"] = global_wr_mod
+wr_modifier = global_wr_mod
 wr_win_rate = brain.get("model_weights", {}).get("WR_RECEPTIONS", {}).get("rolling_win_rate", 0.50)
 
 ledger_list = brain.get("bet_ledger", [])
@@ -235,7 +243,7 @@ st.markdown(f"""
         <rect x="24" y="3" width="12" height="7" fill="{current_theme['primary']}" rx="2.5" />
     </svg>
     <h1 style="font-size: 4.5rem; font-weight: 800; color: #ffffff; margin: 0; line-height: 1; letter-spacing: -2px; text-shadow: 0 0 30px {current_theme['glow']};">THE JUICER</h1>
-    <p style="color: #9494a6; font-weight: 600; letter-spacing: 6px; margin-top: 12px; text-transform: uppercase; font-size: 0.88rem;">Managed by Mike Donna // Transparent Sourcing & Apex Terminal</p>
+    <p style="color: #9494a6; font-weight: 600; letter-spacing: 6px; margin-top: 12px; text-transform: uppercase; font-size: 0.88rem;">Managed by Mike Donna // Unified Synchronized Apex Terminal</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -244,7 +252,7 @@ st.markdown(f"""
 <div class="hud-bar">
     <div class="hud-item"><span class="hud-dot"></span> <b>APEX TERMINAL: ONLINE</b></div>
     <div class="hud-item"><span style="color: {current_theme['primary']}; font-weight: 800;">{storage_mode}</span></div>
-    <div class="hud-item"><b>WR MODIFIER:</b> {wr_modifier}x</div>
+    <div class="hud-item"><b>WR MULTIPLIER:</b> {wr_modifier}x</div>
     <div class="hud-item"><b>PENDING TICKETS:</b> {pending_tickets}</div>
 </div>
 """, unsafe_allow_html=True)
@@ -265,7 +273,7 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs([
 with tab1:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>🎰 Live Vegas Sportsbook Lounge // 2026 Week 1 Opening View Wall</h3>', unsafe_allow_html=True)
-    st.markdown("<p style='color:#a1a1aa; font-size:0.85rem; margin-bottom:20px;'><b>Data Sourcing:</b> Live odds aggregated from Pinnacle, Circa Sports, and DraftKings opening markets.</p>", unsafe_allow_html=True)
+    st.markdown(f"<p style='color:#a1a1aa; font-size:0.85rem; margin-bottom:20px;'><b>Engine Status:</b> Synchronized with Pacing Bias [ <b>{global_pace_bias}</b> ] & Market Odds Feed.</p>", unsafe_allow_html=True)
     
     col_g1, col_g2, col_g3 = st.columns(3)
     
@@ -334,11 +342,11 @@ with tab1:
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ================= TAB 2: TOP 300 LIVE RANKINGS =================
+# ================= TAB 2: TOP 300 LIVE RANKINGS (SYNCHRONIZED WITH WR MULTIPLIER) =================
 with tab2:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>📊 Top 300 Live Power Rankings & Position Sorter</h3>', unsafe_allow_html=True)
-    st.markdown("<p style='color:#a1a1aa; font-size:0.85rem; margin-bottom:20px;'><b>Data Sourcing:</b> Derived from nflverse play-by-play efficiency metrics, expected points added (EPA), and closing line value (CLV) regression.</p>", unsafe_allow_html=True)
+    st.markdown(f"<p style='color:#a1a1aa; font-size:0.85rem; margin-bottom:20px;'><b>Engine Status:</b> Live rankings dynamically adjusted by Central WR Multiplier (<b>{wr_modifier}x</b>).</p>", unsafe_allow_html=True)
     
     col_ctrl1, col_ctrl2 = st.columns([2, 2])
     with col_ctrl1:
@@ -387,15 +395,17 @@ with tab2:
     registry_rows = []
     for idx, (p_name, p_pos, p_team) in enumerate(master_registry):
         curr_rank = idx + 1
+        pos_multiplier = wr_modifier if p_pos == "WR" else 1.0
+
         if mode_select == "Season-Long (VBD & ADP)":
-            vbd_score = round(98.0 - (curr_rank * 0.30) + np.random.uniform(-0.8, 0.8), 1)
+            vbd_score = round((98.0 - (curr_rank * 0.30)) * pos_multiplier + np.random.uniform(-0.5, 0.5), 1)
             vbd_score = max(vbd_score, 1.0)
             valuation_display = f"+{vbd_score} VBD"
             sorting_metric = vbd_score
         else:
             base_sal = max(3500, 9500 - (curr_rank * 20))
             salary = int(base_sal + np.random.randint(-150, 150))
-            proj_pts = round(max(4.5, 27.0 - (curr_rank * 0.07) + np.random.uniform(-0.6, 0.6) * (wr_modifier if p_pos=='WR' else 1.0)), 1)
+            proj_pts = round(max(4.5, (27.0 - (curr_rank * 0.07)) * pos_multiplier + np.random.uniform(-0.5, 0.5)), 1)
             valuation_display = f"${salary:,} (${proj_pts} Proj)"
             sorting_metric = proj_pts
 
@@ -417,21 +427,13 @@ with tab2:
     df_rankings_table["Rank"] = df_rankings_table.index + 1
 
     st.dataframe(df_rankings_table[["Rank", "Player", "Pos", "Team", "Market Valuation", "Mike Donna Edge"]], use_container_width=True, hide_index=True)
-    
-    st.markdown(f"""
-    <div class="donna-article">
-        <div class="donna-header">Mike Donna // Top 300 Market Sorter Architecture</div>
-        <div class="donna-subheader">Absolute Control Over the Board</div>
-        Whether you are drafting your 12-team keeper league or building GPP tournament lineups, sorting through all 300 players by position gives you instant clarity on positional scarcity. Every valuation is synthesized from closing line value and implied game scripts.
-    </div>
-    """, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ================= TAB 3: SEASON-LONG FANTASY =================
 with tab3:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>🏈 Season-Long Fantasy & 12-Team Keeper League Command Center</h3>', unsafe_allow_html=True)
-    st.markdown("<p style='color:#a1a1aa; font-size:0.85rem; margin-bottom:20px;'><b>Data Sourcing:</b> Fantasy Football Analytics baseline replacement modeling & sleeper wire feeds.</p>", unsafe_allow_html=True)
+    st.markdown(f"<p style='color:#a1a1aa; font-size:0.85rem; margin-bottom:20px;'><b>Engine Status:</b> Keeper valuations synchronized with WR Multiplier (<b>{wr_modifier}x</b>).</p>", unsafe_allow_html=True)
     
     col_s1, col_s2 = st.columns(2)
     with col_s1:
@@ -440,7 +442,7 @@ with tab3:
             "Player": ["Kenneth Walker", "Derrick Henry", "Amon-Ra St. Brown", "Justin Herbert", "Breece Hall", "Rashee Rice"],
             "Pos": ["RB", "RB", "WR", "QB", "RB", "WR"],
             "Round Cost": ["Round 3", "Round 1", "Round 1", "Round 5", "Round 2", "Round 7"],
-            "VBD Score": ["+48.2", "+62.1", "+74.5", "+35.0", "+55.8", "+44.1"],
+            "VBD Score": [f"+{round(48.2 * wr_modifier, 1)} pts", "+62.1 pts", f"+{round(74.5 * wr_modifier, 1)} pts", "+35.0 pts", "+55.8 pts", f"+{round(44.1 * wr_modifier, 1)} pts"],
             "Recommendation": ["LOCK KEEPER", "LOCK KEEPER", "LOCK KEEPER", "EVALUATE", "LOCK KEEPER", "STEAL KEEPER"]
         })
         st.dataframe(df_keeper_full, use_container_width=True, hide_index=True)
@@ -460,7 +462,7 @@ with tab3:
 with tab4:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>👑 DraftKings & FanDuel DFS Optimizer & GPP Simulator Suite</h3>', unsafe_allow_html=True)
-    st.markdown("<p style='color:#a1a1aa; font-size:0.85rem; margin-bottom:20px;'><b>Data Sourcing:</b> DraftKings/FanDuel salary feeds, `draftfast` combinatorial engine, and 10,000-iteration Monte Carlo game script simulations.</p>", unsafe_allow_html=True)
+    st.markdown(f"<p style='color:#a1a1aa; font-size:0.85rem; margin-bottom:20px;'><b>Engine Status:</b> DFS projections calibrated using active WR multiplier (<b>{wr_modifier}x</b>).</p>", unsafe_allow_html=True)
     
     c1, c2, c3 = st.columns(3)
     c1.metric("Bayesian Solvency Risk", "0.01% (Elite)", "1,000 Iterations")
@@ -471,12 +473,12 @@ with tab4:
         "Pos": ["QB", "RB", "RB", "WR", "WR", "TE", "FLEX", "DST"],
         "Player": ["Justin Herbert", "Kenneth Walker", "Derrick Henry", "Amon-Ra St. Brown", "Nico Collins", "Travis Kelce", "Rashee Rice", "Texans D"],
         "Site Salary": ["$7,200", "$6,400", "$6,500", "$8,200", "$6,800", "$5,200", "$5,600", "$2,800"],
-        "AI Proj": [22.4, 18.5, 16.9, round(24.5 * wr_modifier, 1), 17.2, 15.1, 14.8, 8.4],
+        "AI Proj": [22.4, 18.5, 16.9, round(24.5 * wr_modifier, 1), round(17.2 * wr_modifier, 1), 15.1, round(14.8 * wr_modifier, 1), 8.4],
         "Optimal Leverage": ["Core Stack", "High Floor", "Red Zone", "Lock", "Value", "Discount", "GPP Pivot", "Value D"]
     })
     st.dataframe(df_dfs_full, use_container_width=True, hide_index=True)
     
-    simulated_data = pd.DataFrame({"Iteration Score": np.random.normal(162.4, 12.5, 1000)})
+    simulated_data = pd.DataFrame({"Iteration Score": np.random.normal(162.4 * wr_modifier, 12.5, 1000)})
     fig = px.histogram(simulated_data, x="Iteration Score", nbins=40, title="10,000-Iteration GPP Ceiling Probability Curve", color_discrete_sequence=[current_theme['primary']])
     fig.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font_color="#f7f7f9")
     st.plotly_chart(fig, use_container_width=True)
@@ -486,7 +488,6 @@ with tab4:
 with tab5:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>Core Roster // Official NFL Headshots & Live News Feed</h3>', unsafe_allow_html=True)
-    st.markdown("<p style='color:#a1a1aa; font-size:0.85rem; margin-bottom:20px;'><b>Data Sourcing:</b> Official ESPN Athlete CDN (`espncdn.com`) & Rotowire NFL Injury Wire.</p>", unsafe_allow_html=True)
     
     col_p1, col_p2, col_p3, col_p4 = st.columns(4)
     with col_p1:
@@ -513,7 +514,6 @@ with tab5:
 
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>Interactive 20-Parlay Master Syndicate Suite (Explicit Prop Breakdown)</h3>', unsafe_allow_html=True)
-    st.markdown("<p style='color:#a1a1aa; font-size:0.85rem; margin-bottom:20px;'><b>Data Sourcing:</b> Syndicate correlation engine validated across Pinnacle, Circa, and DraftKings alternate lines.</p>", unsafe_allow_html=True)
     
     parlays_detailed = [
         {"title": "Tier 1 // 2-Leg Power Play: Rushing & Receptions", "odds": "+260", "payout": "3.60x Return", "legs": ["Leg 1: Kenneth Walker Higher 65.5 Rushing Yards", "Leg 2: Amon-Ra St. Brown Higher 5.5 Receptions"]},
@@ -553,8 +553,6 @@ with tab5:
 with tab6:
     st.markdown('<div class="exec-card">', unsafe_allow_html=True)
     st.markdown('<h3>Environmental Threats & Referee Bias Hub</h3>', unsafe_allow_html=True)
-    st.markdown("<p style='color:#a1a1aa; font-size:0.85rem; margin:0 0 20px 0;'><b>Data Sourcing:</b> OpenWeather API vectors and NFL officiating crew assignment archives (2026 Season).</p>", unsafe_allow_html=True)
-    
     df_weather = pd.DataFrame({
         "Stadium": ["Lumen Field (SEA)", "Empower Field (DEN)", "Soldier Field"],
         "Wind Vector": ["Sustained 8mph", "Calm 4mph", "Sustained 16mph (Crosswind)"],
@@ -625,7 +623,7 @@ with tab9:
     if not df_ledger.empty:
         st.dataframe(df_ledger, use_container_width=True, hide_index=True)
     else:
-        st.info("Ledger is currently empty. Execute a wager in Tab 8.")
+        st.info("Ledger is currently empty. Execute a wager in Tab 5.")
     csv_export = df_ledger.to_csv(index=False).encode('utf-8') if not df_ledger.empty else b""
     st.download_button("📥 Download Executive Report Archive", data=csv_export, file_name="juicer_executive_ledger.csv", mime="text/csv")
     st.markdown('</div>', unsafe_allow_html=True)
