@@ -1,0 +1,501 @@
+import os
+import webbrowser
+
+OUTPUT_FILE = "juicer_visual_showcase.html"
+
+html_content = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Juicer // Visual Concept Showcase</title>
+<style>
+    :root {
+        --bg: #07090e;
+        --panel-bg: #0f131d;
+        --card-bg: #151a26;
+        --border-color: #212838;
+        --green: #00ff88;
+        --cyan: #00e5ff;
+        --magenta: #ff2a6d;
+        --purple: #9d4edd;
+        --text: #e6edf3;
+        --dim: #8b949e;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding-bottom: 60px; overflow-x: hidden; }
+
+    /* --- CONCEPT SWITCHER BAR --- */
+    #concept-switcher {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: rgba(10, 13, 20, 0.96);
+        backdrop-filter: blur(12px);
+        border-bottom: 2px solid var(--border-color);
+        padding: 12px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .switcher-label { font-size: 0.85rem; font-weight: 800; color: var(--cyan); letter-spacing: 1.5px; text-transform: uppercase; }
+    .switcher-buttons { display: flex; gap: 10px; }
+    .btn-switch {
+        background: #181e2b;
+        color: var(--dim);
+        border: 1px solid var(--border-color);
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .btn-switch.active {
+        background: #1f2a3f;
+        color: #fff;
+        border-color: var(--cyan);
+        box-shadow: 0 0 14px rgba(0, 229, 255, 0.35);
+    }
+
+    .wrapper { max-width: 1440px; margin: 0 auto; padding: 24px; }
+
+    /* ========================================================
+       SHARED CORE LAYOUT
+       ======================================================== */
+    .master-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--panel-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 24px 32px;
+        margin-bottom: 16px;
+        position: relative;
+        overflow: hidden;
+    }
+    .brand-group { display: flex; align-items: center; gap: 24px; }
+    .brand-titles h1 {
+        font-size: 2.2rem;
+        font-weight: 900;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: #fff;
+        text-shadow: 0 0 20px rgba(255, 42, 109, 0.75), 0 0 40px rgba(255, 42, 109, 0.35);
+    }
+    .brand-titles p { font-size: 0.85rem; color: var(--dim); letter-spacing: 1px; margin-top: 4px; }
+
+    /* PIPELINE ANIMATION CANVAS */
+    .pipeline-area {
+        flex: 1;
+        margin: 0 40px;
+        height: 100px;
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    /* THE MEGA BLENDER */
+    .blender-container {
+        width: 110px;
+        height: 140px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+    }
+    .blender-lid {
+        width: 60px;
+        height: 10px;
+        background: #2b3245;
+        border-radius: 4px 4px 0 0;
+        border: 1px solid var(--cyan);
+    }
+    .blender-jar {
+        width: 80px;
+        height: 95px;
+        border-left: 3px solid var(--cyan);
+        border-right: 3px solid var(--cyan);
+        border-bottom: 3px solid var(--cyan);
+        border-radius: 0 0 14px 14px;
+        background: rgba(0, 229, 255, 0.04);
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 0 25px rgba(0, 229, 255, 0.25);
+    }
+    .blender-fluid {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 65%;
+        background: linear-gradient(180deg, rgba(255, 42, 109, 0.85) 0%, rgba(157, 78, 221, 0.95) 100%);
+        box-shadow: 0 0 20px rgba(255, 42, 109, 0.6);
+        animation: churn 1.2s infinite ease-in-out alternate;
+    }
+    .blender-base {
+        width: 90px;
+        height: 24px;
+        background: #171c28;
+        border-radius: 4px;
+        border: 1px solid #333d54;
+        margin-top: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .blender-dial {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 8px var(--green);
+    }
+
+    @keyframes churn {
+        0% { transform: scaleY(0.92) skewX(-2deg); }
+        100% { transform: scaleY(1.05) skewX(2deg); }
+    }
+
+    /* TICKER FEED LINES */
+    .ticker-stack { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .ticker-bar {
+        background: var(--panel-bg);
+        border-radius: 6px;
+        padding: 8px 16px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        border-left: 4px solid var(--cyan);
+        display: flex;
+        justify-content: space-between;
+    }
+
+    /* TABS */
+    .tab-bar {
+        display: flex;
+        gap: 8px;
+        border-bottom: 2px solid var(--border-color);
+        padding-bottom: 12px;
+        margin-bottom: 20px;
+    }
+    .tab-item {
+        padding: 10px 18px;
+        border-radius: 8px;
+        background: var(--panel-bg);
+        color: var(--dim);
+        font-size: 0.85rem;
+        font-weight: 700;
+        cursor: pointer;
+        border: 1px solid var(--border-color);
+    }
+    .tab-item.active {
+        background: #192132;
+        color: #fff;
+        border-color: var(--cyan);
+        box-shadow: 0 0 12px rgba(0, 229, 255, 0.2);
+    }
+
+    /* CARDS GRID */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+    .sample-card {
+        background: var(--card-bg);
+        border-radius: 10px;
+        padding: 16px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    }
+    .sample-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        padding-bottom: 10px;
+        margin-bottom: 12px;
+    }
+
+    /* ========================================================
+       CONCEPT SPECIFIC OVERRIDES
+       ======================================================== */
+
+    /* --- CONCEPT 1: CYBER FACTORY --- */
+    .c1-conveyor {
+        width: 100%;
+        height: 14px;
+        background: repeating-linear-gradient(90deg, #1b2233 0px, #1b2233 16px, #28334d 16px, #28334d 32px);
+        animation: rollConveyor 1s linear infinite;
+        border-radius: 4px;
+        position: absolute;
+        bottom: 24px;
+    }
+    .c1-cart {
+        position: absolute;
+        bottom: 38px;
+        width: 44px;
+        height: 26px;
+        background: #1f273b;
+        border: 1px solid var(--cyan);
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.65rem;
+        color: var(--green);
+        font-weight: 800;
+        animation: cartTravel 5s infinite linear;
+    }
+    .c1-data-drop {
+        position: absolute;
+        top: 0;
+        right: 38px;
+        width: 8px;
+        height: 8px;
+        background: var(--magenta);
+        box-shadow: 0 0 10px var(--magenta);
+        border-radius: 2px;
+        animation: dropInData 1.4s infinite cubic-bezier(0.5, 0, 1, 1);
+    }
+    @keyframes rollConveyor { from { background-position: 0 0; } to { background-position: 32px 0; } }
+    @keyframes cartTravel {
+        0% { left: 0%; opacity: 0; }
+        15% { opacity: 1; }
+        85% { opacity: 1; }
+        100% { left: calc(100% - 90px); opacity: 0; }
+    }
+    @keyframes dropInData {
+        0% { transform: translateY(0) scale(1); opacity: 1; }
+        70% { opacity: 1; }
+        100% { transform: translateY(85px) scale(0.4); opacity: 0; }
+    }
+
+    /* --- CONCEPT 2: 8-BIT ARCADE --- */
+    .theme-arcade { font-family: "Courier New", Courier, monospace !important; }
+    .theme-arcade .sample-card { border-radius: 0; border: 2px solid var(--cyan); }
+    .arcade-intern {
+        position: absolute;
+        bottom: 30px;
+        font-size: 1.4rem;
+        animation: walkIntern 6s infinite linear;
+    }
+    @keyframes walkIntern {
+        0% { left: 0; transform: scaleX(1); }
+        45% { left: calc(100% - 140px); transform: scaleX(1); }
+        50% { left: calc(100% - 140px); transform: scaleX(-1); }
+        95% { left: 0; transform: scaleX(-1); }
+        100% { left: 0; transform: scaleX(1); }
+    }
+
+    /* --- CONCEPT 3: ISOMETRIC TECH --- */
+    .iso-tube {
+        width: 100%;
+        height: 6px;
+        background: rgba(0, 229, 255, 0.15);
+        border-radius: 3px;
+        box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+        position: relative;
+    }
+    .iso-pod {
+        width: 24px;
+        height: 12px;
+        background: var(--cyan);
+        border-radius: 8px;
+        position: absolute;
+        top: -3px;
+        box-shadow: 0 0 14px var(--cyan);
+        animation: podTravel 3.5s infinite ease-in-out;
+    }
+    @keyframes podTravel {
+        0% { left: 0%; }
+        50% { left: 85%; }
+        100% { left: 0%; }
+    }
+
+    /* --- CONCEPT 4: BLUEPRINT PIPELINE --- */
+    .blueprint-grid {
+        background-image: linear-gradient(rgba(0, 229, 255, 0.08) 1px, transparent 1px),
+                          linear-gradient(90deg, rgba(0, 229, 255, 0.08) 1px, transparent 1px);
+        background-size: 20px 20px;
+    }
+    .circuit-node {
+        display: inline-block;
+        padding: 4px 10px;
+        border: 1px dashed var(--cyan);
+        color: var(--cyan);
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: 1px;
+    }
+</style>
+</head>
+<body>
+
+<div id="concept-switcher">
+    <div class="switcher-label">👁️ Previewing Concept:</div>
+    <div class="switcher-buttons">
+        <button class="btn-switch active" onclick="setConcept(1)">1. Cyber Factory</button>
+        <button class="btn-switch" onclick="setConcept(2)">2. 8-Bit Arcade</button>
+        <button class="btn-switch" onclick="setConcept(3)">3. Isometric Tech</button>
+        <button class="btn-switch" onclick="setConcept(4)">4. Blueprint CAD</button>
+    </div>
+</div>
+
+<div class="wrapper">
+
+    <!-- MASTER HEADER WITH GIANT BLENDER & DATA CONVEYOR -->
+    <div class="master-header" id="headerNode">
+        <div class="brand-group">
+            <div class="brand-titles">
+                <h1 id="titleBrand">THE JUICER</h1>
+                <p id="subBrand">AUTOMATED DATA SMELTING // 2026 PRIME WAR ROOM</p>
+            </div>
+        </div>
+
+        <!-- PIPELINE ANIMATION AREA -->
+        <div class="pipeline-area" id="pipelineNode">
+            <!-- Dynamic elements will inject here -->
+        </div>
+
+        <!-- MEGA BLENDER -->
+        <div class="blender-container">
+            <div class="blender-lid"></div>
+            <div class="blender-jar">
+                <div class="blender-fluid"></div>
+            </div>
+            <div class="blender-base">
+                <div class="blender-dial"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TICKER BARS -->
+    <div class="ticker-stack">
+        <div class="ticker-bar" style="border-left-color: var(--green); color: var(--green);">
+            <span>🏈 [MULTI-BOOK AUDIT] DK, FD, MGM, CZR LIVE • 🦁 DET @ BUF FINALIZED & PURGED • ⚡ UNDERDOG PROPS ACTIVE</span>
+            <span>SYSTEM GREEN</span>
+        </div>
+        <div class="ticker-bar" style="border-left-color: var(--cyan); color: var(--cyan);">
+            <span>📈 [SHARP MARKET FEED] Line Movement Detected: DAL -2.5 to -3.0 • Total ticking up in DEN vs WAS</span>
+            <span>FEED ACTIVE</span>
+        </div>
+        <div class="ticker-bar" style="border-left-color: var(--magenta); color: var(--magenta);">
+            <span>🚨 [PRIORITY SYNDICATE ALERT] Synthetic Bankroll Up +42.4% • 200 Clean Sunday Parlays Locked</span>
+            <span>AUDITED</span>
+        </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tab-bar">
+        <div class="tab-item">🏆 Vegas Scoreboard</div>
+        <div class="tab-item">👑 DFS Optimizer</div>
+        <div class="tab-item">📊 Classy Rankings</div>
+        <div class="tab-item active">🎯 Parlay Matrix (200 Locked)</div>
+        <div class="tab-item">🏈 Season-Long Fantasy</div>
+        <div class="tab-item">⚡ Underdog Prop Hub</div>
+    </div>
+
+    <!-- CARDS MOCKUP -->
+    <div class="grid-2">
+        <div class="sample-card" style="border-left: 4px solid var(--green);">
+            <div class="sample-card-header">
+                <span style="font-weight:800; color:#fff; font-size:0.95rem;">SLIP-001 (CASH BUILDER)</span>
+                <span style="font-weight:900; color:var(--green); font-size:1.1rem;">+264 (AI Pays $182.00)</span>
+            </div>
+            <div style="font-size:0.75rem; color:var(--dim); margin-bottom:8px;">[DraftKings] Generated: 2026-09-18 19:27 ET</div>
+            <div style="padding:6px 0; border-top: 1px solid rgba(255,255,255,0.06); display:flex; justify-content:space-between;">
+                <span style="color:var(--cyan); font-weight:700;">🏈 Dak Prescott (DAL)</span>
+                <span>Pass Yds > 262.5</span>
+            </div>
+            <div style="padding:6px 0; border-top: 1px solid rgba(255,255,255,0.06); display:flex; justify-content:space-between;">
+                <span style="color:var(--cyan); font-weight:700;">⚡ CeeDee Lamb (DAL)</span>
+                <span>Rec Yds > 84.5</span>
+            </div>
+        </div>
+
+        <div class="sample-card" style="border-left: 4px solid var(--magenta);">
+            <div class="sample-card-header">
+                <span style="font-weight:800; color:#fff; font-size:0.95rem;">UD-004 (FLEX 4-PICK)</span>
+                <span style="font-weight:900; color:var(--green); font-size:1.1rem;">10.0x (Insured 2.5x)</span>
+            </div>
+            <div style="font-size:0.75rem; color:var(--dim); margin-bottom:8px;">[Underdog Fantasy] Sunday Clean Slate</div>
+            <div style="padding:6px 0; border-top: 1px solid rgba(255,255,255,0.06); display:flex; justify-content:space-between;">
+                <span style="color:var(--magenta); font-weight:700;">🎯 Malik Nabers (NYG)</span>
+                <span>Higher 68.5 Rec Yds</span>
+            </div>
+            <div style="padding:6px 0; border-top: 1px solid rgba(255,255,255,0.06); display:flex; justify-content:space-between;">
+                <span style="color:var(--magenta); font-weight:700;">🔥 Brock Purdy (SF)</span>
+                <span>Higher 1.5 Pass TDs</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+function setConcept(num) {
+    const btns = document.querySelectorAll('.btn-switch');
+    btns.forEach((b, idx) => b.classList.toggle('active', idx === (num - 1)));
+
+    const pNode = document.getElementById('pipelineNode');
+    const hNode = document.getElementById('headerNode');
+    document.body.className = '';
+    hNode.className = 'master-header';
+
+    if (num === 1) {
+        // CYBER FACTORY
+        pNode.innerHTML = `
+            <div style="position:absolute; top:12px; left:10px; font-size:0.7rem; color:var(--dim); font-weight:800;">
+                CONVEYOR: <span style="color:var(--green)">RUNNING</span> | SCRAPERS: <span style="color:var(--cyan)">ONLINE</span>
+            </div>
+            <div class="c1-conveyor"></div>
+            <div class="c1-cart">SLIP #200</div>
+            <div class="c1-data-drop"></div>
+        `;
+    } else if (num === 2) {
+        // 8-BIT ARCADE
+        document.body.classList.add('theme-arcade');
+        pNode.innerHTML = `
+            <div style="position:absolute; top:8px; left:10px; font-size:0.75rem; color:var(--cyan); font-weight:800;">
+                [LEVEL 1] INGESTING RAW STATS...
+            </div>
+            <div class="arcade-intern">🧑‍🔬 📋 ➔ 🏈 ➔</div>
+        `;
+    } else if (num === 3) {
+        // ISOMETRIC TECH
+        pNode.innerHTML = `
+            <div style="position:absolute; top:12px; left:10px; font-size:0.75rem; color:var(--dim); letter-spacing:1px;">
+                PNEUMATIC DATA STREAM: <span style="color:var(--cyan)">98.4 KB/S</span>
+            </div>
+            <div class="iso-tube">
+                <div class="iso-pod"></div>
+            </div>
+        `;
+    } else if (num === 4) {
+        // BLUEPRINT CAD
+        hNode.classList.add('blueprint-grid');
+        pNode.innerHTML = `
+            <div style="display:flex; gap:12px; align-items:center;">
+                <span class="circuit-node">NODE: MIKE</span>
+                <span style="color:var(--cyan);">──────▶</span>
+                <span class="circuit-node">NODE: DONNA</span>
+                <span style="color:var(--magenta);">──────▶</span>
+                <span class="circuit-node">LEWIS PURGE</span>
+            </div>
+        `;
+    }
+}
+
+// Initial boot
+setConcept(1);
+</script>
+
+</body>
+</html>
+"""
+
+with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+    f.write(html_content)
+
+print(f"✅ Generated visual interactive mockup: {os.path.abspath(OUTPUT_FILE)}")
+webbrowser.open(f"file://{os.path.abspath(OUTPUT_FILE)}")

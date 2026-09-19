@@ -1,0 +1,135 @@
+import os
+import webbrowser
+
+OUTPUT_FILE = "juicer_intern_animations.html"
+
+html_content = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+    :root {
+        --bg: #07090e; --panel-bg: #0f131d; --cyan: #00e5ff; --magenta: #ff2a6d; --green: #00ff88;
+    }
+    body { background: var(--bg); color: #e6edf3; font-family: sans-serif; padding: 40px; }
+    
+    .header-box {
+        background: var(--panel-bg); border: 1px solid #212838; border-radius: 12px;
+        padding: 30px; position: relative; overflow: hidden; height: 220px; margin-bottom: 40px;
+    }
+    
+    /* PIPES (MIKE & DONNA) */
+    .pipe {
+        position: absolute; top: 0; width: 24px; height: 90px;
+        border-left: 2px solid #333; border-right: 2px solid #333;
+    }
+    .pipe-mike { left: 35%; background: linear-gradient(180deg, rgba(0,229,255,0.1) 0%, rgba(0,229,255,0.8) 100%); }
+    .pipe-donna { right: 35%; background: linear-gradient(180deg, rgba(255,42,109,0.1) 0%, rgba(255,42,109,0.8) 100%); }
+    .pipe-label {
+        position: absolute; top: 10px; font-size: 0.7rem; font-weight: 800;
+        background: #000; padding: 2px 6px; border-radius: 4px; border: 1px solid;
+    }
+    .label-mike { left: calc(35% - 40px); color: var(--cyan); border-color: var(--cyan); }
+    .label-donna { right: calc(35% - 40px); color: var(--magenta); border-color: var(--magenta); }
+
+    /* THE MEGA BLENDER */
+    .blender {
+        position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+        width: 100px; height: 120px; border: 3px solid var(--green); border-top: none;
+        border-radius: 0 0 16px 16px; background: rgba(0,255,136,0.05); overflow: hidden;
+    }
+    .liquid {
+        position: absolute; bottom: 0; width: 100%; height: 60%;
+        background: linear-gradient(180deg, var(--cyan) 0%, var(--magenta) 100%);
+        animation: churn 1s infinite alternate;
+    }
+
+    /* LEWIS QA DESK */
+    .lewis-desk {
+        position: absolute; bottom: 150px; left: 50%; transform: translateX(-50%);
+        background: #111; border: 1px solid var(--cyan); padding: 4px 12px;
+        border-radius: 6px; font-size: 0.8rem; font-weight: bold; color: var(--cyan);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.8); z-index: 10;
+    }
+
+    /* INTERNS & CARTS */
+    .intern-track { position: absolute; bottom: 20px; left: 0; width: 100%; height: 40px; }
+    
+    .intern-group {
+        position: absolute; bottom: 0; display: flex; align-items: flex-end; gap: 8px;
+        animation: sprintCart 6s infinite linear;
+    }
+    .intern { font-size: 1.8rem; transform: scaleX(-1); }
+    .cart {
+        font-size: 1.5rem; background: #1a1a1a; border: 1px solid var(--green);
+        padding: 4px; border-radius: 4px; display: flex; gap: 2px;
+    }
+    
+    .intern-clipboard {
+        position: absolute; bottom: 0; font-size: 1.6rem;
+        animation: sprintClipboard 4.5s infinite linear 2s;
+    }
+
+    @keyframes churn { 0% { transform: scaleY(0.9); } 100% { transform: scaleY(1.1); } }
+    @keyframes sprintCart {
+        0% { left: -100px; opacity: 1; }
+        45% { left: calc(50% - 80px); opacity: 1; }
+        50% { left: calc(50% - 80px); opacity: 0; }
+        100% { left: calc(50% - 80px); opacity: 0; }
+    }
+    @keyframes sprintClipboard {
+        0% { right: -50px; opacity: 1; transform: scaleX(1); }
+        100% { right: 110%; opacity: 1; transform: scaleX(1); }
+    }
+</style>
+</head>
+<body>
+
+    <h2 style="color: #e6edf3; margin-bottom: 10px;">ANIMATION 1: The Factory Floor</h2>
+    <p style="color: #8b949e; margin-bottom: 20px; font-size: 0.9rem;">Mike and Donna's data pipes flowing. Interns pushing carts of fruit and footballs into the hopper.</p>
+    
+    <div class="header-box">
+        <!-- PIPES -->
+        <div class="pipe pipe-mike"></div>
+        <div class="pipe-label label-mike">MIKE // ODDS</div>
+        
+        <div class="pipe pipe-donna"></div>
+        <div class="pipe-label label-donna">DONNA // CLEANSE</div>
+
+        <!-- BLENDER -->
+        <div class="blender"><div class="liquid"></div></div>
+
+        <!-- INTERNS -->
+        <div class="intern-track">
+            <!-- Intern pushing fruit/football cart -->
+            <div class="intern-group">
+                <div class="intern">🧑‍🔬</div>
+                <div class="cart">🍍 🏈 🍊</div>
+            </div>
+            
+            <!-- Intern running with clipboard -->
+            <div class="intern-clipboard">🏃‍♂️ 📋</div>
+        </div>
+    </div>
+
+    <h2 style="color: #e6edf3; margin-bottom: 10px; margin-top: 50px;">ANIMATION 2: Lewis's QA Desk</h2>
+    <p style="color: #8b949e; margin-bottom: 20px; font-size: 0.9rem;">Lewis sitting suspended above the blender, inspecting data before dropping it in.</p>
+    
+    <div class="header-box">
+        <div class="lewis-desk">🕵️‍♂️ NODE: LEWIS QA</div>
+        <div class="blender"><div class="liquid" style="background:var(--green)"></div></div>
+        
+        <div class="intern-track">
+            <div class="intern-clipboard" style="animation-duration: 7s;">🧑‍💻 📋 (Handing slip to Lewis...)</div>
+        </div>
+    </div>
+
+</body>
+</html>
+"""
+
+with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+    f.write(html_content)
+
+print("✅ Character animation prototype generated!")
+webbrowser.open(f"file://{os.path.abspath(OUTPUT_FILE)}")

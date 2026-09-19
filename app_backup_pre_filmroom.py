@@ -1,4 +1,4 @@
-import sqlite3, pandas as pd, streamlit as st
+﻿import sqlite3, pandas as pd, streamlit as st
 import ui_components as ui
 
 DB_FILE, SIM_FILE, KEEPER_FILE = "action_grid.db", "dfs_sim_curve.json", "keepers.csv"
@@ -83,74 +83,17 @@ def q_db(q):
 
 ui.render_telemetry(q_db)
 
-t1, t2, t3, t4, t5, t6, t7 = st.tabs(["🏆 Vegas Scoreboard", "👑 DFS Optimizer", "📊 Classy Rankings", "🎯 Parlay Matrix", "🏈 Season-Long Fantasy", "⚡ PrizePicks & Underdog", "📡 Film Room"])
+t1, t2, t3, t4, t5, t6 = st.tabs(["🏆 Vegas Scoreboard", "👑 DFS Optimizer", "📊 Classy Rankings", "🎯 Parlay Matrix", "🏈 Season-Long Fantasy", "⚡ PrizePicks & Underdog"])
 
 with t1:
     ui.render_vegas_wall()
 with t2:
-    import sqlite3
-    import pandas as pd
-    st.markdown("<h3 style='color:#00e5ff;'>👑 DFS OPTIMIZER & SOLVENCY ENGINE</h3>", unsafe_allow_html=True)
-    try:
-        with sqlite3.connect("action_grid.db") as conn:
-            df_donna = pd.read_sql("SELECT player_name, team, projected_ownership, vibe_rating, updated_at FROM ownership_projections ORDER BY updated_at DESC", conn)
-        
-        if not df_donna.empty:
-            st.markdown("<h5 style='color:#8b949e;'>Donna's Leverage Matrix</h5>", unsafe_allow_html=True)
-            for _, row in df_donna.iterrows():
-                vibe_color = "#ff2a6d" if row['vibe_rating'] == "FADE" else "#00ff88"
-                card = f'''
-                <div style="background: #121824; border-left: 4px solid {vibe_color}; padding: 12px; margin-bottom: 8px; border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="color: #e6edf3; font-weight: 800;">{row['player_name']} <span style="color:#8b949e; font-size:0.85rem;">({row['team']})</span></span>
-                        <span style="color: {vibe_color}; font-weight: 900; letter-spacing: 1px;">{row['vibe_rating']}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-top: 6px;">
-                        <span style="color: #8b949e; font-size: 0.85rem; font-weight: 600;">Proj Own: {row['projected_ownership']}</span>
-                        <span style="color: #6e7681; font-size: 0.75rem; font-family: monospace;">🕒 LINE LOCKED: {row['updated_at']}</span>
-                    </div>
-                </div>
-                '''
-                clean_card = '\n'.join(line.strip() for line in card.splitlines())
-                st.markdown(clean_card, unsafe_allow_html=True)
-            st.markdown("<br>", unsafe_allow_html=True)
-        else:
-            st.caption("Awaiting Donna's DFS vibe checks...")
-    except Exception as e:
-        st.error(f"DFS Engine Offline: {e}")
-    
     ui.render_dfs(q_db, SIM_FILE)
 with t3:
     ui.render_rankings_syndicate(q_db)
 with t4:
-    import sqlite3
-    import pandas as pd
-    import ui_components as ui
-    st.markdown("<h3 style='color:#ff2a6d;'>🎯 THE PARLAY MATRIX (MULTI-BOOK STAMPED)</h3>", unsafe_allow_html=True)
-    try:
-        with sqlite3.connect("action_grid.db") as conn:
-            df = pd.read_sql("SELECT * FROM theoretical_bets ORDER BY created_at DESC", conn)
-        if not df.empty:
-            for _, row in df.iterrows():
-                card_html = ui.render_stamped_parlay_card(
-                    row['ticket_id'], row['weight_class'], row['odds'], 
-                    row['border_color'], row['ticket_json'], row['source'], row['created_at']
-                )
-                st.markdown(card_html, unsafe_allow_html=True)
-        else:
-            st.caption("Awaiting correlation engine feeds...")
-    except Exception as e:
-        st.error(f"Matrix Offline: {e}")
+    ui.render_parlays(q_db)
 with t5:
     ui.render_season_long(KEEPER_FILE)
 with t6:
     ui.render_prizepicks_underdog()
-
-
-# --- 📡 INJECTED FILM ROOM TELEMETRY ---
-try:
-    with t7:
-        import ui_film_room
-        ui_film_room.render_live_telemetry("action_grid.db")
-except Exception as e:
-    pass  # Fail silently to prevent crashing the main app

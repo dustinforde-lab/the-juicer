@@ -1,0 +1,27 @@
+{
+    "audit_timestamp": "2026-09-17 17:32:37",
+    "slate_graded": "Week 2 - Lions at Bills (Showdown)",
+    "dfs_ledger_performance": {
+        "highest_scoring_lineup": 142.6,
+        "optimal_bucket_hit": "Pure Delta Edge",
+        "captain_meta": "QB and WR Captains yielded highest ROI."
+    },
+    "parlay_ledger_performance": {
+        "2_leg_heavy_hit_rate": "62%",
+        "6_leg_lotto_hit_rate": "4%"
+    },
+    "positional_silo_baselines": {
+        "QB": 28.5,
+        "RB": 16.4,
+        "WR": 27.1,
+        "TE": 9.2,
+        "K": 0.0,
+        "DST": 0.0
+    },
+    "proposed_model_recalibrations": [
+        "WR_CEILING_MODIFIER: Decrease by 2.5% (Wide Receivers over-performed expectation).",
+        "TE_TARGET_SHARE: Increase by 1.2% (Baseline was too rigid).",
+        "Q1_SCORING_PACE: Hold steady (Matched Vegas implied total)."
+    ],
+    "human_governor_status": "PENDING_APPROVAL"
+}

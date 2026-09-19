@@ -1,0 +1,156 @@
+import os
+import webbrowser
+
+OUTPUT_FILE = "juicer_bulletproof_war_room.html"
+
+html_content = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+    :root { --bg: #07090e; --panel-bg: #0f131d; --cyan: #00e5ff; --magenta: #ff2a6d; --green: #00ff88; }
+    body { background: var(--bg); color: #e6edf3; font-family: sans-serif; padding: 40px; margin: 0; overflow: hidden; }
+    
+    .header-box {
+        background: var(--panel-bg); border: 1px solid #212838; border-radius: 12px;
+        padding: 30px; position: relative; height: 350px; margin-top: 20px;
+        box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+    }
+    
+    /* PIPES (MIKE & DONNA) */
+    .pipe {
+        position: absolute; top: -10px; width: 34px; height: 160px;
+        border-left: 3px solid #444; border-right: 3px solid #444; z-index: 5;
+    }
+    .pipe-mike { left: 30%; background: linear-gradient(180deg, rgba(0,229,255,0.1), rgba(0,229,255,0.9)); box-shadow: 0 0 20px rgba(0,229,255,0.4); }
+    .pipe-donna { right: 30%; background: linear-gradient(180deg, rgba(255,42,109,0.1), rgba(255,42,109,0.9)); box-shadow: 0 0 20px rgba(255,42,109,0.4); }
+    
+    .pipe-label {
+        position: absolute; top: 15px; font-size: 0.8rem; font-weight: 900; letter-spacing: 1px;
+        background: #000; padding: 4px 10px; border-radius: 4px; border: 1px solid; z-index: 10;
+    }
+    .label-mike { left: calc(30% - 40px); color: var(--cyan); border-color: var(--cyan); }
+    .label-donna { right: calc(30% - 45px); color: var(--magenta); border-color: var(--magenta); }
+
+    /* LEWIS QA COMMAND DESK */
+    .lewis-platform {
+        position: absolute; top: 80px; left: 50%; transform: translateX(-50%);
+        width: 140px; height: 10px; background: #222; border-bottom: 2px solid var(--green);
+        box-shadow: 0 10px 30px rgba(0,255,136,0.2); z-index: 15;
+    }
+    .lewis-desk {
+        position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+        background: #111; border: 1px solid var(--green); padding: 4px 12px;
+        border-radius: 4px 4px 0 0; font-size: 0.75rem; font-weight: bold; color: var(--green);
+    }
+    .lewis-sprite {
+        position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+        height: 50px; image-rendering: pixelated;
+    }
+
+    /* THE MEGA BLENDER */
+    .blender {
+        position: absolute; bottom: 35px; left: 50%; transform: translateX(-50%);
+        width: 140px; height: 160px; border: 4px solid rgba(255,255,255,0.1); border-top: none;
+        border-radius: 0 0 24px 24px; background: rgba(0,0,0,0.5); overflow: hidden;
+        box-shadow: 0 0 40px rgba(0, 229, 255, 0.15), inset 0 0 20px rgba(0, 229, 255, 0.2);
+        z-index: 2;
+    }
+    .liquid {
+        position: absolute; bottom: 0; width: 100%; height: 50%;
+        background: linear-gradient(180deg, var(--cyan) 0%, var(--magenta) 100%);
+        animation: churn 0.8s infinite alternate ease-in-out;
+        opacity: 0.85;
+    }
+
+    /* FACTORY FLOOR */
+    .floor {
+        position: absolute; bottom: 0; left: 0; width: 100%; height: 35px;
+        background: #111; border-top: 2px solid #333; z-index: 1;
+    }
+    
+    /* 8-BIT SPRITES & CARTS (GPU Accelerated) */
+    .moving-group-left {
+        position: absolute; bottom: 35px; right: -200px;
+        display: flex; align-items: flex-end; gap: 8px; z-index: 10;
+        animation: sprintLeft 7s infinite linear;
+    }
+    .moving-group-right {
+        position: absolute; bottom: 35px; left: -200px;
+        display: flex; align-items: flex-end; gap: 8px; z-index: 10;
+        animation: sprintRight 8s infinite linear 2.5s;
+    }
+    
+    .pixel-guy { height: 50px; image-rendering: pixelated; }
+    .pixel-guy-flip { height: 50px; image-rendering: pixelated; transform: scaleX(-1); }
+    
+    .cart-box {
+        background: #1a1a1a; border: 2px solid var(--green);
+        padding: 4px 8px; border-radius: 4px; font-size: 1.4rem;
+        display: flex; gap: 4px; box-shadow: inset 0 0 10px #000, 0 0 10px rgba(0,255,136,0.2);
+        margin-bottom: 5px;
+    }
+    .clipboard { font-size: 1.8rem; margin-bottom: 10px; }
+
+    @keyframes churn { 0% { transform: scaleY(0.95) skewX(-1deg); } 100% { transform: scaleY(1.05) skewX(1deg); } }
+    
+    /* Translate3d pushes the work to the GPU for smooth 60fps */
+    @keyframes sprintLeft {
+        0% { transform: translate3d(0, 0, 0); }
+        100% { transform: translate3d(-1800px, 0, 0); }
+    }
+    @keyframes sprintRight {
+        0% { transform: translate3d(0, 0, 0); }
+        100% { transform: translate3d(1800px, 0, 0); }
+    }
+</style>
+</head>
+<body>
+
+    <h2 style="color: #fff; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px;">The Syndicate Assembly Line</h2>
+    <p style="color: var(--cyan); margin-bottom: 20px; font-weight: bold;">Unblocked 8-Bit Rendering Engine</p>
+    
+    <div class="header-box">
+        <!-- PIPES -->
+        <div class="pipe pipe-mike"></div>
+        <div class="pipe-label label-mike">MIKE // PROJECTIONS</div>
+        
+        <div class="pipe pipe-donna"></div>
+        <div class="pipe-label label-donna">DONNA // QUARANTINE</div>
+
+        <!-- LEWIS QA PLATFORM -->
+        <div class="lewis-platform">
+            <!-- Lewis Boss Sprite -->
+            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/65.gif" class="lewis-sprite" alt="Lewis">
+            <div class="lewis-desk">LEWIS // QA DECK</div>
+        </div>
+
+        <!-- MEGA BLENDER -->
+        <div class="blender"><div class="liquid"></div></div>
+
+        <!-- FACTORY FLOOR -->
+        <div class="floor"></div>
+
+        <!-- INTERN 1: Running Left with a clipboard -->
+        <div class="moving-group-left">
+            <div class="clipboard">📋</div>
+            <!-- Using an open-source GitHub sprite so it won't get blocked -->
+            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/66.gif" class="pixel-guy-flip" alt="Intern 1">
+        </div>
+
+        <!-- INTERN 2: Pushing the Cart Right -->
+        <div class="moving-group-right">
+            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/66.gif" class="pixel-guy" alt="Intern 2">
+            <div class="cart-box">🍍 🏈 🍊</div>
+        </div>
+    </div>
+
+</body>
+</html>
+"""
+
+with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+    f.write(html_content)
+
+print("✅ Unblocked 8-Bit GPU-Accelerated prototype generated!")
+webbrowser.open(f"file://{os.path.abspath(OUTPUT_FILE)}")

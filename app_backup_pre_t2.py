@@ -88,12 +88,11 @@ t1, t2, t3, t4, t5, t6, t7 = st.tabs(["🏆 Vegas Scoreboard", "👑 DFS Optimiz
 with t1:
     ui.render_vegas_wall()
 with t2:
-    import sqlite3
     import pandas as pd
     st.markdown("<h3 style='color:#00e5ff;'>👑 DFS OPTIMIZER & SOLVENCY ENGINE</h3>", unsafe_allow_html=True)
     try:
-        with sqlite3.connect("action_grid.db") as conn:
-            df_donna = pd.read_sql("SELECT player_name, team, projected_ownership, vibe_rating, updated_at FROM ownership_projections ORDER BY updated_at DESC", conn)
+        conn = q_db() if callable(q_db) else q_db
+        df_donna = pd.read_sql("SELECT player_name, team, projected_ownership, vibe_rating, updated_at FROM ownership_projections ORDER BY updated_at DESC", conn)
         
         if not df_donna.empty:
             st.markdown("<h5 style='color:#8b949e;'>Donna's Leverage Matrix</h5>", unsafe_allow_html=True)
@@ -111,25 +110,25 @@ with t2:
                     </div>
                 </div>
                 '''
-                clean_card = '\n'.join(line.strip() for line in card.splitlines())
-                st.markdown(clean_card, unsafe_allow_html=True)
+                st.markdown(card, unsafe_allow_html=True)
             st.markdown("<br>", unsafe_allow_html=True)
         else:
             st.caption("Awaiting Donna's DFS vibe checks...")
+            
+        # Retain original rendering underneath
+        ui.render_dfs(q_db, SIM_FILE)
     except Exception as e:
         st.error(f"DFS Engine Offline: {e}")
-    
-    ui.render_dfs(q_db, SIM_FILE)
+        ui.render_dfs(q_db, SIM_FILE)
 with t3:
     ui.render_rankings_syndicate(q_db)
 with t4:
-    import sqlite3
     import pandas as pd
     import ui_components as ui
     st.markdown("<h3 style='color:#ff2a6d;'>🎯 THE PARLAY MATRIX (MULTI-BOOK STAMPED)</h3>", unsafe_allow_html=True)
     try:
-        with sqlite3.connect("action_grid.db") as conn:
-            df = pd.read_sql("SELECT * FROM theoretical_bets ORDER BY created_at DESC", conn)
+        conn = q_db() if callable(q_db) else q_db
+        df = pd.read_sql("SELECT * FROM theoretical_bets ORDER BY created_at DESC", conn)
         if not df.empty:
             for _, row in df.iterrows():
                 card_html = ui.render_stamped_parlay_card(

@@ -1,0 +1,399 @@
+{
+    "active_core": [
+        {
+            "file": "app.py",
+            "size_kb": 2.7,
+            "functions": [
+                "load_dfs_lineups",
+                "load_parlays"
+            ],
+            "imports": [
+                "streamlit",
+                "json",
+                "pandas",
+                "sqlite3"
+            ],
+            "touches_db": true,
+            "touches_brain": false
+        },
+        {
+            "file": "intern_odds_scraper.py",
+            "size_kb": 2.66,
+            "functions": [
+                "resolve_entity",
+                "fetch_live_odds",
+                "ingest_odds"
+            ],
+            "imports": [
+                "sqlite3",
+                "datetime",
+                "json"
+            ],
+            "touches_db": true,
+            "touches_brain": false
+        },
+        {
+            "file": "intern_showdown_dfs.py",
+            "size_kb": 4.92,
+            "functions": [
+                "get_player_pool",
+                "generate_lineups",
+                "build_showdown"
+            ],
+            "imports": [
+                "random",
+                "sqlite3",
+                "datetime"
+            ],
+            "touches_db": true,
+            "touches_brain": false
+        },
+        {
+            "file": "intern_showdown_parlays.py",
+            "size_kb": 2.93,
+            "functions": [
+                "get_top_props",
+                "build_same_game_parlays",
+                "log_parlays"
+            ],
+            "imports": [
+                "random",
+                "sqlite3",
+                "datetime",
+                "json"
+            ],
+            "touches_db": true,
+            "touches_brain": false
+        },
+        {
+            "file": "intern_slate_audit.py",
+            "size_kb": 2.56,
+            "functions": [
+                "simulate_box_scores",
+                "run_positional_silos",
+                "build_tuesday_report"
+            ],
+            "imports": [
+                "random",
+                "sqlite3",
+                "datetime",
+                "json"
+            ],
+            "touches_db": true,
+            "touches_brain": false
+        },
+        {
+            "file": "setup_master_schema.py",
+            "size_kb": 4.33,
+            "functions": [
+                "setup_schema"
+            ],
+            "imports": [
+                "sqlite3",
+                "datetime",
+                "json"
+            ],
+            "touches_db": true,
+            "touches_brain": false
+        },
+        {
+            "file": "set_week_flag.py",
+            "size_kb": 1.27,
+            "functions": [],
+            "imports": [
+                "sqlite3",
+                "datetime",
+                "json"
+            ],
+            "touches_db": true,
+            "touches_brain": true
+        }
+    ],
+    "detached_or_legacy": [
+        {
+            "file": "audit_workspace.py",
+            "size_kb": 3.5,
+            "functions": [
+                "analyze_workspace"
+            ],
+            "imports": [
+                "re",
+                "json",
+                "os"
+            ],
+            "touches_db": true,
+            "touches_brain": true
+        },
+        {
+            "file": "deploy_cloud.py",
+            "size_kb": 3.77,
+            "functions": [
+                "scrape_sharp_news",
+                "calculate_live_edge",
+                "donna_feed",
+                "main"
+            ],
+            "imports": [
+                "random",
+                "feedparser",
+                "websockets",
+                "asyncio",
+                "subprocess",
+                "os",
+                "datetime",
+                "json"
+            ],
+            "touches_db": false,
+            "touches_brain": false
+        },
+        {
+            "file": "donna_backend.py",
+            "size_kb": 2.56,
+            "functions": [
+                "scrape_sharp_news",
+                "calculate_live_edge",
+                "donna_feed",
+                "main"
+            ],
+            "imports": [
+                "random",
+                "feedparser",
+                "websockets",
+                "asyncio",
+                "os",
+                "datetime",
+                "json"
+            ],
+            "touches_db": false,
+            "touches_brain": false
+        },
+        {
+            "file": "evaluator.py",
+            "size_kb": 3.7,
+            "functions": [
+                "send_discord_alert",
+                "grade_and_audit"
+            ],
+            "imports": [
+                "sqlite3",
+                "datetime",
+                "json",
+                "requests"
+            ],
+            "touches_db": true,
+            "touches_brain": false
+        },
+        {
+            "file": "fetcher.py",
+            "size_kb": 6.19,
+            "functions": [
+                "fetch_live_weather",
+                "fetch_live_odds",
+                "build_snapshot"
+            ],
+            "imports": [
+                "poisson",
+                "os",
+                "datetime",
+                "pandas",
+                "math",
+                "sqlite3",
+                "json",
+                "requests"
+            ],
+            "touches_db": true,
+            "touches_brain": false
+        },
+        {
+            "file": "intern_dfs_optimizer.py",
+            "size_kb": 2.61,
+            "functions": [
+                "generate_dfs_lineups"
+            ],
+            "imports": [
+                "random",
+                "sqlite3",
+                "datetime"
+            ],
+            "touches_db": true,
+            "touches_brain": false
+        },
+        {
+            "file": "intern_donna_ledger.py",
+            "size_kb": 1.69,
+            "functions": [
+                "populate_donna_ledger"
+            ],
+            "imports": [
+                "sqlite3",
+                "datetime"
+            ],
+            "touches_db": true,
+            "touches_brain": false
+        },
+        {
+            "file": "intern_mike_rankings.py",
+            "size_kb": 2.66,
+            "functions": [
+                "load_modifiers",
+                "generate_rankings"
+            ],
+            "imports": [
+                "sqlite3",
+                "datetime",
+                "json",
+                "os"
+            ],
+            "touches_db": true,
+            "touches_brain": true
+        },
+        {
+            "file": "intern_parlays.py",
+            "size_kb": 2.21,
+            "functions": [
+                "build_parlays"
+            ],
+            "imports": [
+                "random",
+                "sqlite3",
+                "datetime"
+            ],
+            "touches_db": true,
+            "touches_brain": false
+        },
+        {
+            "file": "intern_scraper.py",
+            "size_kb": 3.13,
+            "functions": [
+                "init_db",
+                "populate_week2_lines"
+            ],
+            "imports": [
+                "sqlite3",
+                "datetime"
+            ],
+            "touches_db": true,
+            "touches_brain": false
+        },
+        {
+            "file": "live_brain.py",
+            "size_kb": 0.7,
+            "functions": [
+                "read_brain"
+            ],
+            "imports": [
+                "nicegui",
+                "json"
+            ],
+            "touches_db": false,
+            "touches_brain": true
+        },
+        {
+            "file": "run_intern_pipeline.py",
+            "size_kb": 1.61,
+            "functions": [
+                "run_master_pipeline"
+            ],
+            "imports": [
+                "subprocess",
+                "sys",
+                "time"
+            ],
+            "touches_db": false,
+            "touches_brain": false
+        },
+        {
+            "file": "self_learning_loop.py",
+            "size_kb": 1.05,
+            "functions": [
+                "run_learning_cycle"
+            ],
+            "imports": [
+                "datetime",
+                "json",
+                "os"
+            ],
+            "touches_db": false,
+            "touches_brain": true
+        },
+        {
+            "file": "sim_session1.py",
+            "size_kb": 1.22,
+            "functions": [],
+            "imports": [
+                "pandas",
+                "numpy"
+            ],
+            "touches_db": false,
+            "touches_brain": false
+        }
+    ],
+    "data_and_state": [
+        {
+            "file": "action_grid.db",
+            "size_kb": 260.0
+        },
+        {
+            "file": "brain.json",
+            "size_kb": 0.52
+        },
+        {
+            "file": "juicer_core.db",
+            "size_kb": 0.0
+        },
+        {
+            "file": "keepers.csv",
+            "size_kb": 1.51
+        },
+        {
+            "file": "snapshot.json",
+            "size_kb": 3.68
+        },
+        {
+            "file": "tuesday_audit_report.json",
+            "size_kb": 0.91
+        }
+    ],
+    "utility_and_batch": [
+        {
+            "file": "dos.txt",
+            "size_kb": 0.49
+        },
+        {
+            "file": "keeper csv..txt",
+            "size_kb": 1.51
+        },
+        {
+            "file": "keeper csv.txt",
+            "size_kb": 1.51
+        },
+        {
+            "file": "Launch the juicer.bat",
+            "size_kb": 0.45
+        },
+        {
+            "file": "requirements.txt",
+            "size_kb": 0.06
+        },
+        {
+            "file": "run.bat",
+            "size_kb": 0.43
+        },
+        {
+            "file": "start.bat",
+            "size_kb": 0.07
+        },
+        {
+            "file": "start_juicer.bat",
+            "size_kb": 1.26
+        },
+        {
+            "file": "auto_pilot.bat\\@echo off.txt",
+            "size_kb": 0.15
+        },
+        {
+            "file": "auto_pilot.bat\\requirements.txt",
+            "size_kb": 0.11
+        }
+    ]
+}

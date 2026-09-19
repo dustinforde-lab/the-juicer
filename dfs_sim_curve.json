@@ -1,0 +1,35 @@
+{
+    "status": "HARDENED_CHAOS_COMPLETE",
+    "iterations": 10000,
+    "kpis": {
+        "solvency_risk": "0.00%",
+        "cash_rate": "91.4%",
+        "wr_mult": "1.08x"
+    },
+    "results": [
+        {
+            "player": "Josh Allen",
+            "mean_sim": 22.26581980789781,
+            "p90_ceiling": 29.92715083338855,
+            "p10_floor": 14.706738899972406
+        },
+        {
+            "player": "Jahmyr Gibbs",
+            "mean_sim": 18.688336199549386,
+            "p90_ceiling": 26.382732391459832,
+            "p10_floor": 10.999623593945898
+        },
+        {
+            "player": "CeeDee Lamb",
+            "mean_sim": 21.03776660727304,
+            "p90_ceiling": 28.881935961402814,
+            "p10_floor": 13.242044427297932
+        },
+        {
+            "player": "Dalton Kincaid",
+            "mean_sim": 12.760141613944283,
+            "p90_ceiling": 18.349528614744397,
+            "p10_floor": 7.250834394815446
+        }
+    ]
+}
