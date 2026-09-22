@@ -1,0 +1,94 @@
+======================================================================
+  THE JUICER: PIPELINE & ROSTER GENERATION DEEP AUDIT
+======================================================================
+
+[1] ALL SCRIPT REFERENCES INSERTING INTO 'dfs_rosters':
+  --> address_fix.py:87 | conn.execute("DELETE FROM dfs_rosters")
+  --> address_fix.py:91 | conn.execute("INSERT INTO dfs_rosters (qb, rb1, rb2, wr1, wr2, wr3, te, flex, projected_score) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+  --> audit_system.py:54 | total_dfs = cur.execute("SELECT COUNT(*) FROM dfs_rosters").fetchone()[0]
+  --> bug_detector.py:11 | dfs_sample = conn.execute("SELECT * FROM dfs_rosters LIMIT 1").fetchone()
+  --> bug_detector.py:12 | dfs_cols = [description[0] for description in conn.execute("SELECT * FROM dfs_rosters").description]
+  --> build_master_roster.py:51 | cursor.execute("DELETE FROM dfs_rosters WHERE qb LIKE '%TRACER%' OR qb LIKE '%TEST%'")
+  --> build_master_roster.py:56 | INSERT INTO dfs_rosters (qb, rb1, rb2, wr1, wr2, wr3, te, flex, projected_score, backend_tag_id)
+  --> deep_clean.py:29 | cursor.execute("DELETE FROM dfs_rosters WHERE qb LIKE '%TRACER%' OR qb LIKE '%TEST%' OR projected_score = 1000.0")
+  --> enforce_master.py:14 | cursor.execute("DELETE FROM dfs_rosters")
+  --> enforce_master.py:19 | INSERT INTO dfs_rosters (qb, rb1, rb2, wr1, wr2, wr3, te, flex, projected_score, backend_tag_id)
+  --> generate_dfs.py:58 | conn.execute("DELETE FROM dfs_rosters") # Clear old rosters
+  --> generate_dfs.py:59 | conn.executemany("INSERT INTO dfs_rosters (qb, rb1, rb2, wr1, wr2, wr3, te, flex, projected_score) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", rosters)
+  --> juicer_fix.py:21 | cursor.execute("DELETE FROM dfs_rosters WHERE qb LIKE '%TRACER%' OR qb LIKE '%TEST%' OR projected_score = 1000.0")
+  --> juicer_fix.py:30 | INSERT INTO dfs_rosters (qb, rb1, rb2, wr1, wr2, wr3, te, flex, projected_score, backend_tag_id)
+  --> mfl_master_sync.py:52 | cursor.execute("DELETE FROM dfs_rosters WHERE qb LIKE '%TRACER%' OR qb LIKE '%TEST%' OR projected_score = 1000.0")
+  --> mfl_master_sync.py:58 | INSERT INTO dfs_rosters (qb, rb1, rb2, wr1, wr2, wr3, te, flex, projected_score, backend_tag_id)
+  --> patch_ingest.py:33 | cursor.execute("DELETE FROM dfs_rosters WHERE qb LIKE '%TRACER%' OR qb LIKE '%TEST%'")
+  --> patch_ingest.py:37 | INSERT INTO dfs_rosters (qb, rb1, rb2, wr1, wr2, wr3, te, flex, projected_score, backend_tag_id)
+  --> permanent_fix.py:25 | conn.execute("CREATE TABLE IF NOT EXISTS dfs_rosters (roster_id INTEGER PRIMARY KEY AUTOINCREMENT, qb TEXT, rb1 TEXT, rb2 TEXT, wr1 TEXT, wr2 TEXT, wr3 TEXT, te TEXT, flex TEXT, projected_score REAL)")
+  --> permanent_fix.py:38 | conn.execute("DELETE FROM dfs_rosters")
+  --> permanent_fix.py:39 | conn.executemany("INSERT INTO dfs_rosters (qb, rb1, rb2, wr1, wr2, wr3, te, flex, projected_score) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", rosters)
+  --> phase1_audit.py:26 | count = conn.execute("SELECT COUNT(*) FROM dfs_rosters").fetchone()[0]
+  --> pipeline_sync.py:17 | cursor.execute("DELETE FROM dfs_rosters WHERE qb LIKE '%TRACER_%' OR qb LIKE '%TEST%'")
+  --> pipeline_sync.py:24 | INSERT INTO dfs_rosters (qb, rb1, rb2, wr1, wr2, wr3, te, flex, projected_score, backend_tag_id)
+  --> populate_300.py:92 | cur.execute("DELETE FROM dfs_rosters")
+  --> tagging_integration.py:26 | dfs_cols = [col[1] for col in cursor.execute("PRAGMA table_info(dfs_rosters)").fetchall()]
+  --> tagging_integration.py:28 | cursor.execute("ALTER TABLE dfs_rosters ADD COLUMN backend_tag_id TEXT")
+  --> tracer_eradicator.py:17 | cursor.execute("DELETE FROM dfs_rosters WHERE qb LIKE '%TRACER%' OR qb LIKE '%TEST%' OR qb LIKE '%Tracer%'")
+  --> tracer_eradicator.py:24 | INSERT INTO dfs_rosters (qb, rb1, rb2, wr1, wr2, wr3, te, flex, projected_score, backend_tag_id)
+  --> tracer_round.py:21 | "INSERT INTO dfs_rosters (qb, rb1, rb2, wr1, wr2, wr3, te, flex, projected_score) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+  --> wire_mfl_sync.py:139 | cursor.execute("DELETE FROM dfs_rosters")
+
+----------------------------------------------------------------------
+[2] SCRIPT REFERENCES WITH PROCEDURAL NAME LISTS (e.g. first_names, last_names):
+
+----------------------------------------------------------------------
+[3] APP.PY STARTUP ROUTINES & IMPORTS:
+  Line   1: import ui_addresses
+  Line   2: import sqlite3, pandas as pd, streamlit as st, config, ui_components as ui
+  Line   5: from scheduler import JobScheduler, thread_safe_log_fn
+  Line   6: import db_migration
+  Line  11: db_migration.run_migration(conn)
+  Line  16: sched.register_job("system_heartbeat", lambda: None, interval_seconds=120, run_at_start=True)
+  Line  19: import mfl_sync
+  Line  20: sched.register_job("mfl_roster_sync", mfl_sync.run_mfl_sync, interval_seconds=14400, run_at_start=True)
+  Line  24: import learning_loop
+  Line  25: sched.register_job("bayesian_recalibration", learning_loop.recalibrate, interval_seconds=86400, run_at_start=True)
+  Line  36: import ui_components
+
+----------------------------------------------------------------------
+[4] RECOMMENDATION_ENGINE.PY RECORDING LOGIC:
+  Line  55:     def record_dfs_lineup(self, lineup_type: str, projected_pts: float, roster: list[dict]) -> int:
+  Line  56:         if projected_pts < 0: raise RecommendationEngineError("projected_pts cannot be negative")
+  Line  57:         if not roster: raise RecommendationEngineError("roster cannot be empty")
+  Line  58:         cur = self._conn.execute(
+  Line  59:             "INSERT INTO dfs_classic_lineups (lineup_type, projected_pts, roster_json) VALUES (?, ?, ?)",
+  Line  60:             (lineup_type, projected_pts, json.dumps(roster)),
+  Line  61:         )
+  Line  62:         self._conn.commit()
+  Line  63:         return cur.lastrowid
+  Line  64: 
+  Line  65:     def record_slip(self, platform: str, legs: Iterable[Leg], implied_probability: Optional[float] = None, confidence_tier: Optional[str] = None) -> int:
+  Line  66:         legs = list(legs)
+  Line  67:         if platform not in _PLATFORM_TO_SOURCE:
+  Line  68:             raise RecommendationEngineError(f"platform must be one of {sorted(_PLATFORM_TO_SOURCE)}")
+  Line  69:         leg_count = len(legs)
+  Line  70:         if not (2 <= leg_count <= 6):
+  Line  71:             raise RecommendationEngineError(f"slips must have 2-6 legs, got {leg_count}")
+  Line  72:         legs_json = json.dumps([leg.__dict__ for leg in legs])
+  Line  73:         cur = self._conn.execute(
+  Line  74:             "INSERT INTO slips (platform, leg_count, legs_json, implied_probability, confidence_tier, status, created_at) VALUES (?, ?, ?, ?, ?, 'PENDING', ?)",
+  Line  75:             (platform, leg_count, legs_json, implied_probability, confidence_tier, _utcnow()),
+  Line  76:         )
+  Line  77:         self._conn.commit()
+  Line  78:         return cur.lastrowid
+  Line  79: 
+  Line  80:     def grade_dfs_lineup(self, lineup_id: int, actual_pts: float) -> GradeResult:
+  Line  81:         row = self._conn.execute("SELECT projected_pts FROM dfs_classic_lineups WHERE id = ?", (lineup_id,)).fetchone()
+  Line  82:         if row is None: raise RecommendationEngineError(f"no dfs lineup with id={lineup_id}")
+  Line  83:         projected_pts = row[0]
+  Line  84:         hit_flag = 1 if actual_pts >= projected_pts else 0
+  Line  85:         graded_at = _utcnow()
+  Line  86: 
+  Line  87:         self._conn.execute("UPDATE dfs_classic_lineups SET actual_pts = ?, graded_at = ? WHERE id = ?", (actual_pts, graded_at, lineup_id))
+  Line  88:         self._conn.execute(
+  Line  89:             "INSERT INTO bet_grading (source, reference_id, predicted_value, actual_value, hit_flag, created_at, graded_at) VALUES ('DFS', ?, ?, ?, ?, ?, ?)",
+  Line  90:             (lineup_id, projected_pts, actual_pts, hit_flag, graded_at, graded_at),
+
+======================================================================

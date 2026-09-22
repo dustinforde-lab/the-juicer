@@ -1,0 +1,8 @@
+id,player,position,team,stat_category,consensus_line,juice_score,rank,updated_at
+21,Patrick Mahomes,QB,KC,PASS_YDS,275.5,96.42,1,2026-09-17 16:15:50
+23,Justin Jefferson,WR,MIN,REC_YDS,88.5,32.21,3,2026-09-17 16:15:50
+24,CeeDee Lamb,WR,DAL,REC_YDS,86.5,31.49,4,2026-09-17 16:15:50
+25,Christian McCaffrey,RB,SF,RUSH_YDS,83.5,29.22,5,2026-09-17 16:15:50
+26,Breece Hall,RB,NYJ,RUSH_YDS,68.5,23.97,6,2026-09-17 16:15:50
+27,Travis Kelce,TE,KC,REC_YDS,58.0,20.3,7,2026-09-17 16:15:50
+30,Justin Jefferson,WR,MIN,RECEPTIONS,6.5,2.37,10,2026-09-17 16:15:50

@@ -1,35 +1,24 @@
-﻿import py_compile
+with open("app.py", "r", encoding="utf-8") as f:
+    lines = f.readlines()
 
-print("=" * 65)
-print("🔧 [HOTFIX] Repairing IndentationError in app.py...")
-print("=" * 65)
+with open("app.py", "w", encoding="utf-8") as f:
+    in_target_block = False
+    for line in lines:
+        # Detect the start of the injected block
+        if line.startswith("    # Initialize Mobile-First Styles"):
+            in_target_block = True
+            
+        if in_target_block:
+            # Strip exactly 4 leading spaces from the injected lines
+            if line.startswith("    "):
+                f.write(line[4:])
+            else:
+                f.write(line)
+            
+            # Stop formatting once we hit the end of the block
+            if line.strip() == "pass":
+                in_target_block = False
+        else:
+            f.write(line)
 
-try:
-    with open("app.py", "r", encoding="utf-8") as f:
-        lines = f.readlines()
-
-    fixed = False
-    for i in range(1, len(lines)):
-        if "st.markdown(clean_card" in lines[i]:
-            prev_line = lines[i-1]
-            if "clean_card =" in prev_line:
-                # Capture the exact whitespace from the line above
-                correct_indent = prev_line[:len(prev_line) - len(prev_line.lstrip())]
-                lines[i] = correct_indent + "st.markdown(clean_card, unsafe_allow_html=True)\n"
-                fixed = True
-
-    if fixed:
-        with open("app.py", "w", encoding="utf-8") as f:
-            f.writelines(lines)
-        print("   ✅ Indentation automatically realigned.")
-    else:
-        print("   ⚠️ Could not find the specific clean_card lines to fix.")
-
-    # Verify the syntax is now flawless
-    py_compile.compile("app.py", doraise=True)
-    print("   ✅ app.py compiled with ZERO syntax errors!")
-
-except Exception as e:
-    print(f"   ❌ Error: {e}")
-
-print("=" * 65)
+print("✅ Indentation permanently fixed in app.py")

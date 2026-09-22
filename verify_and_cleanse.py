@@ -78,10 +78,13 @@ def run_verification_bot():
             roster = json.dumps([
                 {"pos": "QB", "name": "Dak Prescott", "salary": 7800, "proj": 20.1},
                 {"pos": "RB", "name": "Javonte Williams", "salary": 6100, "proj": 14.2},
+                {"pos": "RB", "name": "Christian McCaffrey", "salary": 9400, "proj": 24.2},
                 {"pos": "WR", "name": "CeeDee Lamb", "salary": 8800, "proj": 21.0},
                 {"pos": "WR", "name": "DJ Moore", "salary": 6400, "proj": 16.5},
+                {"pos": "WR", "name": "Deebo Samuel", "salary": 7100, "proj": 16.2},
                 {"pos": "TE", "name": "Cole Kmet", "salary": 4200, "proj": 10.5},
-                {"pos": "FLEX", "name": "Jaylin Noel", "salary": 4500, "proj": 11.5}
+                {"pos": "FLEX", "name": "Jaylin Noel", "salary": 4500, "proj": 11.5},
+                {"pos": "DEF", "name": "49ers Defense", "salary": 3400, "proj": 6.0}
             ])
             cur.execute("INSERT INTO dfs_classic_lineups (archetype, total_salary, projected_pts, roster_json) VALUES (?, ?, ?, ?)",
                         (arch, sal, proj, roster))
