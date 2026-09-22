@@ -90,15 +90,15 @@ def render_real_parlay_matrix(*a, **k):
     try:
         with sqlite3.connect(DB) as conn:
             conn.row_factory = sqlite3.Row
-            rows = [dict(r) for r in conn.cursor().execute("SELECT * FROM theoretical_bets LIMIT 40").fetchall()]
+            rows = [dict(r) for r in conn.cursor().execute("SELECT * FROM slips WHERE platform = 'SPORTSBOOK_PARLAY' ORDER BY implied_probability DESC LIMIT 250").fetchall()]
         for r in rows:
-            book_source = r.get("sportsbook_source") or r.get("book") or "DraftKings"
-            ticket_raw = r.get("ticket_json") or r.get("legs_json") or "[]"
+            book_source = "DraftKings / FanDuel / MGM"
+            ticket_raw = r.get("legs_json") or "[]"
             if isinstance(ticket_raw, str) and ticket_raw.startswith("["):
                 legs = json.loads(ticket_raw)
-                with st.expander(f"💸 Syndicate Slip: {r.get('ticket_id', '?')} | Odds: {r.get('odds', '+450')} | 🏛️ Book: {book_source}"):
+                with st.expander(f"💸 Syndicate Slip #{r.get('id', '?')} | Confidence: {r.get('confidence_tier', 'B')} | 🏛️ Book: {book_source}"):
                     for leg in legs:
-                        st.markdown(f'<div class="leg-box"><div><span class="leg-player">{leg.get("player", "?")}</span> <span class="leg-team">({leg.get("team", "FA")})</span></div><div><span class="leg-stat">{leg.get("stat", "Prop")}:</span> <span class="leg-line">{leg.get("line", "N/A")}</span></div><div class="book-badge">🏛️ {leg.get("sportsbook_source", book_source)}</div></div>', unsafe_allow_html=True)
+                        st.markdown(f'<div class="leg-box"><div><span class="leg-player">{leg.get("player_name", "?")}</span> <span class="leg-team">{leg.get("position", "")}</span></div><div><span class="leg-stat">{leg.get("direction", "")} {leg.get("stat_category", "PPR")}:</span> <span class="leg-line">{leg.get("line", "N/A")}</span></div><div class="book-badge">🏛️ {book_source}</div></div>', unsafe_allow_html=True)
     except Exception as e: st.error(e)
 
 def render_donna_matrix(*a, **k):
@@ -349,12 +349,11 @@ def render_prizepicks_underdog(*a, **k):
     try:
         with sqlite3.connect(DB) as conn:
             conn.row_factory = sqlite3.Row
-            for r in [dict(r) for r in conn.cursor().execute("SELECT * FROM underdog_slips LIMIT 50").fetchall()]:
-                slip_str = r.get("slip_json")
-                if slip_str and isinstance(slip_str, str) and slip_str.startswith('['):
-                    with st.expander(f"🔮 Slip ID: {r.get('slip_id','?')} | Type: {r.get('slip_type','?')} | 🏛️ {r.get('book','PrizePicks')}"):
-                        for s in json.loads(slip_str):
-                            st.markdown(f'<div class="leg-box"><span class="leg-player">{s.get("player","?")}</span><span class="leg-stat">{s.get("prop","Prop")}: {s.get("line","?")}</span></div>', unsafe_allow_html=True)
+            rows = [dict(r) for r in conn.cursor().execute("SELECT * FROM slips WHERE platform IN ('PRIZEPICKS', 'UNDERDOG') ORDER BY implied_probability DESC LIMIT 150").fetchall()]
+            for r in rows:
+                with st.expander(f"🔮 {r.get('platform', 'PICKEM')} Slip #{r.get('id', '?')} | Confidence: {r.get('confidence_tier', 'B')}"):
+                    for leg in json.loads(r.get("legs_json") or "[]"):
+                        st.markdown(f'<div class="leg-box"><span class="leg-player">{leg.get("player_name", "?")}</span><span class="leg-stat">{leg.get("direction", "")} {leg.get("stat_category", "PPR")}: {leg.get("line", "?")}</span></div>', unsafe_allow_html=True)
     except Exception as e: st.error(e)
 
 def render_film_room(*a, **k):
@@ -827,3 +826,85 @@ def render_dfs_engine():
             
     except Exception as e:
         st.error(f"Error loading Bayesian weights: {e}")
+
+# Final compatibility renderer: supports both the legacy classic lineup table
+# and the newer cash/GPP roster tables while keeping one stable nine-slot UI.
+def render_dfs_engine():
+    import json
+    import sqlite3
+    import pandas as pd
+
+    slot_order = ["QB", "RB", "RB", "WR", "WR", "WR", "TE", "FLEX", "DEF"]
+    st.markdown("<h3 class='neon-title'>👑 DFS CLASSIC ROSTERS</h3>", unsafe_allow_html=True)
+
+    def empty_roster():
+        return ["Open"] * len(slot_order)
+
+    def from_positioned_row(row):
+        columns = ["qb", "rb1", "rb2", "wr1", "wr2", "wr3", "te", "flex", "dst"]
+        return [row[column] or "Open" if column in row.index else "Open" for column in columns]
+
+    def from_roster_json(raw):
+        by_position = {}
+        for player in json.loads(raw or "[]"):
+            position = str(player.get("pos", "FLEX")).upper()
+            if position in ("DST", "DEFENSE"):
+                position = "DEF"
+            by_position.setdefault(position, []).append(player.get("name", "Open"))
+        for slot in slot_order:
+            candidates = by_position.get(slot, [])
+            if slot == "FLEX" and not candidates:
+                candidates = by_position.get("RB", [])[2:] + by_position.get("WR", [])[3:] + by_position.get("TE", [])[1:]
+            by_position[slot] = candidates
+        return [by_position.get(slot, ["Open"]).pop(0) if by_position.get(slot) else "Open" for slot in slot_order]
+
+    def from_players_text(text):
+        roster = ["Open"] * len(slot_order)
+        for section in str(text or "").split(" | "):
+            if ":" not in section:
+                continue
+            position, players = section.split(":", 1)
+            names = [name.strip() for name in players.split(",") if name.strip()]
+            if position.strip() == "RB":
+                roster[1:3] = (names + ["Open", "Open"])[:2]
+            elif position.strip() == "WR":
+                roster[3:6] = (names + ["Open"] * 3)[:3]
+            elif position.strip() in ("QB", "TE", "FLEX", "DEF"):
+                roster[{"QB": 0, "TE": 6, "FLEX": 7, "DEF": 8}[position.strip()]] = names[0] if names else "Open"
+        return roster
+
+    try:
+        with sqlite3.connect("action_grid.db") as conn:
+            tables = set(pd.read_sql("SELECT name FROM sqlite_master WHERE type='table'", conn)["name"])
+            cards = []
+            if "dfs_rosters" in tables:
+                data = pd.read_sql("SELECT * FROM dfs_rosters ORDER BY projected_score DESC", conn)
+                for _, row in data.iterrows():
+                    cards.append((from_positioned_row(row), row.get("projected_score", "-"), row.get("lineup_type", "DFS")))
+            elif "dfs_classic_lineups" in tables:
+                data = pd.read_sql("SELECT * FROM dfs_classic_lineups ORDER BY projected_pts DESC", conn)
+                for _, row in data.iterrows():
+                    cards.append((from_roster_json(row.get("roster_json")), row.get("projected_pts", "-"), row.get("archetype", "DFS")))
+            else:
+                for table in ("cash_rosters", "gpp_rosters"):
+                    if table not in tables:
+                        continue
+                    data = pd.read_sql(f"SELECT * FROM {table} ORDER BY projected_points DESC", conn)
+                    for _, row in data.iterrows():
+                        cards.append((from_players_text(row.get("players_text")), row.get("projected_points", "-"), table.replace("_", " ").upper()))
+
+        if not cards:
+            st.info("No DFS rosters generated. Waiting for the AI generator loop.")
+            return
+
+        for roster, projection, roster_type in cards:
+            pills = "".join(
+                f"<div style='background:#1c1733; border:1px solid #00e5ff55; border-radius:6px; padding:8px; min-width:110px; flex:1;'><div style='color:#00e5ff; font-weight:900; font-size:0.65rem;'>{slot}</div><div style='color:#fff; font-weight:800; font-size:0.85rem;'>{player}</div></div>"
+                for slot, player in zip(slot_order, roster)
+            )
+            st.markdown(
+                f"<div style='background:#130f24; border:2px solid #332b58; border-radius:12px; padding:15px; margin-bottom:15px;'><div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;'><div style='color:#fff; font-weight:900;'>DRAFTKINGS | {str(roster_type).upper()}</div><div style='color:#00ff88; font-weight:800;'>{projection} pts</div></div><div style='display:flex; gap:10px; flex-wrap:wrap;'>{pills}</div></div>",
+                unsafe_allow_html=True,
+            )
+    except Exception as e:
+        st.error(f"Error loading DFS rosters: {e}")

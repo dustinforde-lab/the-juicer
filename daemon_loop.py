@@ -9,6 +9,7 @@ def run_pipeline_cycle():
     
     steps = [
         ("Live Ingest", ["python", "live_ingest.py"]),
+        ("Donna Learning Recalibration", ["python", "-c", "import learning_loop; print(learning_loop.recalculate_weights())"]),
         ("Monte Carlo Evaluator V2", ["python", "mike_evaluator_v2.py"]),
         ("DFS & Slips Generator", ["python", "generate_dfs.py"])
     ]

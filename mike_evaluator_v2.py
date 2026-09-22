@@ -10,6 +10,10 @@ def evaluate_top_300():
     
     with sqlite3.connect(DB_PATH) as conn:
         cur = conn.cursor()
+        learned_weights = {
+            row[0]: row[1]
+            for row in cur.execute("SELECT stat_category, weight_factor FROM correlation_weights")
+        }
         
         # 1. THE PROP GATE: Fetch only viable players with active baselines
         players = cur.execute("""
@@ -38,6 +42,8 @@ def evaluate_top_300():
                 base_score *= 1.05
             elif pos in ('RB', 'WR', 'TE') and base_score > 12.0:
                 base_score *= 1.03
+
+            base_score *= learned_weights.get(pos, learned_weights.get("PPR", 1.0))
                 
             # 7. ELITE TIER ANCHORING (Guaranteeing superstars lead the board)
             if name in ["Josh Allen", "Patrick Mahomes", "Lamar Jackson", "Christian McCaffrey", "Justin Jefferson"]:

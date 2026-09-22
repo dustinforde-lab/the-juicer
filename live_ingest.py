@@ -6,10 +6,23 @@ from datetime import datetime
 
 DB_PATH = os.path.join(os.getcwd(), 'action_grid.db')
 
-API_KEYS = [
-    "PASTE_PRIMARY_KEY_HERE",
-    "PASTE_SECONDARY_KEY_HERE"
-]
+def get_secret(name):
+    value = os.getenv(name)
+    if value:
+        return value
+    try:
+        import streamlit as st
+        value = st.secrets.get(name, "")
+        if value:
+            return value
+        api_keys = st.secrets.get("api_keys", {})
+        return api_keys.get(name.lower(), "")
+    except Exception:
+        return ""
+
+
+API_KEYS = [get_secret("ODDS_API_KEY")]
+MFL_API_TOKEN = get_secret("MFL_API_TOKEN")
 
 def run_smart_ingest():
     print("\n" + "="*65)
@@ -22,7 +35,7 @@ def run_smart_ingest():
         print(f"  [1] Calendar Check: Today is {today}. Peak Window: {peak}")
         
         success = False
-        valid_keys = [k for k in API_KEYS if "PASTE_" not in k]
+        valid_keys = [key for key in API_KEYS if key]
         
         if peak and valid_keys:
             events_url = "https://api.the-odds-api.com/v4/sports/americanfootball_nfl/events"
