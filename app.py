@@ -1,131 +1,36 @@
-import streamlit as st
-import sqlite3
-import pandas as pd
-import config
-import ui_addresses
-import ui_components as ui
-from scheduler import JobScheduler, thread_safe_log_fn
-import learning_loop
-import os
+﻿import streamlit as st
+import address_book
 
-st.set_page_config(
-    page_title="The Juicer - Pro Syndicate War Room",
-    layout="wide",
-    initial_sidebar_state="collapsed"
-)
+# 1. Page Configuration & Styling
+st.set_page_config(page_title="The Juicer | War Room", page_icon="⚡", layout="wide", initial_sidebar_state="collapsed")
+st.markdown("<style>.stApp { background-color: #06090e; color: #c9d1d9; } header, footer { visibility: hidden; }</style>", unsafe_allow_html=True)
 
-DB_PATH = getattr(config, 'DB_PATH', 'action_grid.db')
+# 2. State Bus Initialization
+address_book.init_session_state(st)
 
-# Optional & Guarded Background Scheduler Setup
-@st.cache_resource
-def init_syndicate_scheduler():
-    try:
-        log_fn = thread_safe_log_fn(DB_PATH)
-        sched = JobScheduler(log_fn=log_fn)
-        if hasattr(learning_loop, 'recalibrate_weights'):
-            sched.register_job(
-                "bayesian_recalibration",
-                learning_loop.recalibrate_weights,
-                interval_seconds=86400,
-                run_at_start=False,
-            )
-        sched.start()
-        return True
-    except Exception as e:
-        return False
+# 3. Safe Module Imports (Zero cross-tab dependencies)
+import ui_scoreboard, ui_dfs, ui_lineup_lab, ui_the_rankings, ui_parlay_mix, ui_season_long, ui_prizepicks, ui_film_room, ui_ops, ui_sim_audit
 
-init_syndicate_scheduler()
+# 4. Master Tab Mapping
+tabs = st.tabs(["🏟️ Scoreboard", "🧬 DFS Engine", "🧪 DFS Lab", "⚡ The Rankings", "🔀 Parlay Mix", "🏈 Season Long", "🎟️ PrizePicks", "🎥 Film Room", "⚙️ Ops", "🎲 Learning"])
 
-# Apply Custom CSS & Elite Aesthetics
-if hasattr(ui, 'inject_elite_aesthetic'):
-    ui.inject_elite_aesthetic()
+tab_modules = {
+    0: ui_scoreboard.render_scoreboard_tab,
+    1: ui_dfs.render_dfs_tab,
+    2: ui_lineup_lab.render_lineup_lab_tab,
+    3: ui_the_rankings.render_the_rankings,
+    4: ui_parlay_mix.render_parlay_mix,
+    5: ui_season_long.render_season_long,
+    6: ui_prizepicks.render_prizepicks,
+    7: ui_film_room.render_film_room,
+    8: ui_ops.render_ops_desk,
+    9: ui_sim_audit.render_sim_audit_tab
+}
 
-# Render Multi-Book & Accountability Tickers
-if hasattr(ui, 'render_accountability_tickers'):
-    ui.render_accountability_tickers()
-
-# Master Command Slate Header & Controls (Matching Screenshots)
-col_title, col_slate = st.columns([0.6, 0.4])
-with col_title:
-    st.markdown("<h1 style='text-align: center; color: #ff3366; font-weight: 900; letter-spacing: 2px; margin: 0;'>THE JUICER</h1>", unsafe_allow_html=True)
-with col_slate:
-    selected_slate = st.selectbox(
-        "MASTER COMMAND SLATE:",
-        ["Sunday Main Slate (Classic 9-Man)", "Thursday Night Showdown", "Monday Night Football SGP", "Full Slate DFS Pool"],
-        key="master_command_slate_dropdown"
-    )
-
-st.markdown("---")
-
-# Full 9-Tab War Room Architecture mapped to native ui_components functions
-try:
-    tabs = st.tabs([
-        "🏆 Scoreboard", 
-        "👑 DFS Engine", 
-        "📊 Donna's Leverage", 
-        "🎯 Parlay Matrix", 
-        "🏈 Season-Long", 
-        "⚡ PrizePicks", 
-        "🎥 Film Room", 
-        "⚙️ Ops Center", 
-        "🤖 Learning Loop"
-    ])
-
-    with tabs[0]:
-        if hasattr(ui, 'render_vegas_wall'):
-            ui.render_vegas_wall()
-        else:
-            st.info("Scoreboard feed initializing...")
-
-    with tabs[1]:
-        if hasattr(ui, 'render_dfs_engine'):
-            ui.render_dfs_engine()
-        elif hasattr(ui, 'render_dfs'):
-            ui.render_dfs()
-
-    with tabs[2]:
-        if hasattr(ui, 'render_donna_matrix'):
-            ui.render_donna_matrix()
-        else:
-            st.info("Donna's leverage matrix loading...")
-
-    with tabs[3]:
-        if hasattr(ui, 'render_real_parlay_matrix'):
-            ui.render_real_parlay_matrix()
-        else:
-            st.info("Parlay matrix loading...")
-
-    with tabs[4]:
-        if hasattr(ui, 'render_season_long'):
-            ui.render_season_long()
-        else:
-            st.info("Season-long rosters loading...")
-
-    with tabs[5]:
-        if hasattr(ui, 'render_prizepicks_underdog'):
-            ui.render_prizepicks_underdog()
-        elif hasattr(ui, 'render_pickem_slips'):
-            ui.render_pickem_slips()
-
-    with tabs[6]:
-        if hasattr(ui, 'render_film_room'):
-            ui.render_film_room()
-        else:
-            st.info("Film room telemetry loading...")
-
-    with tabs[7]:
-        if hasattr(ui, 'render_ops_center'):
-            ui.render_ops_center()
-        elif hasattr(ui, 'render_telemetry'):
-            ui.render_telemetry()
-
-    with tabs[8]:
-        if hasattr(ui, 'render_learning_loop'):
-            ui.render_learning_loop()
-        elif hasattr(ui, 'render_learning_panel'):
-            ui.render_learning_panel()
-
-except Exception as e:
-    st.error(f"⚠️ War Room Render Exception: {e}")
-    import traceback
-    st.code(traceback.format_exc())
+# 5. Bulletproof Execution Loop with Localized Fallbacks
+for tab_idx, render_func in tab_modules.items():
+    with tabs[tab_idx]:
+        try:
+            render_func()
+        except Exception as e:
+            st.error(f"⚠️ UI Guardrail: Tab {tab_idx} encountered an error: {e}. The rest of the application remains live.")

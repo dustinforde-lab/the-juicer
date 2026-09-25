@@ -1,0 +1,164 @@
+﻿import ui_extension as uext
+import streamlit as st
+import sqlite3
+import pandas as pd
+import config
+import ui_addresses
+import ui_components as ui
+from scheduler import JobScheduler, thread_safe_log_fn
+import learning_loop
+import mike_evaluator_v2
+import generate_dfs
+import live_medic_poller
+import upgrade_meteorologist
+import os
+
+st.set_page_config(
+    page_title="The Juicer - Pro Syndicate War Room",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
+
+DB_PATH = getattr(config, 'DB_PATH', 'action_grid.db')
+
+# Optional & Guarded Background Scheduler Setup
+@st.cache_resource
+def init_syndicate_scheduler():
+    try:
+        log_fn = thread_safe_log_fn(DB_PATH)
+        sched = JobScheduler(log_fn=log_fn)
+        if hasattr(learning_loop, 'recalculate_weights'):
+            sched.register_job(
+                "bayesian_recalibration",
+                learning_loop.recalculate_weights,
+                interval_seconds=86400,
+                run_at_start=False,
+            )
+        def run_full_pipeline():
+            try:
+                if hasattr(mike_evaluator_v2, "evaluate_top_300"):
+                    mike_evaluator_v2.evaluate_top_300()
+                if hasattr(generate_dfs, "generate_lineups_and_slips"):
+                    generate_dfs.generate_lineups_and_slips()
+            except Exception as e:
+                print(f"[CLAUDE CHUNK 009] Pipeline error: {e}")
+
+        # === CLAUDE CHUNK 009 START -- Wire evaluator + DFS/slip generator + injury + weather engines into startup ===
+        sched.register_job("full_pipeline", run_full_pipeline, interval_seconds=3600, run_at_start=True)
+        if hasattr(live_medic_poller, "poll_live_injury_trends"):
+            sched.register_job("injury_poller", live_medic_poller.poll_live_injury_trends, interval_seconds=1800, run_at_start=True)
+        if hasattr(upgrade_meteorologist, "deploy_meteorologist"):
+            sched.register_job("weather_feed", upgrade_meteorologist.deploy_meteorologist, interval_seconds=3600, run_at_start=True)
+        # === CLAUDE CHUNK 009 END ===
+        sched.start()
+        return True
+    except Exception as e:
+        print(f"[SCHEDULER INIT FAILED] {type(e).__name__}: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
+
+init_syndicate_scheduler()
+
+# Apply Custom CSS & Elite Aesthetics
+if hasattr(ui, 'inject_elite_aesthetic'):
+    ui.inject_elite_aesthetic()
+
+# Render Multi-Book & Accountability Tickers
+if hasattr(ui, 'render_accountability_tickers'):
+    ui.render_accountability_tickers()
+
+# Master Command Slate Header & Controls (Matching Screenshots)
+col_title, col_slate = st.columns([0.6, 0.4])
+with col_title:
+    st.markdown("<h1 style='text-align: center; color: #ff3366; font-weight: 900; letter-spacing: 2px; margin: 0;'>THE JUICER</h1>", unsafe_allow_html=True)
+with col_slate:
+    selected_slate = st.selectbox(
+        "MASTER COMMAND SLATE:",
+        ["Sunday Main Slate (Classic 9-Man)", "Thursday Night Showdown", "Monday Night Football SGP", "Full Slate DFS Pool"],
+        key="master_command_slate_dropdown"
+    )
+
+st.markdown("---")
+
+# Full 9-Tab War Room Architecture mapped to native ui_components functions
+try:
+    tabs = st.tabs([
+        "🏆 Scoreboard", 
+        "👑 DFS Engine", 
+        "📊 Donna's Leverage", 
+        "🎯 Parlay Matrix", 
+        "🏈 Season-Long", 
+        "⚡ PrizePicks", 
+        "🎥 Film Room", 
+        "⚙️ Ops Center", 
+        "🤖 Learning Loop"
+    ])
+
+    with tabs[0]:
+        if hasattr(ui, 'render_vegas_wall'):
+            try:
+                ui.render_vegas_wall()
+            except Exception:
+                uext.render_safe_vegas_wall()
+        else:
+            uext.render_safe_vegas_wall()
+
+    with tabs[1]:
+        if hasattr(ui, 'render_dfs_engine'):
+            ui.render_dfs_engine()
+        elif hasattr(ui, 'render_dfs'):
+            ui.render_dfs()
+
+    with tabs[2]:
+        if hasattr(ui, 'render_donna_matrix'):
+            ui.render_donna_matrix()
+        else:
+            st.info("Donna's leverage matrix loading...")
+
+    with tabs[3]:
+        if hasattr(ui, 'render_real_parlay_matrix'):
+            ui.render_real_parlay_matrix()
+        else:
+            st.info("Parlay matrix loading...")
+
+    with tabs[4]:
+        if hasattr(ui, 'render_season_long'):
+            ui.render_season_long()
+        else:
+            st.info("Season-long rosters loading...")
+
+    with tabs[5]:
+        if hasattr(ui, 'render_prizepicks_underdog'):
+            try:
+                ui.render_prizepicks_underdog()
+            except Exception:
+                uext.render_safe_prizepicks()
+        else:
+            uext.render_safe_prizepicks()
+
+    with tabs[6]:
+        if hasattr(ui, 'render_film_room'):
+            ui.render_film_room()
+        else:
+            st.info("Film room telemetry loading...")
+
+    with tabs[7]:
+        if hasattr(ui, 'render_ops_center'):
+            ui.render_ops_center()
+        elif hasattr(ui, 'render_telemetry'):
+            ui.render_telemetry()
+
+    with tabs[8]:
+        if hasattr(ui, 'render_learning_loop'):
+            ui.render_learning_loop()
+        elif hasattr(ui, 'render_learning_panel'):
+            ui.render_learning_panel()
+
+except Exception as e:
+    st.error(f"Ã¢Å¡Â Ã¯Â¸Â War Room Render Exception: {e}")
+    import traceback
+    st.code(traceback.format_exc())
+
+
+

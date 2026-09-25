@@ -1,0 +1,437 @@
+﻿=================================================================
+🛡️ ROLLBACK ARMED: Snapshots saved to _backups\20260924_180058
+=================================================================
+
+=================================================================
+1. ACTIVE ROOT TAB ROUTING (app.py)
+=================================================================
+
+  app.py:40:if hasattr(ui, 'inject_elite_aesthetic'):
+> app.py:41:    ui.inject_elite_aesthetic()
+  app.py:42:
+  app.py:43:# Render Multi-Book & Accountability Tickers
+> app.py:44:if hasattr(ui, 'render_accountability_tickers'):
+> app.py:45:    ui.render_accountability_tickers()
+  app.py:46:
+  app.py:61:try:
+> app.py:62:    tabs = st.tabs([
+  app.py:63:        "🏆 Scoreboard", 
+  app.py:73:
+> app.py:74:    with tabs[0]:
+> app.py:75:        if hasattr(ui, 'render_vegas_wall'):
+> app.py:76:            ui.render_vegas_wall()
+  app.py:77:        else:
+  app.py:79:
+> app.py:80:    with tabs[1]:
+> app.py:81:        if hasattr(ui, 'render_dfs_engine'):
+> app.py:82:            ui.render_dfs_engine()
+> app.py:83:        elif hasattr(ui, 'render_dfs'):
+> app.py:84:            ui.render_dfs()
+  app.py:85:
+> app.py:86:    with tabs[2]:
+> app.py:87:        if hasattr(ui, 'render_donna_matrix'):
+> app.py:88:            ui.render_donna_matrix()
+  app.py:89:        else:
+  app.py:91:
+> app.py:92:    with tabs[3]:
+> app.py:93:        if hasattr(ui, 'render_real_parlay_matrix'):
+> app.py:94:            ui.render_real_parlay_matrix()
+  app.py:95:        else:
+  app.py:97:
+> app.py:98:    with tabs[4]:
+> app.py:99:        if hasattr(ui, 'render_season_long'):
+> app.py:100:            ui.render_season_long()
+  app.py:101:        else:
+  app.py:103:
+> app.py:104:    with tabs[5]:
+> app.py:105:        if hasattr(ui, 'render_prizepicks_underdog'):
+> app.py:106:            ui.render_prizepicks_underdog()
+> app.py:107:        elif hasattr(ui, 'render_pickem_slips'):
+> app.py:108:            ui.render_pickem_slips()
+  app.py:109:
+> app.py:110:    with tabs[6]:
+> app.py:111:        if hasattr(ui, 'render_film_room'):
+> app.py:112:            ui.render_film_room()
+  app.py:113:        else:
+  app.py:115:
+> app.py:116:    with tabs[7]:
+> app.py:117:        if hasattr(ui, 'render_ops_center'):
+> app.py:118:            ui.render_ops_center()
+> app.py:119:        elif hasattr(ui, 'render_telemetry'):
+> app.py:120:            ui.render_telemetry()
+  app.py:121:
+> app.py:122:    with tabs[8]:
+> app.py:123:        if hasattr(ui, 'render_learning_loop'):
+> app.py:124:            ui.render_learning_loop()
+> app.py:125:        elif hasattr(ui, 'render_learning_panel'):
+> app.py:126:            ui.render_learning_panel()
+  app.py:127:
+
+=================================================================
+2. THE JUICE RANKINGS AUDIT (tab_juice_rankings.py & candidates)
+=================================================================
+--- Found tab_juice_rankings.py ---
+import streamlit as st
+import pandas as pd
+
+def calc_ppr(row):
+    pos = row.get("Pos", "")
+    if pos == "K":
+        return round(row.get("FGM", 2.1) * 3.0 + row.get("FG50", 0.4) * 2.0 + row.get("XPM", 2.6) * 1.0, 2)
+    if pos == "DST":
+        return round(row.get("Sacks", 3.0) * 1.0 + row.get("Turnovers", 1.4) * 2.0 + row.get("DefTD", 0.15) * 6.0 + max(0, 10.0 - (row.get("PtsAllowed", 21) * 0.3)), 2)
+    
+    pts = (row.get("PassYds", 0) / 25.0) + (row.get("RushYds", 0) / 10.0) + (row.get("RecYds", 0) / 10.0) + (row.get("Rec", 0) * 1.0)
+    pts += (row.get("PassTD", 0) * 4.0) + (row.get("RushTD", 0) * 6.0) + (row.get("RecTD", 0) * 6.0)
+    return round(pts, 2)
+
+BASE_SEED = [
+    {"Player": "Josh Allen", "Pos": "QB", "Team": "BUF", "Opp": "MIA", "PassYds": 268, "PassTD": 2.1, "RushYds": 38, "RushTD": 0.5, "Rec": 0, "RecYds": 0, "VegasProp": "254.5 Pass Yds", "Edge": "+5.3%"},
+    {"Player": "Breece Hall", "Pos": "RB", "Team": "NYJ", "Opp": "NE", "PassYds": 0, "PassTD": 0, "RushYds": 82, "RushTD": 0.8, "Rec": 4.8, "RecYds": 38, "VegasProp": "67.5 Rush Yds", "Edge": "+21.5%"},
+    {"Player": "Justin Jefferson", "Pos": "WR", "Team": "MIN", "Opp": "GB", "PassYds": 0, "PassTD": 0, "RushYds": 0, "RushTD": 0.0, "Rec": 7.4, "RecYds": 98, "VegasProp": "84.5 Rec Yds", "Edge": "+16.0%"},
+    {"Player": "Travis Kelce", "Pos": "TE", "Team": "KC", "Opp": "LAC", "PassYds": 0, "PassTD": 0, "RushYds": 0, "RushTD": 0.0, "Rec": 5.6, "RecYds": 64, "VegasProp": "56.5 Rec Yds", "Edge": "+13.3%"},
+    {"Player": "Brandon Aubrey", "Pos": "K", "Team": "DAL", "Opp": "NYG", "FGM": 2.4, "FG50": 0.8, "XPM": 2.8, "VegasProp": "1.5 FGM", "Edge": "+14.0%"},
+    {"Player": "Minnesota Vikings", "Pos": "DST", "Team": "MIN", "Opp": "GB", "Sacks": 3.4, "Turnovers": 1.5, "DefTD": 0.2, "PtsAllowed": 19, "VegasProp": "2.5 Sacks", "Edge": "+14.0%"}
+]
+
+def get_juice_data():
+    df = pd.DataFrame(BASE_SEED)
+    df["Full PPR"] = df.apply(calc_ppr, axis=1)
+    df = df.sort_values(by="Full PPR", ascending=False).reset_index(drop=True)
+    df["Rank"] = df.index + 1
+    return df
+
+POSITION_CAPS = {"QB": 32, "RB": 50, "WR": 75, "TE": 35, "K": 32, "DST": 32}
+
+def render():
+    st.markdown("<h2 style='color:#ffd700; margin-bottom:2px;'>⚡ JUICE RANKINGS & BENCHMARK DESK</h2>", unsafe_allow_html=True)
+    st.markdown("<div style='color:#8b949e; font-size:12px; margin-bottom:14px;'>Mike Projections • Monte Carlo Constraint • Positional Caps</div>", unsafe_allow_html=True)
+    
+    try:
+        df = get_juice_data()
+    except Exception as e:
+        st.error(f"Data Pipeline Error: {e}")
+        return
+        
+    pos_colors = {"QB": "#00e5ff", "RB": "#ff2a6d", "WR": "#00ff88", "TE": "#ffd700", "K": "#ff9f43", "DST": "#a55eea"}
+    
+    p_names = df["Player"].tolist()
+    sel_player = st.selectbox("🔍 INSPECT PLAYER CARD / STAT LINE:", p_names, index=0)
+    p = df[df["Player"] == sel_player].iloc[0]
+    p_col = pos_colors.get(p["Pos"], "#00e5ff")
+    
+    st.html(f"""
+    <div style='background:#0d1117; border:1px solid {p_col}66; border-left:6px solid {p_col}; border-radius:10px; padding:12px 16px; margin-bottom:14px; box-shadow:0 4px 16px rgba(0,0,0,0.5);'>
+        <div style='display:flex; justify-content:space-between; align-items:center;'>
+            <div>
+                <span style='font-size:16px; font-weight:900; color:#ffffff;'>{p["Player"]}</span>
+                <span style='background:{p_col}22; color:{p_col}; font-size:11px; font-weight:800; padding:2px 8px; border-radius:4px; margin-left:6px;'>{p["Pos"]}</span>
+                <span style='color:#8b949e; font-size:12px; margin-left:6px;'>{p.get("Team", "UNK")} vs {p.get("Opp", "UNK")}</span>
+            </div>
+            <div style='text-align:right;'>
+                <span style='color:#8b949e; font-size:11px;'>Full PPR Projection:</span>
+                <span style='color:#00ff88; font-size:16px; font-weight:900; margin-left:6px;'>{p.get("Full PPR", 0):.2f} pts</span>
+            </div>
+        </div>
+        <div style='display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;'>
+            <div style='background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:6px; padding:4px 10px; font-size:11px;'>
+                <span style='color:#8b949e;'>Pass:</span> <b style='color:#ffffff;'>{p.get("PassYds", 0)} yds | {p.get("PassTD", 0)} TD</b>
+            </div>
+            <div style='background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:6px; padding:4px 10px; font-size:11px;'>
+                <span style='color:#8b949e;'>Rush:</span> <b style='color:#ffffff;'>{p.get("RushYds", 0)} yds | {p.get("RushTD", 0)} TD</b>
+            </div>
+            <div style='background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:6px; padding:4px 10px; font-size:11px;'>
+                <span style='color:#8b949e;'>Rec:</span> <b style='color:#ffffff;'>{p.get("Rec", 0)} rec | {p.get("RecYds", 0)} yds</b>
+            </div>
+            <div style='background:rgba(0,255,136,0.1); border:1px solid rgba(0,255,136,0.3); border-radius:6px; padding:4px 10px; font-size:11px;'>
+                <span style='color:#cad3df;'>Prop: <b>{p.get("VegasProp", "N/A")}</b></span>
+                <span style='color:#00ff88; font-weight:bold; margin-left:6px;'>Edge: {p.get("Edge", "0.0%")}</span>
+            </div>
+        </div>
+    </div>
+    """)
+    
+    col_master, col_pos = st.columns([0.42, 0.58])
+    with col_master:
+        st.markdown("<h4 style='color:#00e5ff; margin-bottom:8px;'>MASTER TOP 300 (PPR)</h4>", unsafe_allow_html=True)
+        m_display = df[["Rank", "Player", "Pos", "Team", "Full PPR", "Edge"]].copy()
+        st.dataframe(m_display, use_container_width=True, height=520, hide_index=True)
+        
+    with col_pos:
+        pos_tabs = ["QB", "RB", "WR", "TE", "K", "DST"]
+        selected_pos = st.radio("POSITION FILTER:", pos_tabs, horizontal=True)
+        
+        cap = POSITION_CAPS.get(selected_pos, 50)
+        pos_df = df[df["Pos"] == selected_pos].copy().reset_index(drop=True)
+        pos_df["Pos Rank"] = pos_df.index + 1
+        pos_df = pos_df.head(cap)
+        
+        st.markdown(f"<h4 style='color:#00ff88; margin-bottom:8px;'>TOP {selected_pos} BENCHMARK</h4>", unsafe_allow_html=True)
+        
+        if selected_pos in ["K"]:
+            p_cols = ["Pos Rank", "Player", "Team", "Opp", "FGM", "FG50", "XPM", "Full PPR", "Edge"]
+        elif selected_pos in ["DST"]:
+            p_cols = ["Pos Rank", "Player", "Team", "Opp", "Sacks", "Turnovers", "PtsAllowed", "Full PPR", "Edge"]
+        else:
+            p_cols = ["Pos Rank", "Player", "Team", "Opp", "PassYds", "RushYds", "Rec", "RecYds", "Full PPR", "Edge"]
+            
+        valid_cols = [c for c in p_cols if c in pos_df.columns]
+        st.dataframe(pos_df[valid_cols], use_container_width=True, height=480, hide_index=True)
+
+=================================================================
+3. SCOREBOARD / VEGAS VIEWING WALL AUDIT
+=================================================================
+--- Found ui_scoreboard.py ---
+import streamlit as st
+import sqlite3
+import os
+from scoreboard_styles import get_scoreboard_css
+from scoreboard_cards import build_card_html
+
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "action_grid.db")
+
+def get_db():
+    conn = sqlite3.connect(DB_PATH, timeout=10.0)
+    conn.execute("PRAGMA journal_mode=WAL;")
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def render_scoreboard_tab():
+    st.html(get_scoreboard_css())
+
+    with get_db() as conn:
+        rows = conn.execute("SELECT * FROM scoreboard_live ORDER BY kickoff_time ASC").fetchall()
+
+    if not rows:
+        st.warning("No games loaded in scoreboard_live.")
+        return
+
+    games = [dict(r) for r in rows]
+    active_week = games[0].get("week", 3)
+    last_sync = games[0].get("updated_at", "Now")
+
+    col_title, col_filter, col_meta = st.columns([0.35, 0.45, 0.20])
+    with col_title:
+        st.markdown(f"<h3 style='margin:0; color:#00e5ff; font-weight:900;'>ðŸ† WEEK {active_week}</h3>", unsafe_allow_html=True)
+    with col_filter:
+        view_filter = st.radio("Filter:", ["All", "Live/RZ", "Finals"], horizontal=True, label_visibility="collapsed", key="sb_filter_clean")
+    with col_meta:
+        st.markdown(f"<div style='text-align:right; font-size:11px; color:#8b949e; padding-top:6px;'>âš¡ {last_sync[-8:]}</div>", unsafe_allow_html=True)
+
+    if view_filter == "Live/RZ":
+        display_games = [g for g in games if g["status_state"] == "in" or g["is_red_zone"] == 1]
+    elif view_filter == "Finals":
+        display_games = [g for g in games if g["status_state"] == "post"]
+    else:
+        display_games = games
+
+    grid_html = "<div class='sb-container' style='width:100%; margin-top:10px;'><div class='sb-grid' style='display:grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap:18px; width:100%;'>"
+    for g in display_games:
+        grid_html += build_card_html(g)
+    grid_html += "</div></div>"
+
+    st.html(grid_html)
+
+def run_self_audit():
+    with get_db() as conn:
+        cnt = conn.execute("SELECT COUNT(*) FROM scoreboard_live").fetchone()[0]
+        assert cnt > 0
+    print("âœ… [PASS] Clean Scoreboard bar verified.")
+    return True
+
+if __name__ == "__main__":
+    run_self_audit()
+
+=================================================================
+4. PARLAY MATRIX AUDIT
+=================================================================
+  app.py:92:    with tabs[3]:
+> app.py:93:        if hasattr(ui, 'render_real_parlay_matrix'):
+> app.py:94:            ui.render_real_parlay_matrix()
+  app.py:95:        else:
+  app.py:96:            st.info("Parlay matrix loading...")
+  app.py:97:
+  append_parlays.py:2:# --- APPENDED: PARLAY MATRIX DYNAMIC 2-TO-10 LEG DESK ---
+> append_parlays.py:3:def render_parlay_matrix():
+  append_parlays.py:4:    import streamlit as st
+  append_parlays.py:5:    import parlay_engine
+  append_parlays.py:6:    
+  app_backup_20260924_173624.py:92:    with tabs[3]:
+> app_backup_20260924_173624.py:93:        if hasattr(ui, 'render_real_parlay_matrix'):
+> app_backup_20260924_173624.py:94:            ui.render_real_parlay_matrix()
+  app_backup_20260924_173624.py:95:        else:
+  app_backup_20260924_173624.py:96:            st.info("Parlay matrix loading...")
+  app_backup_20260924_173624.py:97:
+  hardwire_tabs.py:23:        import ui_components
+> hardwire_tabs.py:24:        ui_components.render_parlay_matrix()
+  hardwire_tabs.py:25:    except Exception as e:
+  hardwire_tabs.py:26:        import streamlit as st
+  hardwire_tabs.py:27:        st.error(f"UI Crash in Parlay Matrix: {e}")'''
+  patch_desk.py:81:# Replace existing render_juice_rankings cleanly
+> patch_desk.py:82:ui_code = re.sub(r'def render_juice_rankings\(\):[\s\S]*?(?=def render_slip_card_html|def 
+render_parlay_matrix|def render_prizepicks_desk|$)', new_ui_block + '\n\n', ui_code)
+  patch_desk.py:83:
+  patch_desk.py:84:with open("ui_components.py", "w", encoding="utf-8") as f:
+  patch_desk.py:85:    f.write(ui_code)
+  ui_addresses.py:116:
+> ui_addresses.py:117:def render_parlay_matrix_tab():
+  ui_addresses.py:118:    st.markdown("<h2 style='color: #ff4757; margin-bottom: 2px;'>⚡ CORRELATED PARLAYS (VEGAS 
+VERIFIED)</h2>", unsafe_allow_html=True)
+  ui_addresses.py:119:    st.markdown(_get_last_synced_badge(), unsafe_allow_html=True)
+  ui_addresses.py:120:    
+
+=================================================================
+5. PRIZEPICKS DESK AUDIT
+=================================================================
+  app.py:67:        "🏈 Season-Long", 
+> app.py:68:        "⚡ PrizePicks", 
+  app.py:69:        "🎥 Film Room", 
+  app.py:70:        "⚙️ Ops Center", 
+  app.py:71:        "🤖 Learning Loop"
+  app.py:104:    with tabs[5]:
+> app.py:105:        if hasattr(ui, 'render_prizepicks_underdog'):
+> app.py:106:            ui.render_prizepicks_underdog()
+  app.py:107:        elif hasattr(ui, 'render_pickem_slips'):
+  app.py:108:            ui.render_pickem_slips()
+  app.py:109:
+  app_backup_20260924_173624.py:67:        "🏈 Season-Long", 
+> app_backup_20260924_173624.py:68:        "⚡ PrizePicks", 
+  app_backup_20260924_173624.py:69:        "🎥 Film Room", 
+  app_backup_20260924_173624.py:70:        "⚙️ Ops Center", 
+  app_backup_20260924_173624.py:71:        "🤖 Learning Loop"
+  app_backup_20260924_173624.py:104:    with tabs[5]:
+> app_backup_20260924_173624.py:105:        if hasattr(ui, 'render_prizepicks_underdog'):
+> app_backup_20260924_173624.py:106:            ui.render_prizepicks_underdog()
+  app_backup_20260924_173624.py:107:        elif hasattr(ui, 'render_pickem_slips'):
+  app_backup_20260924_173624.py:108:            ui.render_pickem_slips()
+  app_backup_20260924_173624.py:109:
+  diagnostic_dashboard.py:32:        
+> diagnostic_dashboard.py:33:        st.info("Paste the raw output or any errors from this column back to the chat so 
+we can map the PrizePicks/Parlay cards.")
+  diagnostic_dashboard.py:34:        
+  diagnostic_dashboard.py:35:    except Exception as e:
+  diagnostic_dashboard.py:36:        st.error(f"🚨 Crash in parlay_engine.py: {e}")
+  hardwire_tabs.py:29:
+> hardwire_tabs.py:30:# 3. Hard-wire Tab 5 (PrizePicks)
+> hardwire_tabs.py:31:tab5_pattern = r'with tabs\[5\]:.*?uext\.render_safe_prizepicks\(\)'
+  hardwire_tabs.py:32:tab5_replace = '''with tabs[5]:
+  hardwire_tabs.py:33:    try:
+  hardwire_tabs.py:34:        import ui_components
+> hardwire_tabs.py:35:        ui_components.render_prizepicks_desk()
+  hardwire_tabs.py:36:    except Exception as e:
+  hardwire_tabs.py:37:        import streamlit as st
+> hardwire_tabs.py:38:        st.error(f"UI Crash in PrizePicks Desk: {e}")'''
+  hardwire_tabs.py:39:code = re.sub(tab5_pattern, tab5_replace, code, flags=re.DOTALL)
+  hardwire_tabs.py:40:
+  hardwire_tabs.py:41:with open('app.py', 'w', encoding='utf-8') as f:
+  patch_desk.py:81:# Replace existing render_juice_rankings cleanly
+> patch_desk.py:82:ui_code = re.sub(r'def render_juice_rankings\(\):[\s\S]*?(?=def render_slip_card_html|def 
+render_parlay_matrix|def render_prizepicks_desk|$)', new_ui_block + '\n\n', ui_code)
+  patch_desk.py:83:
+  patch_desk.py:84:with open("ui_components.py", "w", encoding="utf-8") as f:
+  patch_desk.py:85:    f.write(ui_code)
+  probe_props.py:4:
+> probe_props.py:5:print("--- [1/2] TESTING PRIZEPICKS (NFL LEAGUE ID 9) ---")
+> probe_props.py:6:# PrizePicks uses league_id=9 for NFL
+> probe_props.py:7:url = "https://api.prizepicks.com/projections?league_id=9&per_page=250&single_stat=true"
+  probe_props.py:8:headers = {
+  probe_props.py:9:    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) 
+Chrome/122.0.0.0 Safari/537.36",
+  probe_props.py:10:    "Accept": "application/json",
+  probe_props.py:11:    "Accept-Language": "en-US,en;q=0.9",
+> probe_props.py:12:    "Referer": "https://app.prizepicks.com/"
+  probe_props.py:13:}
+  probe_props.py:14:
+  probe_props.py:15:try:
+  probe_props.py:16:    res = requests.get(url, headers=headers, timeout=10)
+> probe_props.py:17:    print(f"PrizePicks HTTP Status: {res.status_code}")
+  probe_props.py:18:    if res.status_code == 200:
+  probe_props.py:19:        data = res.json()
+  probe_props.py:20:        props = data.get("data", [])
+  probe_props.py:21:        included = {item["id"]: item["attributes"] for item in data.get("included", []) if 
+item.get("type") == "new_player"}
+> probe_props.py:22:        print(f"✅ PrizePicks NFL Lines Retrieved: {len(props)} props on board!")
+  probe_props.py:23:        for p in props[:4]:
+  probe_props.py:24:            attrs = p.get("attributes", {})
+  probe_props.py:25:            rel_player = p.get("relationships", {}).get("new_player", {}).get("data", {})
+  probe_props.py:28:    else:
+> probe_props.py:29:        print(f"⚠️ PrizePicks returned HTTP {res.status_code}: {res.text[:120]}")
+  probe_props.py:30:except Exception as e:
+> probe_props.py:31:    print(f"❌ PrizePicks probe error: {e}")
+  probe_props.py:32:
+  probe_props.py:33:print("\n--- [2/2] TESTING THE ODDS API (PLAYER PROPS TARGETED) ---")
+  probe_props.py:34:try:
+  recommendation_engine.py:10:_PLATFORM_TO_SOURCE = {
+> recommendation_engine.py:11:    "PRIZEPICKS": "PICKEM",
+  recommendation_engine.py:12:    "UNDERDOG": "PICKEM",
+  recommendation_engine.py:13:    "SPORTSBOOK_PARLAY": "PARLAY",
+  recommendation_engine.py:14:}
+  refinery_assets.py:7:    # Percentage targets corresponding to the 9 tabs across the dashboard
+> refinery_assets.py:8:    # Tabs: Scoreboard, DFS Engine, Donna's, Parlay, Season-Long, PrizePicks, Film Room, Ops 
+Center, Learning Loop
+  refinery_assets.py:9:    tab_targets = [5.5, 16.5, 27.5, 38.5, 50.0, 61.5, 72.5, 83.5, 94.5]
+  refinery_assets.py:10:    
+  refinery_assets.py:11:    # SVG Paths originating from central downspout (x=500, y=70) and elbowing 90 degrees down 
+to each tab
+  refinery_manifold.py:18:        4: 0,    # Season-Long (straight drop)
+> refinery_manifold.py:19:        5: 52,   # PrizePicks
+  refinery_manifold.py:20:        6: 62,   # Film Room
+  refinery_manifold.py:21:        7: 72,   # Ops Center
+  refinery_manifold.py:22:        8: 82    # Learning Loop (outermost right)
+  stage_donna_ledger.py:18:    with get_db() as conn:
+> stage_donna_ledger.py:19:        # 1. Bet Tracker: DFS, Parlays, PrizePicks/Underdog Slips
+  stage_donna_ledger.py:20:        conn.execute("""
+  stage_donna_ledger.py:21:            CREATE TABLE IF NOT EXISTS donna_bets_ledger (
+  stage_donna_ledger.py:22:                bet_id TEXT PRIMARY KEY,
+  stage_donna_ledger.py:23:                week_num INTEGER,
+> stage_donna_ledger.py:24:                category TEXT, -- 'DFS_CLASSIC_GPP', 'DFS_SHOWDOWN', 'PARLAY', 'PRIZEPICKS'
+  stage_donna_ledger.py:25:                wager_units REAL DEFAULT 1.0,
+  stage_donna_ledger.py:26:                projected_ev REAL,
+  stage_donna_ledger.py:27:                status TEXT DEFAULT 'PENDING', -- 'PENDING', 'WIN', 'LOSS', 'PUSH'
+  ui_addresses.py:160:
+> ui_addresses.py:161:def render_prizepicks_tab():
+> ui_addresses.py:162:    st.markdown("<h2 style='color: #00f2fe; margin-bottom: 2px;'>🎯 PROP SLIPS (PRIZEPICKS & 
+UNDERDOG)</h2>", unsafe_allow_html=True)
+  ui_addresses.py:163:    st.markdown(_get_last_synced_badge(), unsafe_allow_html=True)
+  ui_addresses.py:164:    
+  ui_addresses.py:165:    try:
+  ui_addresses.py:166:        with sqlite3.connect(DB_PATH) as conn:
+> ui_addresses.py:167:            df = pd.read_sql("SELECT * FROM slips WHERE platform IN ('PRIZEPICKS', 'UNDERDOG') 
+ORDER BY implied_probability DESC LIMIT 25", conn)
+  ui_addresses.py:168:        if df.empty:
+> ui_addresses.py:169:            st.warning("No PrizePicks or Underdog slips generated.")
+  ui_addresses.py:170:            return
+  ui_addresses.py:171:
+  ui_addresses.py:172:        for _, row in df.iterrows():
+  ui_addresses.py:177:            # Platform Specific Branding
+> ui_addresses.py:178:            if platform == 'PRIZEPICKS':
+  ui_addresses.py:179:                brand_border = "rgba(155, 89, 182, 0.4)"
+  ui_addresses.py:180:                badge_bg = "rgba(155, 89, 182, 0.2)"
+  ui_addresses.py:181:                badge_text = "#9b59b6"
+> ui_addresses.py:182:                badge_label = "PRIZEPICKS • POWER/FLEX"
+  ui_addresses.py:183:            else:
+  ui_addresses.py:184:                brand_border = "rgba(241, 196, 15, 0.4)"
+  ui_addresses.py:185:                badge_bg = "rgba(241, 196, 15, 0.2)"
+  ui_extension.py:30:
+> ui_extension.py:31:def render_safe_prizepicks():
+> ui_extension.py:32:    st.markdown("### 📈 PRIZEPICKS & UNDERDOG SLIPS")
+  ui_extension.py:33:    try:
+  ui_extension.py:34:        with sqlite3.connect(DB_PATH) as conn:
+  ui_extension.py:35:            df = pd.read_sql("SELECT id, platform, leg_count, implied_probability, 
+confidence_tier, status FROM slips LIMIT 20", conn)
+  ui_extension.py:49:    except Exception as e:
+> ui_extension.py:50:        st.error(f"PrizePicks error: {e}")
+
+=================================================================
+6. CATALOG OF ALL UI & TAB MODULES
+=================================================================
+Get-ChildItem : Cannot convert 'System.Object[]' to the type 'System.String' required by parameter 'Filter'. Specified 
+method is not supported.
+At line:46 char:27
++     Get-ChildItem -Filter "*ui*.py", "*tab*.py" | Select-Object Name, ...
++                           ~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (:) [Get-ChildItem], ParameterBindingException
+    + FullyQualifiedErrorId : CannotConvertArgument,Microsoft.PowerShell.Commands.GetChildItemCommand
+ 
+
+

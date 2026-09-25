@@ -1,0 +1,176 @@
+import ui_extension as uext
+import streamlit as st
+import sqlite3
+import pandas as pd
+import config
+import ui_addresses
+import ui_components as ui
+import ui_scoreboard
+import scoreboard_engine
+from scheduler import JobScheduler, thread_safe_log_fn
+import learning_loop
+import mike_evaluator_v2
+import generate_dfs
+import live_medic_poller
+import upgrade_meteorologist
+import refinery_assets
+import os
+import time
+
+st.set_page_config(
+    page_title="The Juicer - Pro Syndicate War Room",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
+
+# Full edge-to-edge workspace expansion
+st.markdown("""
+<style>
+    .block-container {
+        max-width: 98% !important;
+        padding-left: 1.25rem !important;
+        padding-right: 1.25rem !important;
+        padding-top: 0.5rem !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+DB_PATH = getattr(config, 'DB_PATH', 'action_grid.db')
+
+@st.cache_resource
+def init_syndicate_scheduler():
+    try:
+        log_fn = thread_safe_log_fn(DB_PATH)
+        sched = JobScheduler(log_fn=log_fn)
+        if hasattr(learning_loop, 'recalculate_weights'):
+            sched.register_job("bayesian_recalibration", learning_loop.recalculate_weights, interval_seconds=86400, run_at_start=False)
+        def run_full_pipeline():
+            try:
+                if hasattr(mike_evaluator_v2, "evaluate_top_300"):
+                    mike_evaluator_v2.evaluate_top_300()
+                if hasattr(generate_dfs, "generate_lineups_and_slips"):
+                    generate_dfs.generate_lineups_and_slips()
+            except Exception as e:
+                print(f"[PIPELINE ERROR]: {e}")
+
+        sched.register_job("live_scoreboard_sync", scoreboard_engine.sync_espn_data, interval_seconds=30, run_at_start=True)
+        sched.register_job("full_pipeline", run_full_pipeline, interval_seconds=3600, run_at_start=True)
+        if hasattr(live_medic_poller, "poll_live_injury_trends"):
+            sched.register_job("injury_poller", live_medic_poller.poll_live_injury_trends, interval_seconds=1800, run_at_start=True)
+        if hasattr(upgrade_meteorologist, "deploy_meteorologist"):
+            sched.register_job("weather_feed", upgrade_meteorologist.deploy_meteorologist, interval_seconds=3600, run_at_start=True)
+        sched.start()
+        return True
+    except Exception as e:
+        print(f"[SCHEDULER INIT FAILED] {type(e).__name__}: {e}")
+        return False
+
+init_syndicate_scheduler()
+
+if hasattr(ui, 'inject_elite_aesthetic'):
+    ui.inject_elite_aesthetic()
+
+if hasattr(ui, 'render_accountability_tickers'):
+    ui.render_accountability_tickers()
+
+# Header Command Grid: Title left, Command Slate right
+col_title, col_slate = st.columns([0.65, 0.35])
+with col_title:
+    st.markdown("<h1 style='color: #ff3366; font-weight: 900; letter-spacing: 2px; margin: 0; padding-top: 4px;'>THE JUICER</h1>", unsafe_allow_html=True)
+with col_slate:
+    selected_slate = st.selectbox(
+        "MASTER COMMAND SLATE:",
+        ["Sunday Main Slate (Classic 9-Man)", "Thursday Night Showdown", "Monday Night Football SGP", "Full Slate DFS Pool"],
+        key="master_command_slate_dropdown"
+    )
+
+# Determine whether live background sync is actively running
+is_syncing = True
+try:
+    with sqlite3.connect(DB_PATH, timeout=5.0) as conn:
+        row = conn.execute("SELECT updated_at FROM scoreboard_live LIMIT 1").fetchone()
+        if row and row[0]:
+            # Trigger active drop pulse
+            is_syncing = True
+except Exception:
+    is_syncing = True
+
+# --- MOUNT THE DATA REFINERY & CLEAR GLASS PLUMBING CONDUITS ---
+refinery_markup = refinery_assets.get_refinery_markup(sync_active=is_syncing)
+if hasattr(st, "html"):
+    st.html(refinery_markup)
+else:
+    st.markdown(refinery_markup, unsafe_allow_html=True)
+
+# Full 9-Tab War Room Architecture
+try:
+    tabs = st.tabs([
+        "🏆 Scoreboard", 
+        "👑 DFS Engine", 
+        "📊 Donna's Leverage", 
+        "🎯 Parlay Matrix", 
+        "🏈 Season-Long", 
+        "⚡ PrizePicks", 
+        "🎥 Film Room", 
+        "⚙️ Ops Center", 
+        "🤖 Learning Loop"
+    ])
+
+    with tabs[0]:
+        ui_scoreboard.render_scoreboard_tab()
+
+    with tabs[1]:
+        if hasattr(ui, 'render_dfs_engine'):
+            ui.render_dfs_engine()
+        elif hasattr(ui, 'render_dfs'):
+            ui.render_dfs()
+
+    with tabs[2]:
+        if hasattr(ui, 'render_donna_matrix'):
+            ui.render_donna_matrix()
+        else:
+            st.info("Donna's leverage matrix loading...")
+
+    with tabs[3]:
+        if hasattr(ui, 'render_real_parlay_matrix'):
+            ui.render_real_parlay_matrix()
+        else:
+            st.info("Parlay matrix loading...")
+
+    with tabs[4]:
+        if hasattr(ui, 'render_season_long'):
+            ui.render_season_long()
+        else:
+            st.info("Season-long rosters loading...")
+
+    with tabs[5]:
+        if hasattr(ui, 'render_prizepicks_underdog'):
+            try:
+                ui.render_prizepicks_underdog()
+            except Exception:
+                uext.render_safe_prizepicks()
+        else:
+            uext.render_safe_prizepicks()
+
+    with tabs[6]:
+        if hasattr(ui, 'render_film_room'):
+            ui.render_film_room()
+        else:
+            st.info("Film room telemetry loading...")
+
+    with tabs[7]:
+        if hasattr(ui, 'render_ops_center'):
+            ui.render_ops_center()
+        elif hasattr(ui, 'render_telemetry'):
+            ui.render_telemetry()
+
+    with tabs[8]:
+        if hasattr(ui, 'render_learning_loop'):
+            ui.render_learning_loop()
+        elif hasattr(ui, 'render_learning_panel'):
+            ui.render_learning_panel()
+
+except Exception as e:
+    st.error(f"⚠️ War Room Render Exception: {e}")
+    import traceback
+    st.code(traceback.format_exc())

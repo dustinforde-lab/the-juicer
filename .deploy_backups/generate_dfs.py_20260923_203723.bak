@@ -1,0 +1,311 @@
+"""
+The Juicer - DFS Quant Engine & Showdown Evaluator
+Generates 150 Classic Main Slate Builds + 50 Showdown (TNF: ATL @ GB) Builds.
+Codifies Mike's 12 Empirical Optimal Rules for Showdown.
+"""
+import sqlite3
+import json
+import random
+import os
+
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "action_grid.db")
+
+def get_db():
+    conn = sqlite3.connect(DB_PATH, timeout=10.0)
+    conn.execute("PRAGMA journal_mode=WAL;")
+    conn.execute("PRAGMA busy_timeout=10000;")
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def init_dfs_schema():
+    with get_db() as conn:
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS dfs_lineups (
+                lineup_id TEXT PRIMARY KEY,
+                slate_name TEXT,
+                contest_type TEXT,
+                format_type TEXT,
+                total_salary INTEGER,
+                projected_points REAL,
+                floor_points REAL,
+                ceiling_points REAL,
+                ownership_sum REAL,
+                stack_summary TEXT,
+                roster_json TEXT,
+                meta_json TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        # Non-destructive column addition for format_type
+        try:
+            conn.execute("ALTER TABLE dfs_lineups ADD COLUMN format_type TEXT DEFAULT 'CLASSIC'")
+        except Exception:
+            pass
+        conn.commit()
+
+# Classic Main Slate Player Pool
+CLASSIC_QBS = [
+    {"name": "Josh Allen", "pos": "QB", "team": "BUF", "opp": "LAC", "salary": 7800, "proj": 24.2, "alpha": 95.8, "own": 18.2, "total": 49.5},
+    {"name": "Patrick Mahomes", "pos": "QB", "team": "KC", "opp": "MIA", "salary": 7400, "proj": 22.4, "alpha": 93.1, "own": 14.5, "total": 51.0},
+    {"name": "Lamar Jackson", "pos": "QB", "team": "BAL", "opp": "DAL", "salary": 7600, "proj": 23.5, "alpha": 94.7, "own": 16.0, "total": 48.5},
+    {"name": "Jared Goff", "pos": "QB", "team": "DET", "opp": "NYJ", "salary": 6300, "proj": 19.1, "alpha": 88.4, "own": 9.8, "total": 47.0},
+]
+CLASSIC_RBS = [
+    {"name": "Christian McCaffrey", "pos": "RB", "team": "SF", "opp": "ARI", "salary": 8800, "proj": 22.8, "alpha": 97.4, "own": 27.5, "total": 45.0},
+    {"name": "Jahmyr Gibbs", "pos": "RB", "team": "DET", "opp": "NYJ", "salary": 7100, "proj": 17.6, "alpha": 91.2, "own": 18.0, "total": 47.0},
+    {"name": "Kyren Williams", "pos": "RB", "team": "LAR", "opp": "DEN", "salary": 6800, "proj": 16.4, "alpha": 89.0, "own": 15.2, "total": 44.5},
+    {"name": "Salvon Ahmed", "pos": "RB", "team": "MIA", "opp": "KC", "salary": 4400, "proj": 11.2, "alpha": 85.0, "own": 8.1, "total": 51.0},
+    {"name": "James Cook", "pos": "RB", "team": "BUF", "opp": "LAC", "salary": 6400, "proj": 15.2, "alpha": 87.5, "own": 12.0, "total": 49.5},
+]
+CLASSIC_WRS = [
+    {"name": "Justin Jefferson", "pos": "WR", "team": "MIN", "opp": "TB", "salary": 8200, "proj": 20.8, "alpha": 95.0, "own": 22.0, "total": 46.5},
+    {"name": "Amon-Ra St. Brown", "pos": "WR", "team": "DET", "opp": "NYJ", "salary": 7900, "proj": 19.4, "alpha": 93.8, "own": 19.5, "total": 47.0},
+    {"name": "Rashee Rice", "pos": "WR", "team": "KC", "opp": "MIA", "salary": 6700, "proj": 16.2, "alpha": 90.1, "own": 16.4, "total": 51.0},
+    {"name": "DK Metcalf", "pos": "WR", "team": "SEA", "opp": "WAS", "salary": 6500, "proj": 15.0, "alpha": 87.9, "own": 13.0, "total": 45.5},
+    {"name": "Tyrell Shavers", "pos": "WR", "team": "BUF", "opp": "LAC", "salary": 3400, "proj": 9.4, "alpha": 84.5, "own": 5.2, "total": 49.5},
+    {"name": "Casey Washington", "pos": "WR", "team": "ATL", "opp": "GB", "salary": 3300, "proj": 8.8, "alpha": 82.2, "own": 4.1, "total": 46.5},
+]
+CLASSIC_TES = [
+    {"name": "Travis Kelce", "pos": "TE", "team": "KC", "opp": "MIA", "salary": 6100, "proj": 14.5, "alpha": 88.7, "own": 14.0, "total": 51.0},
+    {"name": "Trey McBride", "pos": "TE", "team": "ARI", "opp": "SF", "salary": 5200, "proj": 12.8, "alpha": 86.5, "own": 11.2, "total": 45.0},
+    {"name": "Darren Waller", "pos": "TE", "team": "MIA", "opp": "KC", "salary": 4000, "proj": 10.2, "alpha": 83.1, "own": 9.4, "total": 51.0},
+]
+CLASSIC_DEFS = [
+    {"name": "Ravens Defense", "pos": "DEF", "team": "BAL", "opp": "DAL", "salary": 3000, "proj": 8.0, "alpha": 83.0, "own": 9.0, "total": 48.5},
+    {"name": "Bills Defense", "pos": "DEF", "team": "BUF", "opp": "LAC", "salary": 3200, "proj": 8.4, "alpha": 84.0, "own": 8.5, "total": 49.5},
+    {"name": "49ers Defense", "pos": "DEF", "team": "SF", "opp": "ARI", "salary": 3400, "proj": 8.8, "alpha": 85.5, "own": 11.0, "total": 45.0},
+]
+
+# Showdown Slate Pool (TNF: Atlanta Falcons @ Green Bay Packers)
+SHOWDOWN_POOL = [
+    {"name": "Jordan Love", "pos": "QB", "team": "GB", "opp": "ATL", "salary": 10400, "proj": 19.8, "alpha": 94.2, "own": 58.0},
+    {"name": "Kirk Cousins", "pos": "QB", "team": "ATL", "opp": "GB", "salary": 9600, "proj": 17.5, "alpha": 89.5, "own": 48.0},
+    {"name": "Bijan Robinson", "pos": "RB", "team": "ATL", "opp": "GB", "salary": 10800, "proj": 19.2, "alpha": 96.0, "own": 64.0},
+    {"name": "Josh Jacobs", "pos": "RB", "team": "GB", "opp": "ATL", "salary": 9200, "proj": 16.0, "alpha": 91.0, "own": 52.0},
+    {"name": "Drake London", "pos": "WR", "team": "ATL", "opp": "GB", "salary": 8400, "proj": 15.4, "alpha": 92.5, "own": 45.0},
+    {"name": "Jayden Reed", "pos": "WR", "team": "GB", "opp": "ATL", "salary": 8000, "proj": 14.8, "alpha": 91.8, "own": 44.0},
+    {"name": "Romeo Doubs", "pos": "WR", "team": "GB", "opp": "ATL", "salary": 6200, "proj": 11.2, "alpha": 85.0, "own": 28.0},
+    {"name": "Darnell Mooney", "pos": "WR", "team": "ATL", "opp": "GB", "salary": 5800, "proj": 10.4, "alpha": 83.5, "own": 24.0},
+    {"name": "Kyle Pitts", "pos": "TE", "team": "ATL", "opp": "GB", "salary": 5400, "proj": 9.8, "alpha": 82.0, "own": 22.0},
+    {"name": "Luke Musgrave", "pos": "TE", "team": "GB", "opp": "ATL", "salary": 4600, "proj": 8.0, "alpha": 78.5, "own": 16.0},
+    {"name": "Brandon McManus", "pos": "K", "team": "GB", "opp": "ATL", "salary": 4200, "proj": 7.5, "alpha": 76.0, "own": 18.0},
+    {"name": "Younghoe Koo", "pos": "K", "team": "ATL", "opp": "GB", "salary": 4000, "proj": 7.2, "alpha": 75.0, "own": 17.0},
+    {"name": "Packers Defense", "pos": "DEF", "team": "GB", "opp": "ATL", "salary": 3800, "proj": 6.8, "alpha": 74.0, "own": 14.0},
+    {"name": "Falcons Defense", "pos": "DEF", "team": "ATL", "opp": "GB", "salary": 3400, "proj": 6.2, "alpha": 72.0, "own": 12.0},
+]
+
+def validate_showdown_12_rules(cpt, flexes):
+    """
+    Mike's 12 Empirical Optimal Rules for DraftKings Showdown:
+    1. >= 1 QB
+    2. QB at CPT -> stacked with >= 1 teammate pass catcher
+    3. <= 2 RBs total
+    4. >= 1 WR total
+    5. <= 3 WRs total
+    6. <= 1 TE in FLEX
+    7. <= 2 pass catchers from same team
+    8. <= 1 Kicker
+    9. <= 1 DST
+    10. No Kicker or DST at CPT
+    11. Stack CPT with >= 1 teammate
+    12. Leave >= $1,000 on the table (Total Salary <= $49,000)
+    """
+    all_players = [cpt] + flexes
+    # Rule 10: Ban K / DST at CPT
+    if cpt["pos"] in ["K", "DEF"]:
+        return False, "Rule 10 Violation: K/DST at CPT"
+
+    # Rule 12: Salary <= 49000 (leave >= $1,000 on the table)
+    total_sal = int(cpt["salary"] * 1.5) + sum(p["salary"] for p in flexes)
+    if total_sal > 49000:
+        return False, "Rule 12 Violation: Salary exceeds $49,000"
+
+    # Must have both teams represented (DraftKings mandatory rule)
+    teams = set(p["team"] for p in all_players)
+    if len(teams) < 2:
+        return False, "DK Rule: Single team sweep illegal"
+
+    qbs = [p for p in all_players if p["pos"] == "QB"]
+    rbs = [p for p in all_players if p["pos"] == "RB"]
+    wrs = [p for p in all_players if p["pos"] == "WR"]
+    tes_flex = [p for p in flexes if p["pos"] == "TE"]
+    kickers = [p for p in all_players if p["pos"] == "K"]
+    dsts = [p for p in all_players if p["pos"] == "DEF"]
+
+    # Rule 1: >= 1 QB
+    if len(qbs) < 1:
+        return False, "Rule 1 Violation: < 1 QB"
+
+    # Rule 2: If QB at CPT, stack with >= 1 pass catcher (WR/TE)
+    if cpt["pos"] == "QB":
+        cpt_pcs = [p for p in flexes if p["team"] == cpt["team"] and p["pos"] in ["WR", "TE"]]
+        if len(cpt_pcs) < 1:
+            return False, "Rule 2 Violation: QB CPT not stacked with teammate WR/TE"
+
+    # Rule 3: <= 2 RBs total
+    if len(rbs) > 2:
+        return False, "Rule 3 Violation: > 2 RBs"
+
+    # Rule 4 & 5: Between 1 and 3 WRs
+    if len(wrs) < 1 or len(wrs) > 3:
+        return False, f"Rule 4/5 Violation: WR count {len(wrs)}"
+
+    # Rule 6: <= 1 TE in FLEX
+    if len(tes_flex) > 1:
+        return False, "Rule 6 Violation: > 1 TE in FLEX"
+
+    # Rule 7: <= 2 Pass Catchers (WR/TE) from same team
+    for t in teams:
+        pcs_team = [p for p in all_players if p["team"] == t and p["pos"] in ["WR", "TE"]]
+        if len(pcs_team) > 2:
+            return False, f"Rule 7 Violation: > 2 Pass Catchers from {t}"
+
+    # Rule 8: <= 1 Kicker
+    if len(kickers) > 1:
+        return False, "Rule 8 Violation: > 1 Kicker"
+
+    # Rule 9: <= 1 DST
+    if len(dsts) > 1:
+        return False, "Rule 9 Violation: > 1 DST"
+
+    # Rule 11: Stack CPT with >= 1 teammate
+    cpt_teammates = [p for p in flexes if p["team"] == cpt["team"]]
+    if len(cpt_teammates) < 1:
+        return False, "Rule 11 Violation: CPT has 0 teammates in FLEX"
+
+    return True, "VALID_SHOWDOWN_OPTIMAL"
+
+def generate_200_lineups():
+    init_dfs_schema()
+    generated = []
+
+    # 1. Generate 150 Classic Main Slate Builds
+    for i in range(150):
+        c_type = "CASH" if i < 30 else "GPP"
+        qb = random.choice(CLASSIC_QBS)
+        rb1, rb2 = random.sample(CLASSIC_RBS, 2)
+        wr1, wr2, wr3 = random.sample(CLASSIC_WRS, 3)
+        te = random.choice(CLASSIC_TES)
+        # Choose FLEX from unused skill players
+        used_names = {p["name"] for p in [qb, rb1, rb2, wr1, wr2, wr3, te]}
+        flex_pool = [p for p in (CLASSIC_RBS + CLASSIC_WRS + CLASSIC_TES) if p["name"] not in used_names]
+        flex = random.choice(flex_pool)
+        dst = random.choice(CLASSIC_DEFS)
+
+        roster = [qb, rb1, rb2, wr1, wr2, wr3, te, flex, dst]
+        total_sal = sum(p["salary"] for p in roster)
+
+        # Ensure salary legality ($50k cap)
+        if total_sal > 50000:
+            # Replace highest non-QB with cheaper punt
+            roster[5] = CLASSIC_WRS[-1]  # Casey Washington ($3,300)
+            total_sal = sum(p["salary"] for p in roster)
+
+        base_proj = round(sum(p["proj"] for p in roster), 1)
+        floor = round(base_proj * 0.82, 1)
+        ceil = round(base_proj * 1.28, 1)
+        own_sum = round(sum(p["own"] for p in roster), 1)
+
+        # Primary stack
+        pcs = [p["name"].split()[-1] for p in roster if p["team"] == qb["team"] and p["pos"] in ["WR", "TE", "FLEX"]]
+        stack_str = f"⚡ {qb['team']} STACK ({qb['name'].split()[-1]} + {'/'.join(pcs)})" if pcs else "BALANCED INDEPENDENT"
+
+        meta = {
+            "remaining_salary": 50000 - total_sal,
+            "stud_count": sum(1 for p in roster if p["salary"] >= 7500),
+            "mid_count": sum(1 for p in roster if 5000 <= p["salary"] < 7500),
+            "punt_count": sum(1 for p in roster if p["salary"] < 5000),
+            "leverage_label": "HIGH LEVERAGE" if own_sum < 125 else "CHALK CORE",
+            "mike_verdict": f"MME Build #{i+1}. Correlated around {qb['team']} pass attack."
+        }
+
+        lineup_id = f"DK_CLASSIC_{i+1:03d}"
+        generated.append((
+            lineup_id, "Sunday Main Slate (Classic 9-Man)", c_type, "CLASSIC",
+            total_sal, base_proj, floor, ceil, own_sum, stack_str,
+            json.dumps(roster), json.dumps(meta)
+        ))
+
+    # 2. Generate 50 Showdown Builds (TNF: ATL @ GB) Enforcing Mike's 12 Rules
+    showdown_count = 0
+    attempts = 0
+    while showdown_count < 50 and attempts < 2500:
+        attempts += 1
+        # Pick CPT (Rule 10 excludes K/DST)
+        cpt_candidates = [p for p in SHOWDOWN_POOL if p["pos"] not in ["K", "DEF"]]
+        cpt = dict(random.choice(cpt_candidates))
+        
+        # Pick 5 FLEX from remaining pool
+        flex_pool = [p for p in SHOWDOWN_POOL if p["name"] != cpt["name"]]
+        flexes = random.sample(flex_pool, 5)
+
+        is_valid, msg = validate_showdown_12_rules(cpt, flexes)
+        if not is_valid:
+            continue
+
+        showdown_count += 1
+        c_type = "CASH" if showdown_count <= 10 else "GPP"
+
+        # CPT gets 1.5x salary & points
+        cpt_card = dict(cpt)
+        cpt_card["is_cpt"] = True
+        cpt_card["salary"] = int(cpt["salary"] * 1.5)
+        cpt_card["proj"] = round(cpt["proj"] * 1.5, 1)
+
+        roster_6 = [cpt_card] + flexes
+        total_sal = sum(p["salary"] for p in roster_6)
+        base_proj = round(sum(p["proj"] for p in roster_6), 1)
+        floor = round(base_proj * 0.78, 1)
+        ceil = round(base_proj * 1.35, 1)
+        own_sum = round(sum(p["own"] for p in roster_6), 1)
+
+        # Script detection (e.g. 4-2 or 3-3 split)
+        gb_count = sum(1 for p in roster_6 if p["team"] == "GB")
+        atl_count = 6 - gb_count
+        split_str = f"⚡ {gb_count}-{atl_count} {'PACKERS' if gb_count > atl_count else 'FALCONS'} SCRIPT" if gb_count != 3 else "🔄 3-3 BALANCED SPLIT"
+
+        meta = {
+            "remaining_salary": 50000 - total_sal,
+            "stud_count": sum(1 for p in roster_6 if p["salary"] >= 8000),
+            "mid_count": sum(1 for p in roster_6 if 5000 <= p["salary"] < 8000),
+            "punt_count": sum(1 for p in roster_6 if p["salary"] < 5000),
+            "leverage_label": f"LEFT ${50000 - total_sal} (UNIQUE GPP)",
+            "mike_verdict": f"Showdown #{showdown_count}. {cpt['name']} CPT. 12-Rule Optimal Passed."
+        }
+
+        lineup_id = f"DK_SHOWDOWN_{showdown_count:02d}"
+        generated.append((
+            lineup_id, "Thursday Night Showdown (ATL @ GB)", c_type, "SHOWDOWN",
+            total_sal, base_proj, floor, ceil, own_sum, split_str,
+            json.dumps(roster_6), json.dumps(meta)
+        ))
+
+    # Commit all 200 builds in one atomic WAL transaction
+    with get_db() as conn:
+        conn.execute("DELETE FROM dfs_lineups")
+        conn.executemany("""
+            INSERT INTO dfs_lineups (
+                lineup_id, slate_name, contest_type, format_type, total_salary, projected_points,
+                floor_points, ceiling_points, ownership_sum, stack_summary, roster_json, meta_json
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, generated)
+        conn.commit()
+
+    return len(generated), showdown_count
+
+def run_self_audit():
+    total, sd_total = generate_200_lineups()
+    assert total == 200, f"Expected 200 total builds, got {total}"
+    assert sd_total == 50, f"Expected 50 Showdown builds, got {sd_total}"
+    with get_db() as conn:
+        # Check Classic Cap
+        classic_row = conn.execute("SELECT * FROM dfs_lineups WHERE format_type='CLASSIC' ORDER BY total_salary DESC LIMIT 1").fetchone()
+        assert classic_row["total_salary"] <= 50000, "Classic cap violation"
+        # Check Showdown 12th Rule (<= $49,000)
+        sd_row = conn.execute("SELECT * FROM dfs_lineups WHERE format_type='SHOWDOWN' ORDER BY total_salary DESC LIMIT 1").fetchone()
+        assert sd_row["total_salary"] <= 49000, f"Showdown rule 12 violation: {sd_row['total_salary']}"
+    print(f"✅ [PASS] 200 Lineups Verified (150 Classic + 50 Showdown). Mike's 12 Rules Enforced.")
+    return True
+
+if __name__ == "__main__":
+    run_self_audit()

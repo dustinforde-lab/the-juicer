@@ -1,0 +1,10 @@
+﻿
+---------------------------------------------------------------------
+6. STANDARD CODING PATTERN & INTEGRATION RULES FOR CLAUDE
+---------------------------------------------------------------------
+- Imports: Always import sqlite3, pandas, json, streamlit, and config (DB = config.DB_FILE)[cite: 12].
+- Database Access: Always use context managers (`with sqlite3.connect(DB_PATH) as conn:`)[cite: 12, 13]. Never leave unclosed connections.
+- UI Styling: Wrap custom layouts in dark-mode friendly CSS containers (`background-color: #0b0914; color: #ffffff;`)[cite: 12].
+- Unique Widget Keys: Every Streamlit input, selectbox, or button must have a distinct, descriptive `key="..."` argument.
+- Error Bounding: Enclose all database reads, JSON parsing (`json.loads`), and rendering logic inside try/except blocks with clean st.error() fallback handlers[cite: 12, 20].
+- Safe API Fallbacks: Network scrapers must gracefully fall back to local seed data or mock payloads if environment variables or secrets (`ODDS_API_KEY`, `MFL_API_TOKEN`) are absent[cite: 18, 19].

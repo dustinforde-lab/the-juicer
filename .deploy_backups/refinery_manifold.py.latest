@@ -1,0 +1,187 @@
+"""
+The Juicer - Contender 6: 9-Valve Industrial Glass Manifold
+Semi-realistic borosilicate tubes, chrome couplings, neon fluid flow, and tab gutter.
+"""
+
+def get_manifold_markup():
+    # Exact percentage width alignment for each of the 9 tabs
+    # [Scoreboard, DFS, Donna, Parlay, Season, PrizePicks, Film, Ops, Loop]
+    tab_targets = [5.5, 16.5, 27.5, 38.5, 50.0, 61.5, 72.5, 83.5, 94.5]
+
+    pipe_svg_elements = ""
+    for idx, pct in enumerate(tab_targets):
+        x = pct * 10.0  # ViewBox 0 0 1000 130
+        
+        # Path calculations: leave extraction reservoir at y=48, branch 90 deg, drop into tab nozzle at y=125
+        if x == 500:
+            d = "M 500 48 L 500 125"
+            elbow_x, elbow_y = 500, 48
+        elif x < 500:
+            d = f"M 500 48 L 500 68 Q 500 78 490 78 L {x + 10} 78 Q {x} 78 {x} 88 L {x} 125"
+            elbow_x, elbow_y = x, 78
+        else:
+            d = f"M 500 48 L 500 68 Q 500 78 510 78 L {x - 10} 78 Q {x} 78 {x} 88 L {x} 125"
+            elbow_x, elbow_y = x, 78
+
+        pipe_svg_elements += f"""
+        <!-- Conduit {idx+1} Outer Glass Glow -->
+        <path d="{d}" fill="none" stroke="rgba(0, 229, 255, 0.25)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Clear Borosilicate Glass Wall -->
+        <path d="{d}" fill="none" stroke="url(#glassWallGrad)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Pressurized Neon Juice Stream -->
+        <path d="{d}" class="fluid-stream" fill="none" stroke="url(#juiceNeonGrad)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Glass Surface Specular Reflection Highlight -->
+        <path d="{d}" fill="none" stroke="rgba(255, 255, 255, 0.55)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="transform: translateY(-1.5px);"/>
+        
+        <!-- Industrial Chrome / Brass Knurled Collar at Drop -->
+        <rect x="{x - 6}" y="118" width="12" height="7" rx="1.5" fill="url(#metalChromeGrad)" stroke="#37474f" stroke-width="1"/>
+        <line x1="{x - 6}" y1="121" x2="{x + 6}" y2="121" stroke="#263238" stroke-width="1"/>
+        """
+
+    markup = f"""
+    <style>
+    .manifold-container {{
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: -10px;
+        margin-bottom: 2px;
+        position: relative;
+    }}
+    /* Extraction Chamber (Low-Profile Industrial Glass Vat) */
+    .extraction-core {{
+        width: 130px;
+        height: 60px;
+        border-radius: 0 0 16px 16px;
+        border-left: 3px solid rgba(0, 229, 255, 0.85);
+        border-right: 3px solid rgba(0, 229, 255, 0.85);
+        border-bottom: 4px solid rgba(0, 229, 255, 0.95);
+        background: radial-gradient(circle at 50% 30%, rgba(20, 28, 48, 0.6) 0%, rgba(5, 8, 16, 0.95) 100%);
+        box-shadow: 0 0 25px rgba(0, 229, 255, 0.35), inset 0 0 15px rgba(255, 42, 109, 0.3);
+        position: relative;
+        overflow: hidden;
+    }}
+    /* Churning Juice Inside Core */
+    .core-juice {{
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 75%;
+        background: linear-gradient(180deg, rgba(255, 42, 109, 0.9) 0%, rgba(0, 229, 255, 0.85) 100%);
+        filter: drop-shadow(0 0 10px rgba(255, 42, 109, 0.8));
+        animation: juiceSlosh 0.9s infinite alternate ease-in-out;
+    }}
+    /* Stainless Steel Impeller Blades */
+    .core-impeller {{
+        position: absolute;
+        bottom: 5px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 26px;
+        height: 26px;
+        animation: spinFast 0.1s infinite linear;
+        z-index: 3;
+    }}
+    .core-blade {{
+        position: absolute;
+        top: 10px;
+        left: 0;
+        width: 26px;
+        height: 6px;
+        background: linear-gradient(90deg, #b0bec5, #ffffff, #78909c);
+        border-radius: 3px;
+        box-shadow: 0 0 5px #ffffff;
+    }}
+    .core-blade.rot {{ transform: rotate(90deg); }}
+    
+    @keyframes spinFast {{ 0% {{ transform: translateX(-50%) rotate(0deg); }} 100% {{ transform: translateX(-50%) rotate(360deg); }} }}
+    @keyframes juiceSlosh {{ 0% {{ transform: scaleY(0.95) skewX(-2deg); }} 100% {{ transform: scaleY(1.05) skewX(2deg); }} }}
+
+    /* Flowing Pressurized Fluid in Clear Tubes */
+    .conduit-canvas {{
+        width: 100%;
+        height: 105px;
+        margin-top: -12px;
+        display: block;
+        overflow: visible;
+    }}
+    .fluid-stream {{
+        stroke-dasharray: 14, 7;
+        animation: flowAnimation 0.65s infinite linear;
+    }}
+    @keyframes flowAnimation {{
+        0% {{ stroke-dashoffset: 42; }}
+        100% {{ stroke-dashoffset: 0; }}
+    }}
+
+    /* Brushed-Steel Heavy Gutter Over Tabs */
+    .tab-gutter-trough {{
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #101622 0%, #1e293b 8%, #00e5ff 25%, #ff2a6d 50%, #00ff88 75%, #1e293b 92%, #101622 100%);
+        box-shadow: 0 0 14px rgba(0, 229, 255, 0.7), 0 2px 6px rgba(255, 42, 109, 0.5);
+        border-radius: 2px;
+        margin-top: -2px;
+        position: relative;
+    }}
+    </style>
+
+    <div class="manifold-container">
+        <!-- Low-Profile Vat Header -->
+        <div class="extraction-core">
+            <div class="core-juice"></div>
+            <div class="core-impeller">
+                <div class="core-blade"></div>
+                <div class="core-blade rot"></div>
+            </div>
+        </div>
+        <!-- 9-Valve Glass Plumbing SVG -->
+        <svg class="conduit-canvas" viewBox="0 0 1000 130" preserveAspectRatio="none">
+            <defs>
+                <!-- Neon Juice Multi-Stop Gradient -->
+                <linearGradient id="juiceNeonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#00e5ff" />
+                    <stop offset="30%" stop-color="#00ff88" />
+                    <stop offset="50%" stop-color="#ff2a6d" />
+                    <stop offset="70%" stop-color="#9d4edd" />
+                    <stop offset="100%" stop-color="#00e5ff" />
+                </linearGradient>
+                <!-- Borosilicate Glass Shading -->
+                <linearGradient id="glassWallGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="rgba(255, 255, 255, 0.55)" />
+                    <stop offset="50%" stop-color="rgba(0, 229, 255, 0.15)" />
+                    <stop offset="100%" stop-color="rgba(10, 25, 40, 0.65)" />
+                </linearGradient>
+                <!-- Chrome Coupling Metal Gradient -->
+                <linearGradient id="metalChromeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#455a64" />
+                    <stop offset="35%" stop-color="#cfd8dc" />
+                    <stop offset="50%" stop-color="#ffffff" />
+                    <stop offset="65%" stop-color="#cfd8dc" />
+                    <stop offset="100%" stop-color="#37474f" />
+                </linearGradient>
+            </defs>
+            {pipe_svg_elements}
+        </svg>
+        <!-- The Continuous Trough Above Tabs -->
+        <div class="tab-gutter-trough"></div>
+    </div>
+    """
+    return markup
+
+def run_self_audit():
+    try:
+        html = get_manifold_markup()
+        assert "juiceNeonGrad" in html, "Neon fluid gradient missing."
+        assert "glassWallGrad" in html, "Borosilicate glass shading missing."
+        assert "metalChromeGrad" in html, "Chrome coupling hardware missing."
+        assert "tab-gutter-trough" in html, "Gutter trough missing."
+        print("✅ [PASS] Contender 6 Manifold verified. Zero regressions.")
+        return True
+    except Exception as e:
+        print(f"❌ [FAIL] Contender 6 self-audit failed: {e}")
+        return False
+
+if __name__ == "__main__":
+    run_self_audit()

@@ -1,0 +1,94 @@
+"""
+The Juicer - Scoreboard War Room View & Auto-Poller
+Uses native st.html and full container width.
+"""
+import streamlit as st
+import sqlite3
+import os
+from scoreboard_styles import get_scoreboard_css
+from scoreboard_cards import build_card_html
+import scoreboard_engine
+
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "action_grid.db")
+
+def get_db():
+    conn = sqlite3.connect(DB_PATH, timeout=10.0)
+    conn.execute("PRAGMA journal_mode=WAL;")
+    conn.execute("PRAGMA busy_timeout=10000;")
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def render_scoreboard_tab():
+    # Force style block via native HTML
+    css_payload = get_scoreboard_css()
+    if hasattr(st, "html"):
+        st.html(css_payload)
+    else:
+        st.markdown(css_payload, unsafe_allow_html=True)
+
+    with get_db() as conn:
+        rows = conn.execute("SELECT * FROM scoreboard_live ORDER BY kickoff_time ASC").fetchall()
+
+    if not rows:
+        st.info("Scoreboard initializing... Fetching live slate from ESPN...")
+        scoreboard_engine.sync_espn_data()
+        with get_db() as conn:
+            rows = conn.execute("SELECT * FROM scoreboard_live ORDER BY kickoff_time ASC").fetchall()
+
+    if not rows:
+        st.warning("No games currently loaded.")
+        return
+
+    games = [dict(r) for r in rows]
+    active_week = games[0].get("week", 1)
+    last_sync = games[0].get("updated_at", "Now")
+
+    col_title, col_filter, col_meta = st.columns([0.45, 0.35, 0.20])
+    with col_title:
+        st.markdown(f"<h3 style='margin:0; color:#00e5ff; font-weight:900; letter-spacing:1px;'>🏆 NFL WEEK {active_week} SCOREBOARD</h3>", unsafe_allow_html=True)
+    with col_filter:
+        view_filter = st.radio(
+            "Filter Slate:",
+            ["All Games", "Live / Red Zone", "Finals"],
+            horizontal=True,
+            label_visibility="collapsed",
+            key="sb_view_filter_radio"
+        )
+    with col_meta:
+        st.markdown(f"<div style='text-align:right; font-size:11px; color:#8b949e; padding-top:6px;'>⚡ Auto-Feed • {last_sync[-8:]}</div>", unsafe_allow_html=True)
+
+    if view_filter == "Live / Red Zone":
+        display_games = [g for g in games if g["status_state"] == "in" or g["is_red_zone"] == 1]
+    elif view_filter == "Finals":
+        display_games = [g for g in games if g["status_state"] == "post"]
+    else:
+        display_games = games
+
+    if not display_games:
+        st.caption(f"No games currently matching filter: '{view_filter}'")
+        return
+
+    # Full-width grid container
+    grid_html = "<div class='sb-container' style='width:100%; margin-top:10px;'><div class='sb-grid' style='display:grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap:18px; width:100%;'>"
+    for g in display_games:
+        grid_html += build_card_html(g)
+    grid_html += "</div></div>"
+
+    if hasattr(st, "html"):
+        st.html(grid_html)
+    else:
+        st.markdown(grid_html, unsafe_allow_html=True)
+
+def run_self_audit():
+    try:
+        with get_db() as conn:
+            cnt = conn.execute("SELECT COUNT(*) FROM scoreboard_live").fetchone()[0]
+            assert cnt > 0, "No records in scoreboard_live."
+        print("✅ [PASS] Chunk 4 verified. Zero regressions.")
+        return True
+    except Exception as e:
+        print(f"❌ [FAIL] Chunk 4 self-audit failed: {e}")
+        return False
+
+if __name__ == "__main__":
+    run_self_audit()

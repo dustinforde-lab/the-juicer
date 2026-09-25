@@ -1,0 +1,283 @@
+﻿=== THE JUICER MASTER UPGRADE AUDIT (9/23 17:00 TO 9/24 06:40) ===
+
+--------------------------------------------------
+FILE: ui_components.py.phase2.bak
+MODIFIED: 09/23/2026 17:45:50
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: ui_components.py.20260923_224852.bak
+MODIFIED: 09/23/2026 17:45:50
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: THE_JUICER_AUDIT_FINDINGS.txt
+MODIFIED: 09/23/2026 18:20:36
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: live_ingest.py
+MODIFIED: 09/23/2026 18:21:19
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: archive
+MODIFIED: 09/23/2026 18:25:52
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: deploy_update.py
+MODIFIED: 09/23/2026 18:48:21
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: scoreboard_engine.py
+MODIFIED: 09/23/2026 18:57:33
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: scoreboard_styles.py
+MODIFIED: 09/23/2026 18:59:24
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: refinery_assets.py
+MODIFIED: 09/23/2026 19:28:05
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: scoreboard_cards.py
+MODIFIED: 09/23/2026 19:34:56
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: System_Operations
+MODIFIED: 09/23/2026 19:34:57
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: refinery_manifold.py
+MODIFIED: 09/23/2026 20:02:02
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: ui_dfs_controls.py
+MODIFIED: 09/23/2026 20:18:12
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: ui_dfs_cards.py
+MODIFIED: 09/23/2026 20:38:44
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: ui_scoreboard.py
+MODIFIED: 09/23/2026 20:44:23
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: audit_market_feeds.py
+MODIFIED: 09/23/2026 20:54:39
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: stage_props_schema.py
+MODIFIED: 09/23/2026 21:11:01
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: stage_props_engine.py
+MODIFIED: 09/23/2026 21:11:14
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: approved_manifest.json
+MODIFIED: 09/23/2026 21:12:56
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: probe_props.py
+MODIFIED: 09/23/2026 21:14:04
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: prop_consensus_engine.py
+MODIFIED: 09/23/2026 21:15:47
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: mike_evaluator_v2.py
+MODIFIED: 09/23/2026 21:17:34
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: stage_quota_meter.py
+MODIFIED: 09/23/2026 21:23:31
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: generate_dfs.py
+MODIFIED: 09/23/2026 21:38:18
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: stage_donna_ledger.py
+MODIFIED: 09/23/2026 21:43:22
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: autonomous_daemon.py
+MODIFIED: 09/23/2026 21:43:37
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: stage_ui_donna_loop.py
+MODIFIED: 09/23/2026 21:43:52
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: ui_dfs.py
+MODIFIED: 09/23/2026 21:58:35
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: .deploy_backups
+MODIFIED: 09/23/2026 21:58:37
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: system_audit.py
+MODIFIED: 09/23/2026 22:32:28
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: parlay_engine.py
+MODIFIED: 09/23/2026 22:33:22
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: append_parlays.py
+MODIFIED: 09/23/2026 22:33:46
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: patch_desk.py
+MODIFIED: 09/23/2026 22:49:12
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: clean_app.py
+MODIFIED: 09/23/2026 22:51:37
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: app.py.phase3.bak
+MODIFIED: 09/23/2026 22:51:38
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: route_app.py
+MODIFIED: 09/23/2026 23:10:14
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: tab_juice_rankings.py
+MODIFIED: 09/23/2026 23:13:43
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: hardwire_tabs.py
+MODIFIED: 09/23/2026 23:19:06
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: diagnostic_dashboard.py
+MODIFIED: 09/24/2026 00:07:08
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+--------------------------------------------------
+FILE: juice_pipeline.py
+MODIFIED: 09/24/2026 06:21:20
+--------------------------------------------------
+[Error reading file or binary content]
+
+
+

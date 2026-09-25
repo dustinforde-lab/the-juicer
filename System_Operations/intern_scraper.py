@@ -1,4 +1,4 @@
-import sqlite3
+﻿import sqlite3
 from datetime import datetime
 
 DB_FILE = "action_grid.db"
@@ -55,7 +55,7 @@ def populate_week2_lines(conn):
         ("Amon-Ra St. Brown", "WR", "DET", "DraftKings", "RECEPTIONS", 7.5, 105, -135, now)
     ]
     cursor.executemany('''
-        INSERT INTO vegas_lines (player, position, team, sportsbook, stat_category, line, over_odds, under_odds, updated_at)
+        INSERT OR REPLACE INTO vegas_lines (player, position, team, sportsbook, stat_category, line, over_odds, under_odds, updated_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     ''', props)
     
@@ -65,7 +65,7 @@ def populate_week2_lines(conn):
         ("MIN vs SF", 2, 46.5, 4.5, "Consensus", now)
     ]
     cursor.executemany('''
-        INSERT INTO game_lines (game, week, over_under, spread, sportsbook, updated_at)
+        INSERT OR REPLACE INTO game_lines (game, week, over_under, spread, sportsbook, updated_at)
         VALUES (?, ?, ?, ?, ?, ?)
     ''', games)
     

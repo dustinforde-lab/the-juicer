@@ -1,0 +1,328 @@
+import ui_extension as uext
+import streamlit as st
+import sqlite3
+import pandas as pd
+import config
+import ui_addresses
+import ui_components as ui
+import ui_scoreboard
+import scoreboard_engine
+from scheduler import JobScheduler, thread_safe_log_fn
+import learning_loop
+import mike_evaluator_v2
+import generate_dfs
+import live_medic_poller
+import upgrade_meteorologist
+import os
+
+st.set_page_config(
+    page_title="The Juicer - Pro Syndicate War Room",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
+
+# Force Streamlit container to 100% full screen width
+st.markdown("""
+<style>
+    .block-container {
+        max-width: 98% !important;
+        padding-left: 1.5rem !important;
+        padding-right: 1.5rem !important;
+        padding-top: 1rem !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+DB_PATH = getattr(config, 'DB_PATH', 'action_grid.db')
+
+@st.cache_resource
+def init_syndicate_scheduler():
+    try:
+        log_fn = thread_safe_log_fn(DB_PATH)
+        sched = JobScheduler(log_fn=log_fn)
+        if hasattr(learning_loop, 'recalculate_weights'):
+            sched.register_job("bayesian_recalibration", learning_loop.recalculate_weights, interval_seconds=86400, run_at_start=False)
+        def run_full_pipeline():
+            try:
+                if hasattr(mike_evaluator_v2, "evaluate_top_300"):
+                    mike_evaluator_v2.evaluate_top_300()
+                if hasattr(generate_dfs, "generate_lineups_and_slips"):
+                    generate_dfs.generate_lineups_and_slips()
+            except Exception as e:
+                print(f"[PIPELINE ERROR]: {e}")
+
+        sched.register_job("live_scoreboard_sync", scoreboard_engine.sync_espn_data, interval_seconds=30, run_at_start=True)
+        sched.register_job("full_pipeline", run_full_pipeline, interval_seconds=3600, run_at_start=True)
+        if hasattr(live_medic_poller, "poll_live_injury_trends"):
+            sched.register_job("injury_poller", live_medic_poller.poll_live_injury_trends, interval_seconds=1800, run_at_start=True)
+        if hasattr(upgrade_meteorologist, "deploy_meteorologist"):
+            sched.register_job("weather_feed", upgrade_meteorologist.deploy_meteorologist, interval_seconds=3600, run_at_start=True)
+        sched.start()
+        return True
+    except Exception as e:
+        print(f"[SCHEDULER INIT FAILED] {type(e).__name__}: {e}")
+        return False
+
+init_syndicate_scheduler()
+
+if hasattr(ui, 'inject_elite_aesthetic'):
+    ui.inject_elite_aesthetic()
+
+if hasattr(ui, 'render_accountability_tickers'):
+    ui.render_accountability_tickers()
+
+# --- THE MEGA BLENDER: SPINNING BLADES + SWIRLING FOOTBALLS & FRUIT ---
+blender_html = """
+<style>
+    .blender-viewport {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 0;
+        margin-top: -25px;
+        margin-bottom: 2px;
+        position: relative;
+    }
+    .blender-lid {
+        width: 90px;
+        height: 12px;
+        background: #1f273b;
+        border: 2px solid #00e5ff;
+        border-radius: 6px 6px 0 0;
+        box-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
+    }
+    .blender-jar {
+        width: 130px;
+        height: 135px;
+        border-left: 3px solid #00e5ff;
+        border-right: 3px solid #00e5ff;
+        border-bottom: 4px solid #00e5ff;
+        border-radius: 0 0 20px 20px;
+        background: rgba(0, 229, 255, 0.04);
+        box-shadow: 0 0 25px rgba(0, 229, 255, 0.25), inset 0 0 15px rgba(0, 229, 255, 0.15);
+        position: relative;
+        overflow: hidden;
+    }
+    .blender-fluid {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 72%;
+        background: linear-gradient(180deg, rgba(255, 42, 109, 0.85) 0%, rgba(157, 78, 221, 0.95) 100%);
+        box-shadow: 0 0 20px rgba(255, 42, 109, 0.8);
+        animation: churnFluid 0.8s infinite alternate ease-in-out;
+    }
+    /* Swirling Items in Vortex */
+    .vortex-item {
+        position: absolute;
+        font-size: 18px;
+        user-select: none;
+        z-index: 3;
+    }
+    .vortex-ball {
+        animation: swirlA 1.6s infinite linear;
+    }
+    .vortex-straw {
+        animation: swirlB 1.9s infinite linear;
+    }
+    .vortex-melon {
+        animation: swirlC 2.2s infinite linear;
+    }
+    .vortex-lime {
+        animation: swirlD 1.7s infinite linear;
+    }
+    @keyframes swirlA {
+        0% { left: 15px; bottom: 65px; transform: rotate(0deg) scale(0.9); }
+        50% { left: 85px; bottom: 25px; transform: rotate(180deg) scale(0.7); }
+        100% { left: 15px; bottom: 65px; transform: rotate(360deg) scale(0.9); }
+    }
+    @keyframes swirlB {
+        0% { left: 85px; bottom: 70px; transform: rotate(360deg) scale(0.85); }
+        50% { left: 20px; bottom: 30px; transform: rotate(180deg) scale(1.05); }
+        100% { left: 85px; bottom: 70px; transform: rotate(0deg) scale(0.85); }
+    }
+    @keyframes swirlC {
+        0% { left: 45px; bottom: 35px; transform: rotate(0deg) scale(1.1); }
+        50% { left: 80px; bottom: 75px; transform: rotate(180deg) scale(0.8); }
+        100% { left: 45px; bottom: 35px; transform: rotate(360deg) scale(1.1); }
+    }
+    @keyframes swirlD {
+        0% { left: 70px; bottom: 45px; transform: rotate(0deg) scale(0.8); }
+        50% { left: 25px; bottom: 75px; transform: rotate(-180deg) scale(1.0); }
+        100% { left: 70px; bottom: 45px; transform: rotate(-360deg) scale(0.8); }
+    }
+    /* Spinning Metal Blades */
+    .blender-blades {
+        position: absolute;
+        bottom: 6px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 38px;
+        height: 38px;
+        z-index: 4;
+        animation: spinBlades 0.15s infinite linear;
+    }
+    .blade-wing {
+        position: absolute;
+        top: 15px;
+        left: 2px;
+        width: 34px;
+        height: 8px;
+        background: linear-gradient(90deg, #cfd8dc, #ffffff, #90a4ae);
+        border-radius: 4px;
+        box-shadow: 0 0 6px #ffffff;
+    }
+    .blade-wing.vertical {
+        transform: rotate(90deg);
+    }
+    .blade-hub {
+        position: absolute;
+        top: 13px;
+        left: 13px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #37474f;
+        border: 2px solid #b0bec5;
+    }
+    .blender-base {
+        width: 140px;
+        height: 24px;
+        background: #121824;
+        border: 2px solid #2d3748;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 2px;
+    }
+    .blender-dial {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #00ff88;
+        box-shadow: 0 0 10px #00ff88;
+        animation: pulseDial 1.2s infinite alternate ease-in-out;
+    }
+    @keyframes spinBlades {
+        0% { transform: translateX(-50%) rotate(0deg); }
+        100% { transform: translateX(-50%) rotate(360deg); }
+    }
+    @keyframes churnFluid {
+        0% { transform: scaleY(0.94) skewX(-2deg); }
+        100% { transform: scaleY(1.04) skewX(2deg); }
+    }
+    @keyframes pulseDial {
+        0% { opacity: 0.6; }
+        100% { opacity: 1.0; box-shadow: 0 0 14px #00ff88; }
+    }
+</style>
+<div class="blender-viewport">
+    <div class="blender-lid"></div>
+    <div class="blender-jar">
+        <div class="blender-fluid"></div>
+        <div class="vortex-item vortex-ball">🏈</div>
+        <div class="vortex-item vortex-straw">🍓</div>
+        <div class="vortex-item vortex-melon">🍉</div>
+        <div class="vortex-item vortex-lime">🍋</div>
+        <div class="blender-blades">
+            <div class="blade-wing"></div>
+            <div class="blade-wing vertical"></div>
+            <div class="blade-hub"></div>
+        </div>
+    </div>
+    <div class="blender-base">
+        <div class="blender-dial"></div>
+    </div>
+</div>
+"""
+st.markdown(blender_html, unsafe_allow_html=True)
+
+# Master Command Slate Controls
+col_title, col_slate = st.columns([0.65, 0.35])
+with col_title:
+    st.markdown("<h1 style='text-align: center; color: #ff3366; font-weight: 900; letter-spacing: 2px; margin: 0;'>THE JUICER</h1>", unsafe_allow_html=True)
+with col_slate:
+    selected_slate = st.selectbox(
+        "MASTER COMMAND SLATE:",
+        ["Sunday Main Slate (Classic 9-Man)", "Thursday Night Showdown", "Monday Night Football SGP", "Full Slate DFS Pool"],
+        key="master_command_slate_dropdown"
+    )
+
+st.markdown("---")
+
+# Full 9-Tab War Room Architecture
+try:
+    tabs = st.tabs([
+        "🏆 Scoreboard", 
+        "👑 DFS Engine", 
+        "📊 Donna's Leverage", 
+        "🎯 Parlay Matrix", 
+        "🏈 Season-Long", 
+        "⚡ PrizePicks", 
+        "🎥 Film Room", 
+        "⚙️ Ops Center", 
+        "🤖 Learning Loop"
+    ])
+
+    with tabs[0]:
+        ui_scoreboard.render_scoreboard_tab()
+
+    with tabs[1]:
+        if hasattr(ui, 'render_dfs_engine'):
+            ui.render_dfs_engine()
+        elif hasattr(ui, 'render_dfs'):
+            ui.render_dfs()
+
+    with tabs[2]:
+        if hasattr(ui, 'render_donna_matrix'):
+            ui.render_donna_matrix()
+        else:
+            st.info("Donna's leverage matrix loading...")
+
+    with tabs[3]:
+        if hasattr(ui, 'render_real_parlay_matrix'):
+            ui.render_real_parlay_matrix()
+        else:
+            st.info("Parlay matrix loading...")
+
+    with tabs[4]:
+        if hasattr(ui, 'render_season_long'):
+            ui.render_season_long()
+        else:
+            st.info("Season-long rosters loading...")
+
+    with tabs[5]:
+        if hasattr(ui, 'render_prizepicks_underdog'):
+            try:
+                ui.render_prizepicks_underdog()
+            except Exception:
+                uext.render_safe_prizepicks()
+        else:
+            uext.render_safe_prizepicks()
+
+    with tabs[6]:
+        if hasattr(ui, 'render_film_room'):
+            ui.render_film_room()
+        else:
+            st.info("Film room telemetry loading...")
+
+    with tabs[7]:
+        if hasattr(ui, 'render_ops_center'):
+            ui.render_ops_center()
+        elif hasattr(ui, 'render_telemetry'):
+            ui.render_telemetry()
+
+    with tabs[8]:
+        if hasattr(ui, 'render_learning_loop'):
+            ui.render_learning_loop()
+        elif hasattr(ui, 'render_learning_panel'):
+            ui.render_learning_panel()
+
+except Exception as e:
+    st.error(f"⚠️ War Room Render Exception: {e}")
+    import traceback
+    st.code(traceback.format_exc())

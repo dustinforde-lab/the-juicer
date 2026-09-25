@@ -1,0 +1,59 @@
+﻿================================================================================
+THE JUICER - CODE AUDIT & STRATEGIC RECOMMENDATIONS
+Target Path: C:\Users\Chuck\the-juicer
+Generated: 09/23/2026 18:20:36
+================================================================================
+
+[EXECUTIVE SUMMARY]
+The Juicer is an ambitious, high-utility platform incorporating live odds ingestion,
+multi-source sports/roster data, Monte Carlo simulation, and a modular Streamlit UI.
+However, rapid hotfixing has created architectural fragmentation, dual schema states,
+and script clutter that need consolidation.
+
+--------------------------------------------------------------------------------
+1. CRITICAL REPAIR: PURGE MOJIBAKE / BYTE ENCODING CORRUPTIONS
+--------------------------------------------------------------------------------
+Files Affected: app.py, ui_components.py, abbyslayz_syndicate.py
+Issue: Unicode glyphs (emojis and arrows) were saved with conflicting encodings,
+resulting in corrupt UI strings (e.g. 'Ã°Å¸Â â€  Scoreboard').
+Action: Re-encode app.py and UI modules with clean UTF-8 headers to restore crisp
+visual assets and emoji tabs.
+
+--------------------------------------------------------------------------------
+2. ARCHITECTURAL UNIFICATION: RESOLVE DUAL SCHEMA INVENTORY
+--------------------------------------------------------------------------------
+Files Affected: generate_dfs.py, dfs_multi_ilp.py, dfs_exposure_capped.py, ui_addresses.py
+Issue: Rosters are split across 'dfs_rosters', 'dfs_classic_lineups', and
+'abbys_master_book'. UI tabs query different tables with mismatched column structures.
+Action: Standardize on a single canonical roster table definition:
+  dfs_rosters (roster_id, qb, rb1, rb2, wr1, wr2, wr3, te, flex, dst, projected_score, lineup_type)
+Align all optimizers and UI cards to pull from this single source of truth.
+
+--------------------------------------------------------------------------------
+3. SCHEMA INTEGRITY: ADD MISSING COLUMNS IN PLAYER_RANKINGS
+--------------------------------------------------------------------------------
+Files Affected: live_ingest.py, lines_ingest.py
+Issue: lines_ingest.py attempts to update 'consensus_line' and 'stat_category',
+but live_ingest.py's CREATE TABLE IF NOT EXISTS statement omits these fields.
+Action: Add consensus_line TEXT and stat_category TEXT directly to the base schema
+definition in live_ingest.py to prevent unhandled SQLite column errors.
+
+--------------------------------------------------------------------------------
+4. STABILITY & CONCURRENCY: WAL MODE & GLOBAL LOCK GUARDS
+--------------------------------------------------------------------------------
+Files Affected: All DB connection points (app.py, scheduler.py, daemon_loop.py)
+Issue: Background evaluation threads in app.py and scheduler.py collide with
+front-end Streamlit read queries, raising 'sqlite3.OperationalError: database is locked'.
+Action: Enforce WAL mode and a 10-second busy timeout across all SQLite connections:
+  PRAGMA journal_mode=WAL;
+  PRAGMA busy_timeout=10000;
+
+--------------------------------------------------------------------------------
+5. WORKSPACE SANITIZATION: RETIRE ONE-OFF HOTFIX SCRIPTS
+--------------------------------------------------------------------------------
+Files Affected: Root directory (*_fix.py, hunter.py, exterminate.py, *.bak)
+Issue: Over 40 hotfix scripts obscure the active application pipeline, increasing
+the risk of re-introducing obsolete logic.
+Action: Relocate all hotfix scripts and .bak historical dumps into the archive/
+folder, leaving only the active core pipeline in the workspace root.
+================================================================================

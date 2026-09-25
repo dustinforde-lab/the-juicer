@@ -1,4 +1,4 @@
-import sqlite3
+﻿import sqlite3
 import os
 import requests
 import traceback
@@ -55,11 +55,12 @@ def run_smart_ingest():
             # Ensure table exists just in case
             cur.execute("""
                 CREATE TABLE IF NOT EXISTS player_rankings (
-                    player_name TEXT, pos TEXT, team TEXT, 
+                    player_name TEXT PRIMARY KEY, pos TEXT, team TEXT, 
                     pass_yds REAL, pass_tds REAL, rush_yds REAL, rush_tds REAL, 
                     rec REAL, rec_yds REAL, rec_tds REAL, 
                     ppr_baseline REAL, sim_floor REAL, sim_ceiling REAL, 
-                    gpp_pathway REAL, draftkings_salary INTEGER
+                    gpp_pathway REAL, draftkings_salary INTEGER,
+                    consensus_line REAL, stat_category TEXT
                 )
             """)
             

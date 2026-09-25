@@ -1,0 +1,355 @@
+import ui_extension as uext
+import streamlit as st
+import sqlite3
+import pandas as pd
+import config
+import ui_addresses
+import ui_components as ui
+import ui_scoreboard
+import scoreboard_engine
+from scheduler import JobScheduler, thread_safe_log_fn
+import learning_loop
+import mike_evaluator_v2
+import generate_dfs
+import live_medic_poller
+import upgrade_meteorologist
+import os
+
+st.set_page_config(
+    page_title="The Juicer - Pro Syndicate War Room",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
+
+# Expand Streamlit container to 100% full screen
+st.markdown("""
+<style>
+    .block-container {
+        max-width: 98% !important;
+        padding-left: 1.5rem !important;
+        padding-right: 1.5rem !important;
+        padding-top: 0.5rem !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+DB_PATH = getattr(config, 'DB_PATH', 'action_grid.db')
+
+@st.cache_resource
+def init_syndicate_scheduler():
+    try:
+        log_fn = thread_safe_log_fn(DB_PATH)
+        sched = JobScheduler(log_fn=log_fn)
+        if hasattr(learning_loop, 'recalculate_weights'):
+            sched.register_job("bayesian_recalibration", learning_loop.recalculate_weights, interval_seconds=86400, run_at_start=False)
+        def run_full_pipeline():
+            try:
+                if hasattr(mike_evaluator_v2, "evaluate_top_300"):
+                    mike_evaluator_v2.evaluate_top_300()
+                if hasattr(generate_dfs, "generate_lineups_and_slips"):
+                    generate_dfs.generate_lineups_and_slips()
+            except Exception as e:
+                print(f"[PIPELINE ERROR]: {e}")
+
+        sched.register_job("live_scoreboard_sync", scoreboard_engine.sync_espn_data, interval_seconds=30, run_at_start=True)
+        sched.register_job("full_pipeline", run_full_pipeline, interval_seconds=3600, run_at_start=True)
+        if hasattr(live_medic_poller, "poll_live_injury_trends"):
+            sched.register_job("injury_poller", live_medic_poller.poll_live_injury_trends, interval_seconds=1800, run_at_start=True)
+        if hasattr(upgrade_meteorologist, "deploy_meteorologist"):
+            sched.register_job("weather_feed", upgrade_meteorologist.deploy_meteorologist, interval_seconds=3600, run_at_start=True)
+        sched.start()
+        return True
+    except Exception as e:
+        print(f"[SCHEDULER INIT FAILED] {type(e).__name__}: {e}")
+        return False
+
+init_syndicate_scheduler()
+
+if hasattr(ui, 'inject_elite_aesthetic'):
+    ui.inject_elite_aesthetic()
+
+if hasattr(ui, 'render_accountability_tickers'):
+    ui.render_accountability_tickers()
+
+# --- INDUSTRIAL DATA REFINERY BLENDER & GLASS DISTRIBUTION MANIFOLD ---
+refinery_html = """
+<style>
+    .refinery-wrapper {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: -15px;
+        position: relative;
+    }
+    /* Falling Betting Slips & News Clippings */
+    .ingest-zone {
+        position: relative;
+        width: 220px;
+        height: 38px;
+        overflow: hidden;
+    }
+    .data-drop {
+        position: absolute;
+        font-size: 10px;
+        font-weight: 800;
+        font-family: monospace;
+        border-radius: 3px;
+        padding: 1px 4px;
+        opacity: 0.9;
+    }
+    .drop-slip1 { background: rgba(0,255,136,0.25); color: #00ff88; border: 1px solid #00ff88; animation: dropA 2.2s infinite ease-in; left: 20px; }
+    .drop-news  { background: rgba(255,42,109,0.25); color: #ff2a6d; border: 1px solid #ff2a6d; animation: dropB 2.8s infinite ease-in; left: 100px; }
+    .drop-slip2 { background: rgba(0,229,255,0.25); color: #00e5ff; border: 1px solid #00e5ff; animation: dropC 2.5s infinite ease-in; left: 155px; }
+
+    @keyframes dropA { 0% { top: -20px; opacity: 1; transform: scale(1) rotate(0deg); } 80% { opacity: 0.8; } 100% { top: 38px; opacity: 0; transform: scale(0.4) rotate(15deg); } }
+    @keyframes dropB { 0% { top: -20px; opacity: 1; transform: scale(1) rotate(-5deg); } 80% { opacity: 0.8; } 100% { top: 38px; opacity: 0; transform: scale(0.3) rotate(-20deg); } }
+    @keyframes dropC { 0% { top: -20px; opacity: 1; transform: scale(1) rotate(10deg); } 80% { opacity: 0.8; } 100% { top: 38px; opacity: 0; transform: scale(0.4) rotate(25deg); } }
+
+    /* Industrial Jar Assembly */
+    .refinery-jar {
+        width: 140px;
+        height: 125px;
+        border-left: 3px solid rgba(0, 229, 255, 0.7);
+        border-right: 3px solid rgba(0, 229, 255, 0.7);
+        border-bottom: 4px solid rgba(0, 229, 255, 0.9);
+        border-radius: 0 0 16px 16px;
+        background: linear-gradient(180deg, rgba(20,28,45,0.2) 0%, rgba(0,229,255,0.06) 100%);
+        box-shadow: 0 0 25px rgba(0, 229, 255, 0.25), inset 0 0 18px rgba(0, 229, 255, 0.12);
+        position: relative;
+        overflow: hidden;
+    }
+    /* Tick Marks */
+    .refinery-jar::before {
+        content: "- 500K DATA\\A- 250K PROPS\\A- 100K ODDS";
+        white-space: pre-wrap;
+        position: absolute;
+        right: 6px;
+        top: 15px;
+        font-size: 8px;
+        font-family: monospace;
+        color: rgba(0, 229, 255, 0.5);
+        line-height: 1.6;
+        text-align: right;
+    }
+    .refinery-fluid {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 65%;
+        background: linear-gradient(180deg, rgba(255, 42, 109, 0.8) 0%, rgba(157, 78, 221, 0.95) 100%);
+        box-shadow: 0 0 20px rgba(255, 42, 109, 0.7);
+        animation: churnFluid 0.7s infinite alternate ease-in-out;
+    }
+    /* Spinning Quad-Blade */
+    .blade-assembly {
+        position: absolute;
+        bottom: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40px;
+        height: 40px;
+        animation: spinBlades 0.12s infinite linear;
+        z-index: 4;
+    }
+    .blade-bar {
+        position: absolute;
+        top: 16px;
+        left: 0;
+        width: 40px;
+        height: 7px;
+        background: linear-gradient(90deg, #cfd8dc, #ffffff, #90a4ae);
+        border-radius: 4px;
+        box-shadow: 0 0 6px #ffffff;
+    }
+    .blade-bar.cross { transform: rotate(90deg); }
+    .blade-center {
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #263238;
+        border: 2px solid #eceff1;
+    }
+
+    /* Base Motor */
+    .refinery-base {
+        width: 150px;
+        height: 20px;
+        background: #111726;
+        border: 2px solid #2d3748;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    .status-light {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: #00ff88;
+        box-shadow: 0 0 10px #00ff88;
+        animation: lightPulse 1.2s infinite alternate ease-in-out;
+    }
+
+    /* Distribution Manifold & Glass Pipes */
+    .pipe-drain-vertical {
+        width: 10px;
+        height: 22px;
+        background: linear-gradient(90deg, rgba(0,229,255,0.4), rgba(255,42,109,0.9), rgba(0,229,255,0.4));
+        box-shadow: 0 0 12px rgba(255,42,109,0.8);
+    }
+    .pipe-manifold-horizontal {
+        width: 98%;
+        height: 7px;
+        background: linear-gradient(90deg, transparent 0%, rgba(0,229,255,0.3) 10%, rgba(255,42,109,0.85) 50%, rgba(0,229,255,0.3) 90%, transparent 100%);
+        border-radius: 4px;
+        box-shadow: 0 0 14px rgba(255,42,109,0.6);
+        position: relative;
+    }
+    .pipe-taps-grid {
+        width: 96%;
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1px;
+    }
+    .pipe-nozzle {
+        width: 6px;
+        height: 12px;
+        background: linear-gradient(180deg, rgba(255,42,109,0.9), rgba(0,229,255,0.7));
+        border-radius: 0 0 3px 3px;
+        box-shadow: 0 0 8px rgba(0,229,255,0.7);
+        animation: nozzleDrip 1.4s infinite alternate ease-in-out;
+    }
+
+    @keyframes spinBlades { 0% { transform: translateX(-50%) rotate(0deg); } 100% { transform: translateX(-50%) rotate(360deg); } }
+    @keyframes churnFluid { 0% { transform: scaleY(0.93) skewX(-2deg); } 100% { transform: scaleY(1.05) skewX(2deg); } }
+    @keyframes lightPulse { 0% { opacity: 0.5; } 100% { opacity: 1.0; box-shadow: 0 0 14px #00ff88; } }
+    @keyframes nozzleDrip { 0% { opacity: 0.6; filter: brightness(0.9); } 100% { opacity: 1.0; filter: brightness(1.3); } }
+</style>
+
+<div class="refinery-wrapper">
+    <div class="ingest-zone">
+        <div class="data-drop drop-slip1">BET TICKET [-3.5]</div>
+        <div class="data-drop drop-news">NEWS: INJURY ALERT</div>
+        <div class="data-drop drop-slip2">PROP [O 245.5]</div>
+    </div>
+    <div class="refinery-jar">
+        <div class="refinery-fluid"></div>
+        <div class="blade-assembly">
+            <div class="blade-bar"></div>
+            <div class="blade-bar cross"></div>
+            <div class="blade-center"></div>
+        </div>
+    </div>
+    <div class="refinery-base">
+        <div class="status-light"></div>
+    </div>
+    <div class="pipe-drain-vertical"></div>
+    <div class="pipe-manifold-horizontal"></div>
+    <div class="pipe-taps-grid">
+        <div class="pipe-nozzle" title="Feed: Scoreboard"></div>
+        <div class="pipe-nozzle" title="Feed: DFS Engine"></div>
+        <div class="pipe-nozzle" title="Feed: Donna"></div>
+        <div class="pipe-nozzle" title="Feed: Parlay Matrix"></div>
+        <div class="pipe-nozzle" title="Feed: Season-Long"></div>
+        <div class="pipe-nozzle" title="Feed: PrizePicks"></div>
+        <div class="pipe-nozzle" title="Feed: Film Room"></div>
+        <div class="pipe-nozzle" title="Feed: Ops Center"></div>
+        <div class="pipe-nozzle" title="Feed: Learning Loop"></div>
+    </div>
+</div>
+"""
+if hasattr(st, "html"):
+    st.html(refinery_html)
+else:
+    st.markdown(refinery_html, unsafe_allow_html=True)
+
+# Master Command Slate Controls
+col_title, col_slate = st.columns([0.65, 0.35])
+with col_title:
+    st.markdown("<h1 style='text-align: center; color: #ff3366; font-weight: 900; letter-spacing: 2px; margin: 0;'>THE JUICER</h1>", unsafe_allow_html=True)
+with col_slate:
+    selected_slate = st.selectbox(
+        "MASTER COMMAND SLATE:",
+        ["Sunday Main Slate (Classic 9-Man)", "Thursday Night Showdown", "Monday Night Football SGP", "Full Slate DFS Pool"],
+        key="master_command_slate_dropdown"
+    )
+
+st.markdown("---")
+
+# Full 9-Tab War Room Architecture
+try:
+    tabs = st.tabs([
+        "🏆 Scoreboard", 
+        "👑 DFS Engine", 
+        "📊 Donna's Leverage", 
+        "🎯 Parlay Matrix", 
+        "🏈 Season-Long", 
+        "⚡ PrizePicks", 
+        "🎥 Film Room", 
+        "⚙️ Ops Center", 
+        "🤖 Learning Loop"
+    ])
+
+    with tabs[0]:
+        ui_scoreboard.render_scoreboard_tab()
+
+    with tabs[1]:
+        if hasattr(ui, 'render_dfs_engine'):
+            ui.render_dfs_engine()
+        elif hasattr(ui, 'render_dfs'):
+            ui.render_dfs()
+
+    with tabs[2]:
+        if hasattr(ui, 'render_donna_matrix'):
+            ui.render_donna_matrix()
+        else:
+            st.info("Donna's leverage matrix loading...")
+
+    with tabs[3]:
+        if hasattr(ui, 'render_real_parlay_matrix'):
+            ui.render_real_parlay_matrix()
+        else:
+            st.info("Parlay matrix loading...")
+
+    with tabs[4]:
+        if hasattr(ui, 'render_season_long'):
+            ui.render_season_long()
+        else:
+            st.info("Season-long rosters loading...")
+
+    with tabs[5]:
+        if hasattr(ui, 'render_prizepicks_underdog'):
+            try:
+                ui.render_prizepicks_underdog()
+            except Exception:
+                uext.render_safe_prizepicks()
+        else:
+            uext.render_safe_prizepicks()
+
+    with tabs[6]:
+        if hasattr(ui, 'render_film_room'):
+            ui.render_film_room()
+        else:
+            st.info("Film room telemetry loading...")
+
+    with tabs[7]:
+        if hasattr(ui, 'render_ops_center'):
+            ui.render_ops_center()
+        elif hasattr(ui, 'render_telemetry'):
+            ui.render_telemetry()
+
+    with tabs[8]:
+        if hasattr(ui, 'render_learning_loop'):
+            ui.render_learning_loop()
+        elif hasattr(ui, 'render_learning_panel'):
+            ui.render_learning_panel()
+
+except Exception as e:
+    st.error(f"⚠️ War Room Render Exception: {e}")
+    import traceback
+    st.code(traceback.format_exc())
