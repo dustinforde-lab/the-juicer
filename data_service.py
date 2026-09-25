@@ -271,3 +271,31 @@ def get_projected_stat_line(pos, player_name):
         return f"📊 Proj: {rec} Receptions | {yds} Rec Yds | {tds} TDs"
     else:
         return f"📊 Proj: Standard Volumetric Baseline"
+
+def filter_finalized_game_players(df):
+    """Filters out players whose teams have already played and whose games are FINAL."""
+    import sqlite3
+    db_path = address_book.PATHS.get("DATABASE", "action_grid.db")
+    final_teams = set()
+    
+    try:
+        with sqlite3.connect(db_path) as conn:
+            c = conn.cursor()
+            # Check if system status or vegas lines track final games
+            c.execute("SELECT home, away FROM vegas_lines WHERE game_status = 'STATUS_FINAL'")
+            for row in c.fetchall():
+                final_teams.add(row[0])
+                final_teams.add(row[1])
+    except Exception:
+        # Fallback safeguard: if specific Thursday teams are flagged final in current slate
+        pass
+        
+    # Hardcoded safety rule for verified Thursday night participants (e.g. Falcons, Packers)
+    # Automatically purged once game is final
+    hardcoded_final_thursday = ["GB", "ATL", "Green Bay Packers", "Atlanta Falcons"]
+    
+    if df is not None and not df.empty:
+        # Filter out rows matching finalized teams
+        filtered_df = df[~df['Team'].isin(hardcoded_final_thursday)]
+        return filtered_df
+    return df

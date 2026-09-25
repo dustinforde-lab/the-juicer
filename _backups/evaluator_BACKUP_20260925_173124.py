@@ -1,31 +1,3 @@
-﻿def is_thursday_game(p,d):
- try:return __import__("datetime").datetime.strptime(d if isinstance(d,str) else str(d),"%Y-%m-%d").weekday()==3
- except:return False
-def get_player_roster_status(n,t):
- try:
-  import sqlite3
-  c=sqlite3.connect("ction_grid.db").cursor()
-  c.execute("SELECT status, playing_time_pct FROM player_roster_status WHERE player_name=? AND team=? ORDER BY last_updated DESC LIMIT 1",(n,t))
-  r=c.fetchone()
-  if not r:return "UNKNOWN"
-  status,pt=r
-  if status.upper()=="OUT":return "INJURED_OUT"
-  if status.upper() in ["INACTIVE","BENCHED"]:return "BENCHED"
-  if status.upper() in ["ACTIVE","PROBABLE"]:return "ACTIVE" if pt and pt>0.1 else "BENCHED"
-  return "UNKNOWN"
- except:return "UNKNOWN"
-def validate_player_eligibility(p):
- is_thu=is_thursday_game(p.get("name"),p.get("game_date"))
- if is_thu:return {"eligible":False,"reason":f"{p.get('name')}: Thursday game","is_thursday":True,"roster_status":None}
- rs=get_player_roster_status(p.get("name"),p.get("team"))
- return {"eligible":True,"reason":None,"is_thursday":False,"roster_status":rs} if rs in ["ACTIVE","UNKNOWN"] else {"eligible":False,"reason":f"{p.get('name')}: {rs}","is_thursday":False,"roster_status":rs}
-def filter_player_pool(df):
- import pandas as pd
- filtered=[dict(p.to_dict(),roster_status=validate_player_eligibility(p.to_dict())["roster_status"]) for i,p in df.iterrows() if validate_player_eligibility(p.to_dict())["eligible"]]
- result=pd.DataFrame(filtered) if filtered else df.iloc[0:0]
- print(f"✅ Pool filtered: {len(df)} → {len(result)} eligible")
- return result
-
 import sqlite3
 import datetime
 import requests
