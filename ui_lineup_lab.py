@@ -1,54 +1,48 @@
-﻿import streamlit as st
+﻿# -*- coding: utf-8 -*-
+import streamlit as st
 import data_service
-import address_book
 
 def render_lineup_lab_tab():
-    st.markdown("<h2 style='color:#ffd700; margin-bottom:2px;'>🧪 DFS LAB & TACTICAL WORKBENCH</h2>", unsafe_allow_html=True)
-    st.markdown("<div style='color:#8b949e; font-size:12px; margin-bottom:14px;'>Horizontal Test-Tube Racks • Nested Capsule Pills • Fantastic Four Anchors</div>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:#ffd700; margin-bottom:2px;'>🧪 DFS LAB: TACTICAL WORKBENCH</h2>", unsafe_allow_html=True)
+    st.markdown("<div style='color:#8b949e; font-size:12px; margin-bottom:14px;'>Master Player Pool &bull; Live Roster Compiler &bull; Salary Cap Math</div>", unsafe_allow_html=True)
 
-    if "dfs_lab_slate" not in st.session_state: st.session_state["dfs_lab_slate"] = "Showdown (6 Spots)"
-    if "dfs_lab_type" not in st.session_state: st.session_state["dfs_lab_type"] = "🏆 GPP (150 MME)"
+    if "lab_slate" not in st.session_state: st.session_state["lab_slate"] = "Showdown"
+    st.session_state["lab_slate"] = st.radio("Workbench Slate", ["Showdown", "Sunday Classic"], horizontal=True)
 
-    c_slate, c_type, c_btn = st.columns([1.5, 1.5, 1])
-    with c_slate:
-        slate = st.radio("Slate Architecture", ["Showdown (6 Spots)", "Sunday Classic Main (9 Spots)"], horizontal=True, key="lab_slate")
-    with c_type:
-        ctype = st.radio("Contest Target", ["🏆 GPP (150 MME)", "🛡️ Cash Games (25 High-Floor)"], horizontal=True, key="lab_type")
-    with c_btn:
-        st.button("📥 Export CSV", use_container_width=True)
-
-    st.markdown("""
-    <style>
-        .test-tube-rack { background: rgba(13, 17, 23, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 12px 16px; margin-bottom: 14px; }
-        .tube-header { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 6px; margin-bottom: 8px; font-size: 12px; }
-        .pill-container { display: flex; flex-direction: row; gap: 6px; width: 100%; }
-        .player-pill { flex: 1; background: #161b22; border-radius: 8px; padding: 6px 8px; display: flex; flex-direction: column; font-size: 11px; border-top: 3px solid #30363d; }
-    </style>
-    """, unsafe_allow_html=True)
-
-    lineups = data_service.get_dfs_lab_lineups(slate, ctype)
+    col_pool, col_builder = st.columns([1.2, 1.8])
     
-    for lu in lineups:
-        pills_html = ""
-        for p in lu["pills"]:
-            # Standardized dictionary access (No tuple crashes)
-            pos_col = "#ffd700" if p["pos"]=="CPT" else ("#00e5ff" if p["pos"]=="QB" else ("#ff2a6d" if "RB" in p["pos"] else ("#00ff88" if "WR" in p["pos"] else "#a55eea")))
-            core_fx = "border: 1.5px solid #00ff88; box-shadow: 0 0 8px rgba(0,255,136,0.2);" if p["core"] else ""
-            
-            pills_html += f"""
-            <div class='player-pill' style='border-top: 3px solid {pos_col}; {core_fx}'>
-                <div style='display:flex; justify-content:space-between;'><b style='color:{pos_col};'>{p["pos"]}</b></div>
-                <div style='font-weight:700; color:#fff; margin:2px 0;'>{p["name"]}</div>
-                <div style='display:flex; justify-content:space-between; color:#8b949e;'><span>{p["sal"]}</span><b style='color:#00ff88;'>{p["pts"]}</b></div>
-            </div>
-            """
+    with col_pool:
+        st.markdown("<h4 style='color:#00e5ff; margin-bottom:6px;'>Player Pool</h4>", unsafe_allow_html=True)
+        df = data_service.get_slate_master_300(st.session_state["lab_slate"])
         
-        st.html(f"""
-        <div class='test-tube-rack'>
-            <div class='tube-header'>
-                <div><b style='color:#00e5ff;'>ROSTER {lu['id']}</b> • Cap: <b>${lu['salary']:,}</b> • ⚡ {lu['script']}</div>
-                <div><span style='color:#8b949e;'>Ceiling:</span> <b style='color:#00ff88; font-size:14px;'>{lu['ceiling']} pts</b></div>
+        feed_html = "<div style='height: 600px; overflow-y: auto; scrollbar-width: thin; padding-right: 8px;'>"
+        for _, row in df.iterrows():
+            pos_col = "#00e5ff" if row['Pos']=="QB" else ("#ff2a6d" if row['Pos']=="RB" else ("#00ff88" if row['Pos']=="WR" else "#ffd700"))
+            feed_html += f"""
+            <div style='background:rgba(13,17,23,0.75); border:1px solid rgba(255,255,255,0.08); border-left:4px solid {pos_col}; border-radius:6px; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;'>
+                <div>
+                    <div style='color:#fff; font-size:13px; font-weight:bold;'>{row['Player']} <span style='color:{pos_col}; font-size:10px;'>{row['Pos']}</span></div>
+                    <div style='color:#8b949e; font-size:11px;'>${row.get('Salary', 0):,} | xFP: <span style='color:#00ff88;'>{row.get('xFP', 0):.1f}</span></div>
+                </div>
+                <div style='background:#30363d; color:#fff; font-size:18px; font-weight:bold; width:28px; height:28px; display:flex; align-items:center; justify-content:center; border-radius:4px; cursor:pointer;'>+</div>
+            </div>"""
+        feed_html += "</div>"
+        st.html(feed_html)
+
+    with col_builder:
+        st.markdown("<h4 style='color:#00ff88; margin-bottom:6px;'>Active Roster Compiler</h4>", unsafe_allow_html=True)
+        
+        st.html("""
+        <div style='background:rgba(13,17,23,0.9); border:1px solid #30363d; border-radius:10px; padding:16px; margin-bottom:16px;'>
+            <div style='display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px; margin-bottom:12px;'>
+                <div><span style='color:#8b949e; font-size:12px;'>Rem Cap:</span> <b style='color:#00ff88; font-size:18px;'>$50,000</b></div>
+                <div><span style='color:#8b949e; font-size:12px;'>Avg Rem:</span> <b style='color:#00e5ff; font-size:18px;'>$8,333</b></div>
             </div>
-            <div class='pill-container'>{pills_html}</div>
+            <div style='background:rgba(255,255,255,0.02); border:1px dashed #30363d; padding:12px; border-radius:6px; margin-bottom:8px; display:flex; justify-content:center; color:#8b949e; font-size:12px;'>Empty CPT Slot</div>
+            <div style='background:rgba(255,255,255,0.02); border:1px dashed #30363d; padding:12px; border-radius:6px; margin-bottom:8px; display:flex; justify-content:center; color:#8b949e; font-size:12px;'>Empty FLEX Slot</div>
+            <div style='background:rgba(255,255,255,0.02); border:1px dashed #30363d; padding:12px; border-radius:6px; margin-bottom:8px; display:flex; justify-content:center; color:#8b949e; font-size:12px;'>Empty FLEX Slot</div>
+            <div style='background:rgba(255,255,255,0.02); border:1px dashed #30363d; padding:12px; border-radius:6px; margin-bottom:8px; display:flex; justify-content:center; color:#8b949e; font-size:12px;'>Empty FLEX Slot</div>
+            <div style='background:rgba(255,255,255,0.02); border:1px dashed #30363d; padding:12px; border-radius:6px; margin-bottom:8px; display:flex; justify-content:center; color:#8b949e; font-size:12px;'>Empty FLEX Slot</div>
+            <div style='background:rgba(255,255,255,0.02); border:1px dashed #30363d; padding:12px; border-radius:6px; display:flex; justify-content:center; color:#8b949e; font-size:12px;'>Empty FLEX Slot</div>
         </div>
         """)

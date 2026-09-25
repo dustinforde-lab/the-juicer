@@ -1,4 +1,5 @@
-﻿import streamlit as st
+﻿# -*- coding: utf-8 -*-
+import streamlit as st
 import numpy as np
 
 def generate_250_parlay_deck():
@@ -72,7 +73,7 @@ def build_parlay_ticket_card(t):
 
 def render_parlay_mix():
     st.markdown("<h2 style='color:#00e5ff; margin-bottom:2px;'>🔀 PARLAY MIX & CORRELATION SLIPS</h2>", unsafe_allow_html=True)
-    st.markdown("<div style='color:#8b949e; font-size:12px; margin-bottom:14px;'>250 Pre-Made Correlated Parlay Cards • SGP Scripts • Cross-Book Odds Comparison</div>", unsafe_allow_html=True)
+    st.markdown("<div style='color:#8b949e; font-size:12px; margin-bottom:14px;'>250 Pre-Made Correlated Parlay Cards &bull; SGP Scripts &bull; Cross-Book Odds Comparison</div>", unsafe_allow_html=True)
 
     deck = generate_250_parlay_deck()
 
@@ -93,3 +94,4 @@ def render_parlay_mix():
     for idx, t in enumerate(deck):
         with cols[idx % 2]:
             st.html(build_parlay_ticket_card(t))
+

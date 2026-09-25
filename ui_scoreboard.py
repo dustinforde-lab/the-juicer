@@ -1,4 +1,5 @@
-﻿import streamlit as st
+﻿# -*- coding: utf-8 -*-
+import streamlit as st
 import requests
 from datetime import datetime
 
@@ -62,7 +63,7 @@ def build_helmet_card(g):
     <div style='background:rgba(13,17,23,0.85); backdrop-filter:blur(10px); {rz_style} border-radius:12px; padding:18px; margin-bottom:16px;'>
         <div style='display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px; margin-bottom:14px;'>
             <div><span style='color:#8b949e; font-weight:800; font-size:12px;'>📺 {g['network']}</span></div>
-            <div><span style='background:#161b22; color:#c9d1d9; font-weight:800; font-size:11px; padding:4px 10px; border-radius:6px; border:1px solid #30363d;'>{g['spread']} • O/U {g['ou']}</span></div>
+            <div><span style='background:#161b22; color:#c9d1d9; font-weight:800; font-size:11px; padding:4px 10px; border-radius:6px; border:1px solid #30363d;'>{g['spread']} &bull; O/U {g['ou']}</span></div>
         </div>
 
         <div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;'>
@@ -93,7 +94,7 @@ def build_helmet_card(g):
 def _render_wall_body():
     games = fetch_espn_live()
     pulse_time = datetime.now().strftime('%H:%M:%S')
-    st.markdown(f"<div style='color:#8b949e; font-size:11px; margin-bottom:10px;'>Active Board: <b>{len(games)} Games</b> • 🟢 Live Telemetry Pulsed at {pulse_time}</div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='color:#8b949e; font-size:11px; margin-bottom:10px;'>Active Board: <b>{len(games)} Games</b> &bull; 🟢 Live Telemetry Pulsed at {pulse_time}</div>", unsafe_allow_html=True)
     
     cols = st.columns(2)
     for idx, g in enumerate(games):
@@ -102,7 +103,7 @@ def _render_wall_body():
 
 def render_scoreboard_tab():
     st.markdown("<h2 style='color:#00ff88; margin-bottom:2px;'>🏟️ LIVE VEGAS GAME CENTER</h2>", unsafe_allow_html=True)
-    st.markdown("<div style='color:#8b949e; font-size:12px; margin-bottom:14px;'>Immersive Scoreboard • ESPN Helmets • Central Game Clock • 30-Second Refresh</div>", unsafe_allow_html=True)
+    st.markdown("<div style='color:#8b949e; font-size:12px; margin-bottom:14px;'>Immersive Scoreboard &bull; ESPN Helmets &bull; Central Game Clock &bull; 30-Second Refresh</div>", unsafe_allow_html=True)
     try:
         if hasattr(st, "fragment"):
             @st.fragment(run_every="30s")
@@ -110,3 +111,4 @@ def render_scoreboard_tab():
             _frag()
         else: _render_wall_body()
     except: _render_wall_body()
+

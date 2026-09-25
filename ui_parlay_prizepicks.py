@@ -1,4 +1,5 @@
-﻿import streamlit as st
+﻿# -*- coding: utf-8 -*-
+import streamlit as st
 import pandas as pd
 import sqlite3
 import os
@@ -24,8 +25,8 @@ def build_pick_card(p):
     """
 
 def render_parlay_matrix():
-    st.markdown("<h2 style='color:#ffd700; margin-bottom:2px;'>🎟️ PARLAY MATRIX & PRIZEPICKS OPTIMIZER</h2>", unsafe_allow_html=True)
-    st.markdown("<div style='color:#8b949e; font-size:12px; margin-bottom:14px;'>+EV Slip Builder • 54.2% Break-Even Filtering • Flex vs Power Evaluator</div>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:#ffd700; margin-bottom:2px;'>??? PARLAY MATRIX & PRIZEPICKS OPTIMIZER</h2>", unsafe_allow_html=True)
+    st.markdown("<div style='color:#8b949e; font-size:12px; margin-bottom:14px;'>+EV Slip Builder &bull; 54.2% Break-Even Filtering &bull; Flex vs Power Evaluator</div>", unsafe_allow_html=True)
     
     df_vegas = pd.DataFrame()
     df_dfs = pd.DataFrame()
@@ -55,22 +56,23 @@ def render_parlay_matrix():
         col1, col2 = st.columns([0.4, 0.6])
         
         with col1:
-            st.markdown("<h4 style='color:#00e5ff; margin-bottom:8px;'>🎯 THE +EV HOTLIST</h4>", unsafe_allow_html=True)
+            st.markdown("<h4 style='color:#00e5ff; margin-bottom:8px;'>?? THE +EV HOTLIST</h4>", unsafe_allow_html=True)
             for _, row in ev_pool.iterrows():
                 st.html(build_pick_card(row.to_dict()))
                 
         with col2:
-            st.markdown("<h4 style='color:#ff2a6d; margin-bottom:8px;'>⚡ SLIP CONSTRUCTOR</h4>", unsafe_allow_html=True)
+            st.markdown("<h4 style='color:#ff2a6d; margin-bottom:8px;'>? SLIP CONSTRUCTOR</h4>", unsafe_allow_html=True)
             st.info("Select 2 to 6 legs from the +EV Hotlist to calculate true multiplier edges.")
             
             slip_type = st.radio("PrizePicks Slip Type", ["Power Play (Max Variance / Max Muliplier)", "Flex Play (Safety Net / Reduced Multiplier)"])
             legs = st.slider("Number of Legs", min_value=2, max_value=6, value=5)
             
             if slip_type.startswith("Power"):
-                st.success(f"📈 Power Play Selected: All {legs} legs must hit. Top payout compounds the +EV edge.")
+                st.success(f"?? Power Play Selected: All {legs} legs must hit. Top payout compounds the +EV edge.")
             else:
-                st.warning(f"🛡️ Flex Play Selected: {legs}-leg baseline. Warning: Minimum tier payout may return less than initial stake.")
+                st.warning(f"??? Flex Play Selected: {legs}-leg baseline. Warning: Minimum tier payout may return less than initial stake.")
                 
-            st.button("⚙️ GENERATE OPTIMAL TICKET", use_container_width=True)
+            st.button("?? GENERATE OPTIMAL TICKET", width="stretch")
     else:
-        st.warning("⚠️ Matrix requires active Vegas lines and DFS Projections to calculate +EV.")
+        st.warning("?? Matrix requires active Vegas lines and DFS Projections to calculate +EV.")
+

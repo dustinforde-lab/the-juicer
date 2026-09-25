@@ -1,4 +1,5 @@
-﻿import streamlit as st
+﻿# -*- coding: utf-8 -*-
+import streamlit as st
 
 def generate_prop_slips():
     """Generates 150 pre-made prop slip cards: 75 PrizePicks and 75 Underdog Fantasy."""
@@ -70,7 +71,7 @@ def build_prop_slip_card(slip):
         <div style='display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:8px; margin-bottom:10px;'>
             <div>
                 <span style='font-size:15px; font-weight:900; color:#ffffff;'>{slip['Slip_ID']}</span>
-                <span style='color:#8b949e; font-size:12px; margin-left:6px;'>• {slip['Title']}</span>
+                <span style='color:#8b949e; font-size:12px; margin-left:6px;'>&bull; {slip['Title']}</span>
             </div>
             <div>
                 <span style='background:rgba(0,255,136,0.15); color:#00ff88; font-size:12px; font-weight:900; padding:3px 8px; border-radius:4px;'>{slip['Multiplier']}</span>
@@ -90,7 +91,7 @@ def build_prop_slip_card(slip):
 
 def render_prizepicks():
     st.markdown("<h2 style='color:#ff2a6d; margin-bottom:2px;'>🎟️ PRIZEPICKS & UNDERDOG PROP SLIPS</h2>", unsafe_allow_html=True)
-    st.markdown("<div style='color:#8b949e; font-size:12px; margin-bottom:14px;'>150 Pre-Made Prop Slips • 75 PrizePicks Flex Plays • 75 Underdog Higher/Lower Cards</div>", unsafe_allow_html=True)
+    st.markdown("<div style='color:#8b949e; font-size:12px; margin-bottom:14px;'>150 Pre-Made Prop Slips &bull; 75 PrizePicks Flex Plays &bull; 75 Underdog Higher/Lower Cards</div>", unsafe_allow_html=True)
 
     pp_slips, ud_slips = generate_prop_slips()
 
@@ -103,3 +104,4 @@ def render_prizepicks():
     for idx, slip in enumerate(active_deck):
         with cols[idx % 2]:
             st.html(build_prop_slip_card(slip))
+

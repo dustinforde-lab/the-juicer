@@ -1,4 +1,5 @@
-﻿import streamlit as st
+﻿# -*- coding: utf-8 -*-
+import streamlit as st
 import pandas as pd
 import numpy as np
 import os
@@ -146,8 +147,8 @@ def get_positional_showdown_data():
     ]
 
 def render_the_rankings():
-    st.markdown("<h2 style='color:#00ff88; margin-bottom:2px;'>⚡ THE RANKINGS & EVALUATOR 3.0 WAR ROOM</h2>", unsafe_allow_html=True)
-    st.markdown("<div style='color:#8b949e; font-size:12px; margin-bottom:16px;'>Dual Glassmorphic Desk • Slate-Wide Top 300 Board • Positional Showdown Desk with Kickers & Zero-Latency Recon Drawers</div>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:#00ff88; margin-bottom:2px;'>? THE RANKINGS & EVALUATOR 3.0 WAR ROOM</h2>", unsafe_allow_html=True)
+    st.markdown("<div style='color:#8b949e; font-size:12px; margin-bottom:16px;'>Dual Glassmorphic Desk &bull; Slate-Wide Top 300 Board &bull; Positional Showdown Desk with Kickers & Zero-Latency Recon Drawers</div>", unsafe_allow_html=True)
 
     # Global Glassmorphic & Accordion Styling
     st.markdown("""
@@ -196,19 +197,19 @@ def render_the_rankings():
     # LEFT TABLE: SLATE-WIDE TOP 300 BOARD (MIKE EVALUATOR 3.0 FULL PPR)
     # =========================================================================
     with col_left:
-        st.markdown("<h4 style='color:#00ff88; margin-bottom:6px;'>🏆 SLATE TOP 300 BOARD (FULL PPR)</h4>", unsafe_allow_html=True)
+        st.markdown("<h4 style='color:#00ff88; margin-bottom:6px;'>?? SLATE TOP 300 BOARD (FULL PPR)</h4>", unsafe_allow_html=True)
         st.markdown("<div style='color:#8b949e; font-size:11px; margin-bottom:10px;'>Ranked strictly by Mike's Weekly xFP Opportunity Model</div>", unsafe_allow_html=True)
 
         df_300 = generate_slate_master_300()
         
-        search_left = st.text_input("🔍 Quick Search Top 300", "", key="t300_srch")
+        search_left = st.text_input("?? Quick Search Top 300", "", key="t300_srch")
         if search_left:
             df_300 = df_300[df_300["Player"].str.contains(search_left, case=False) | df_300["Team"].str.contains(search_left, case=False)]
 
         st.markdown("<div class='scrollable-300'>", unsafe_allow_html=True)
         st.dataframe(
             df_300,
-            use_container_width=True,
+            width="stretch",
             height=580,
             column_config={
                 "Rank": st.column_config.NumberColumn("#", format="%d", width=50),
@@ -227,8 +228,8 @@ def render_the_rankings():
     # RIGHT TABLE: POSITIONAL SHOWDOWN DESK WITH RECON DRAWERS
     # =========================================================================
     with col_right:
-        st.markdown("<h4 style='color:#00e5ff; margin-bottom:6px;'>🎯 SHOWDOWN DESK (POS & KICKERS)</h4>", unsafe_allow_html=True)
-        st.markdown("<div style='color:#8b949e; font-size:11px; margin-bottom:10px;'>Single-Game Leverage • Zero-Latency HTML/CSS Recon Drawers</div>", unsafe_allow_html=True)
+        st.markdown("<h4 style='color:#00e5ff; margin-bottom:6px;'>?? SHOWDOWN DESK (POS & KICKERS)</h4>", unsafe_allow_html=True)
+        st.markdown("<div style='color:#8b949e; font-size:11px; margin-bottom:10px;'>Single-Game Leverage &bull; Zero-Latency HTML/CSS Recon Drawers</div>", unsafe_allow_html=True)
 
         pos_tabs = st.radio("Positional Filter", ["ALL", "QB", "RB", "WR", "TE", "K", "DST"], horizontal=True)
 
@@ -258,7 +259,7 @@ def render_the_rankings():
                     </div>
                     <div style='text-align:right;'>
                         <span style='font-size:11px; color:#8b949e;'>Ceil:</span> <b style='color:{tier_col}; font-size:13px;'>{p['Sim_Ceiling']}</b>
-                        <span style='font-size:10px; color:#8b949e; margin-left:6px;'>▼</span>
+                        <span style='font-size:10px; color:#8b949e; margin-left:6px;'>?</span>
                     </div>
                 </summary>
                 <div style='margin-top:10px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.06); font-size:11px;'>
@@ -268,12 +269,13 @@ def render_the_rankings():
                         <span><b>Sim Delta:</b> <b style='color:#00ff88;'>+{p['Delta']:.1f}</b></span>
                     </div>
                     <div style='background:#0d1117; border-left:3px solid #00ff88; border-radius:4px; padding:6px 8px; margin-bottom:6px; color:#c9d1d9;'>
-                        <b style='color:#00ff88;'>⚡ Sleeper & ESPN Wire:</b> {p['ESPN_Wire']} <i>({p['Practice']})</i>
+                        <b style='color:#00ff88;'>? Sleeper & ESPN Wire:</b> {p['ESPN_Wire']} <i>({p['Practice']})</i>
                     </div>
                     <div style='background:#0d1117; border-left:3px solid #ffd700; border-radius:4px; padding:6px 8px; color:#c9d1d9;'>
-                        <b style='color:#ffd700;'>🧠 Donna's Read:</b> {p['Donna_Read']}
+                        <b style='color:#ffd700;'>?? Donna's Read:</b> {p['Donna_Read']}
                     </div>
                 </div>
             </details>
             """
             st.html(html_card)
+

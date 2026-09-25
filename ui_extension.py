@@ -1,3 +1,4 @@
+﻿# -*- coding: utf-8 -*-
 # ==========================================
 # === JUICER EXTENSION MODULE (NON-DESTRUCTIVE) ===
 # ==========================================
@@ -9,7 +10,7 @@ import datetime
 DB_PATH = "action_grid.db"
 
 def render_safe_vegas_wall():
-    st.markdown("### 🏆 VEGAS ACTION SCOREBOARD & LIVE LINES")
+    st.markdown("### ðŸ† VEGAS ACTION SCOREBOARD & LIVE LINES")
     try:
         with sqlite3.connect(DB_PATH) as conn:
             df = pd.read_sql("SELECT game, week, over_under, spread, sportsbook, updated_at FROM game_lines", conn)
@@ -29,7 +30,7 @@ def render_safe_vegas_wall():
         st.error(f"Scoreboard error: {e}")
 
 def render_safe_prizepicks():
-    st.markdown("### 📈 PRIZEPICKS & UNDERDOG SLIPS")
+    st.markdown("### ðŸ“ˆ PRIZEPICKS & UNDERDOG SLIPS")
     try:
         with sqlite3.connect(DB_PATH) as conn:
             df = pd.read_sql("SELECT id, platform, leg_count, implied_probability, confidence_tier, status FROM slips LIMIT 20", conn)

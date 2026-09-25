@@ -1,3 +1,4 @@
+﻿# -*- coding: utf-8 -*-
 """
 The Juicer - DFS War Room Card Component
 Supports 9-Man Classic & 6-Man Showdown with Crowned Gold Captain Tiles.
@@ -69,7 +70,7 @@ def render_lineup_card_html(lineup_row):
         if is_cpt:
             p_color = "#ffd700"
             border_css = "border: 2px solid #ffd700; box-shadow: inset 0 0 12px rgba(255, 215, 0, 0.25), 0 0 10px rgba(255, 215, 0, 0.2);"
-            tag_label = "👑 CPT (1.5x)"
+            tag_label = "ðŸ‘‘ CPT (1.5x)"
         else:
             p_color = POS_COLORS.get(pos, "#00e5ff")
             border_css = f"border:1px solid rgba(255,255,255,0.08); border-top:2px solid {p_color};"
@@ -80,7 +81,7 @@ def render_lineup_card_html(lineup_row):
             f"<div style='display:flex; justify-content:space-between; align-items:center;'><span style='font-size:10px; font-weight:800; color:{p_color};'>{tag_label}</span><img src='{logo_url}' style='width:16px; height:16px; object-fit:contain;'></div>"
             f"<div style='font-size:12px; font-weight:700; color:#ffffff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px;'>{p_name}</div>"
             f"<div style='display:flex; justify-content:space-between; font-size:10px; color:#8b949e; margin-top:2px;'><span>{team} vs {opp}</span><span style='color:#00ff88; font-weight:600;'>{sal}</span></div>"
-            f"<div style='display:flex; justify-content:space-between; font-size:9px; color:#cad3df; margin-top:4px; padding-top:3px; border-top:1px solid rgba(255,255,255,0.05);'><span>α {alpha}</span><b style='color:#00e5ff;'>{p_proj} pt</b></div>"
+            f"<div style='display:flex; justify-content:space-between; font-size:9px; color:#cad3df; margin-top:4px; padding-top:3px; border-top:1px solid rgba(255,255,255,0.05);'><span>Î± {alpha}</span><b style='color:#00e5ff;'>{p_proj} pt</b></div>"
             f"</div>"
         )
 
@@ -100,8 +101,8 @@ def render_lineup_card_html(lineup_row):
         f"</div>"
         f"<div style='display:flex; flex-wrap:nowrap; overflow-x:auto; width:100%; gap:4px;'>{tiles_html}</div>"
         f"<div style='display:flex; justify-content:space-between; align-items:center; margin-top:8px; font-size:10px; color:#8b949e;'>"
-        f"<div style='display:flex; gap:12px;'><span>🎯 <b>{studs}</b> Studs • <b>{mids}</b> Mid • <b>{punts}</b> Punts</span><span>📊 <b>{lev_label}</b></span></div>"
-        f"<div style='color:#cad3df;'>💡 <i>{meta.get('mike_verdict', '')}</i></div>"
+        f"<div style='display:flex; gap:12px;'><span>ðŸŽ¯ <b>{studs}</b> Studs â€¢ <b>{mids}</b> Mid â€¢ <b>{punts}</b> Punts</span><span>ðŸ“Š <b>{lev_label}</b></span></div>"
+        f"<div style='color:#cad3df;'>ðŸ’¡ <i>{meta.get('mike_verdict', '')}</i></div>"
         f"</div>"
         f"</div>"
     )
@@ -110,7 +111,7 @@ def run_self_audit():
     sample_sd = {
         "lineup_id": "DK_SD_TEST", "contest_type": "GPP", "format_type": "SHOWDOWN",
         "projected_points": 118.5, "floor_points": 88.0, "ceiling_points": 145.2, "total_salary": 48600,
-        "stack_summary": "⚡ 4-2 PACKERS SCRIPT",
+        "stack_summary": "âš¡ 4-2 PACKERS SCRIPT",
         "roster_json": [
             {"name": "Jordan Love", "pos": "QB", "team": "GB", "opp": "ATL", "salary": 15600, "proj": 29.7, "is_cpt": True},
             {"name": "Jayden Reed", "pos": "WR", "team": "GB", "opp": "ATL", "salary": 8000, "proj": 14.8},
@@ -119,9 +120,9 @@ def run_self_audit():
         "meta_json": {"remaining_salary": 1400, "stud_count": 2, "mid_count": 1, "punt_count": 0, "leverage_label": "LEFT $1400", "mike_verdict": "Test Passed"}
     }
     html = render_lineup_card_html(sample_sd)
-    assert "👑 CPT" in html, "Captain badge missing."
+    assert "ðŸ‘‘ CPT" in html, "Captain badge missing."
     assert "SHOWDOWN 6-MAN" in html, "Showdown badge missing."
-    print("✅ [PASS] Chunk 2 v3 (Crowned Showdown Cards) verified.")
+    print("âœ… [PASS] Chunk 2 v3 (Crowned Showdown Cards) verified.")
     return True
 
 if __name__ == "__main__":

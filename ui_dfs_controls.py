@@ -1,3 +1,4 @@
+﻿# -*- coding: utf-8 -*-
 """
 The Juicer - DFS Controls & DraftKings Exporter
 Chunk 3: DraftKings CSV generator, lock/exclude filters, and lineup controls.
@@ -78,8 +79,8 @@ def render_controls_bar(lineups):
         )
         
     with col_lock:
-        with st.popover("⚙️ Roster Constraints (Lock / Exclude)"):
-            st.markdown("<b style='color:#00ff88;'>🔒 Locked Core Players:</b>", unsafe_allow_html=True)
+        with st.popover("âš™ï¸ Roster Constraints (Lock / Exclude)"):
+            st.markdown("<b style='color:#00ff88;'>ðŸ”’ Locked Core Players:</b>", unsafe_allow_html=True)
             st.caption("Guaranteed 100% exposure in all generated builds.")
             st.multiselect(
                 "Locked Players:",
@@ -87,7 +88,7 @@ def render_controls_bar(lineups):
                 default=list(st.session_state["dfs_locked_players"]),
                 key="dfs_locked_multiselect"
             )
-            st.markdown("<b style='color:#ff2a6d;'>🚫 Excluded Fades:</b>", unsafe_allow_html=True)
+            st.markdown("<b style='color:#ff2a6d;'>ðŸš« Excluded Fades:</b>", unsafe_allow_html=True)
             st.caption("Banned from all builds.")
             st.multiselect(
                 "Excluded Players:",
@@ -99,11 +100,11 @@ def render_controls_bar(lineups):
     with col_export:
         csv_bytes = generate_draftkings_csv(lineups)
         st.download_button(
-            label="📥 EXPORT DK CSV",
+            label="ðŸ“¥ EXPORT DK CSV",
             data=csv_bytes,
             file_name="juicer_draftkings_lineups.csv",
             mime="text/csv",
-            use_container_width=True
+            width="stretch"
         )
 
 def run_self_audit():
@@ -123,8 +124,9 @@ def run_self_audit():
     csv_out = generate_draftkings_csv(sample_lineups).decode("utf-8")
     assert "QB" in csv_out, "QB header missing from CSV."
     assert "Josh Allen" in csv_out, "Roster data missing from CSV."
-    print("✅ [PASS] Chunk 3 (DFS Controls & CSV) verified. Zero regressions.")
+    print("âœ… [PASS] Chunk 3 (DFS Controls & CSV) verified. Zero regressions.")
     return True
 
 if __name__ == "__main__":
     run_self_audit()
+

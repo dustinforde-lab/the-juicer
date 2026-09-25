@@ -1,4 +1,5 @@
-﻿import streamlit as st
+﻿# -*- coding: utf-8 -*-
+import streamlit as st
 import pandas as pd
 import sqlite3
 import os
@@ -67,7 +68,7 @@ def build_domo_card(p):
 
 def render_juice_tab():
     st.markdown("<h2 style='color:#00ff88; margin-bottom:2px;'>⚡ JUICE RANKINGS & DOMO LEVERAGE</h2>", unsafe_allow_html=True)
-    st.markdown("<div style='color:#8b949e; font-size:12px; margin-bottom:14px;'>Dual-Ranking Matrix • Live Injury Status • Vegas Implied Totals</div>", unsafe_allow_html=True)
+    st.markdown("<div style='color:#8b949e; font-size:12px; margin-bottom:14px;'>Dual-Ranking Matrix &bull; Live Injury Status &bull; Vegas Implied Totals</div>", unsafe_allow_html=True)
     
     # Breaking News Marquee
     try:
@@ -75,7 +76,7 @@ def render_juice_tab():
             with sqlite3.connect(DB_PATH) as conn:
                 news_items = pd.read_sql("SELECT Headline FROM breaking_news_feed ORDER BY Published_At DESC LIMIT 3", conn)
                 if not news_items.empty:
-                    headlines = " &nbsp;&nbsp;•&nbsp;&nbsp; ".join(news_items["Headline"].tolist())
+                    headlines = " &nbsp;&nbsp;&bull;&nbsp;&nbsp; ".join(news_items["Headline"].tolist())
                     st.markdown(f"""
                         <div style='background:rgba(255,165,2,0.1); border:1px solid rgba(255,165,2,0.3); border-radius:6px; padding:6px 12px; font-size:12px; color:#ffa502; margin-bottom:14px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;'>
                             <b>🚨 WIRE:</b> {headlines}
@@ -123,3 +124,4 @@ def render_juice_tab():
                 st.html(build_domo_card(row.to_dict()))
     else:
         st.warning("⚠️ Matrix waiting for Live Vegas Lines and DFS Projections.")
+
