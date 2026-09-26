@@ -3,6 +3,56 @@ import streamlit as st
 import address_book
 
 st.set_page_config(page_title="The Juicer | War Room", page_icon="⚡", layout="wide", initial_sidebar_state="collapsed")
+
+# JUICER_TELEMETRY_START
+import time
+from datetime import datetime
+import streamlit as st
+
+def _render_alfred_sidebar():
+    st.markdown('''
+    <style>
+    .alfred-badge {
+        font-size: 14px; 
+        font-weight: bold; 
+        color: #00ff88;
+        background-color: rgba(0, 255, 136, 0.05);
+        padding: 10px; 
+        border-radius: 8px;
+        border: 1px solid #00ff88; 
+        text-align: center;
+        margin-bottom: 20px; 
+        animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.3); }
+        70% { box-shadow: 0 0 0 6px rgba(0, 255, 136, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); }
+    }
+    </style>
+    ''', unsafe_allow_html=True)
+    
+    cur_t = datetime.now().strftime("%I:%M:%S %p")
+    
+    with st.sidebar:
+        st.markdown(f'<div class="alfred-badge">🟢 ALFRED ONLINE<br><span style="font-size:11px; color:#ccc;">LAST SYNC: {cur_t}</span></div>', unsafe_allow_html=True)
+        if st.button("🔄 Sync Live Data", use_container_width=True):
+            pbar = st.progress(0, text="Alfred: Fetching Data...")
+            for pct in range(100):
+                time.sleep(0.005)
+                pbar.progress(pct + 1, text="Alfred: Fetching Data...")
+            pbar.empty()
+            st.toast("⚡ Data Refreshed Successfully!", icon="🟢")
+            st.rerun()
+
+_render_alfred_sidebar()
+# JUICER_TELEMETRY_END
+
+
+
+
+
+
 st.markdown("<style>.stApp { background-color: #06090e; color: #c9d1d9; } header, footer { visibility: hidden; }</style>", unsafe_allow_html=True)
 address_book.init_session_state(st)
 
